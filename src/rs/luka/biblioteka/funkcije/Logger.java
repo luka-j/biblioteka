@@ -1,0 +1,70 @@
+package rs.luka.biblioteka.funkcije;
+
+import java.io.IOException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.SimpleFormatter;
+import javax.swing.JOptionPane;
+import rs.luka.biblioteka.data.Config;
+
+/**
+ * Sadrži root logger za aplikaciju i metode za inicijalizaciju i gašenje istog.
+ * 
+ * @author luka
+ * @since 18.9.2014.
+ */
+public class Logger {
+    /**
+     * Root logger aplikacije, rs.luka.biblioteka.
+     */
+    public static final java.util.logging.Logger ROOT_LOGGER = java.util.logging.Logger.getLogger("rs.luka.biblioteka");
+    /**
+     * handler namenjen za root logger, trebalo bi da koristi UTF-8 i simpleformat.
+     */
+    private static java.util.logging.Handler handler;
+    /**
+     * Logging level za handler i root logger. Pri ucitavanju je INFO, a pri
+     * inicijalizaciji u metodi se uzima vrednost iz configa.
+     */
+    private static Level LOGGING_LEVEL = Level.INFO;
+    
+    /**
+     * Inicijalizuje logger, postavlja handlere i logging level.
+     * @since 18.9.'14.
+     */
+    public static void initLogger() {
+        LOGGING_LEVEL = /*Level.parse(Config.get("logLevel"))*/ Level.CONFIG;
+        ROOT_LOGGER.setLevel(LOGGING_LEVEL);
+        try {
+            handler = new FileHandler(Utils.getWorkingDir() + "biblioteka.log", true);
+            handler.setEncoding("UTF-8");
+            handler.setFormatter(new SimpleFormatter());
+            handler.setLevel(LOGGING_LEVEL);
+            ROOT_LOGGER.addHandler(handler);
+            //za debugging:
+            //for(java.util.logging.Handler handler0 : java.util.logging.Logger.getLogger("").getHandlers())
+            //    if(handler0 instanceof ConsoleHandler) {
+            //        handler0.setLevel(Level.FINE);
+            //        System.out.println("found");}
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Greska pri inicijalizaciji loggera.\n"
+                    + "Neke funkcije logovanja verovatno nece raditi", "I/O Greska",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (SecurityException ex) {
+            JOptionPane.showMessageDialog(null, "Sigurnosna greska pri inicijalizaciji loggera.\n"
+                    + "Neke funkcije logovanja verovatno nece raditi", 
+                    "Sigurnosna greska", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    /**
+     * Finalizuje logger, loguje izlazak i zatvara handler. 
+     * Nakon zvanja ove metode, svi drugi loggeri loguju direktno preko root loggera platforme
+     * @since 18.9.'14.
+     */
+    public static void finalizeLogger() {
+        ROOT_LOGGER.log(Level.INFO, "Program izlazi. Gasim logger.");
+        handler.close();
+    }
+}

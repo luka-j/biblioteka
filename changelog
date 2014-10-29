@@ -1,0 +1,70 @@
+ * Encapsulation i sinonimi za config
+ * MultiMap implementacija sa ArrayListama
+ * Jos sredjivanja koda, priprema za spajanje UcenikKnjiga sa Ucenik.java
+ * Bugfixing
+ * Organizovao kod (posebno Ucenik i UcenikKnjiga)
+ * Zavrsio sve sto se tice undo i redoa, preimenivao UndoData u UndoAkcija i stavio u Undo.java
+ * Dodao redo funkciju, redizajnirao undo, kreirao UndoData klasu
+ * JSeparator za grafiku (razrede), sva logika i helper metode vezane za to
+ * Malo pocistio reference, testirao i popravio undo, pronasao 1 bug (undoVracanje)
+ * Zavrsio undo back-end
+ * Poceo undo
+ * Obavezan unos i prikazivanje pisca knjige
+ * bugfixes, promenio workingDir (sada postoji initWorkingDir i setWorkingDir), dodao u init()
+ * Promenio save, dodao IOString, centralizovana serijalizacija, pojednostavio save i load
+ * Napravio podelio save metodu na saveUcenike i saveKnjige, i jednu koja zove obe
+ * Uradio logging preko Java Logging API, dodao mnogo vise logovanja
+ * Brisanje naslova, zavrsio checkboxove za knjige
+ * Napravio funkciju koja iscrtava modalni dijalog za TextFieldom i vraca vrednost
+ * Uradio uzimanje iz klase za Knjige
+ * Uradio autosave funkciju sa hardcoded periodom. Blokira main Thread. 
+ * Poceo checkboxove za knjige 
+ * Prebacio sve JFrameove iz Ucenika u modalne JDialoge
+ * Popravio i istestirao sve vezano za checkboxove
+ * Uradio funkcionalnost checkboxova za Ucenike Promenio grafiku za ucenike;
+ * svaki ucenik i knjiga imaju svoj checkbox Pocistio kod, dodao dokumentaciju 
+ * popravio logger, sada koristi Files.copy ako se ne poklapa sa backupom
+ * promenio redosled ucitavanja i pokretanja grafike
+ * fgColor za svu grafiku 
+ * Uradio podesavanja, promenio loadData
+ * Uradio podesavanja grafike za boje
+ * Ucenik vise ne bi trebalo da moze da uzme vise knjiga istog naslova
+ * Promenio vracanje() da koristi Exception-e
+ * Promenio uzimanje() da koristi Exception-e umesto errCode-a
+ * brKnjiga za pregledUcenika(), pociscen kod za grafiku, JTextArea za novaGeneracija()
+ * Promenio getUcenikKnjiga i getDatum da krecu od 0
+ * izbacio addNSort
+ * Dodao dokumentaciju u Init, pocistio imena
+ * Ubacen brKnjiga u Unos i unos novog ucenika
+ * Dodat razred kod unosa novog ucenika, gomila bugova ispravljeno
+ * Pociscen kod
+ * Promenjena gomila funkcija da moze da radi sa promenjenim Ucenikom
+ * Promenjen Ucenik - sada se sastoji od imena, razreda i niza UcenikKnjiga
+ * Dodat UcenikKnjiga - novi objekat koji grupise naslov knjige i datum kada je iznajmljena
+ * Promenjen unos - trebalo bi da je lakse sada; jedan textbox za knjige kod ucenika, 
+ * ActionListeneri na poslednjim textboxovima
+ * Pozicioniranje prozora - valjda gotovo
+ * Pretraga ucenika po knjigama - JScrollPane i jos neke popravke grafike
+ * Izbacio search multithreading, radi sporije nego klasican search
+ * Pretraga ucenika po knjigama, imena + datumi
+ * null dates - proveriti jos jednom
+ * Popravljeni ucSize i knjSize
+ * sortiranje i comparables - radi
+ * implemented Comparables
+ * ucSize i knjSize - radi
+ * manji bugfixovi, testing
+ * Ista imena ucenika popravljena
+ * Ucenici sa istim imenom bi sada trebalo da funkcionisu kako treba
+ * Bolji double panic log - trebalo bi da je OK 
+ * Pocistiti config loadovanje gde je nepotrebno 
+ * Bolje obavestavanje - PROVERITI 
+ * Brisanje ucenika - napokon radi
+ * Log se brise pri svakom novom unosu - trebalo bi da je OK sada
+ * UncaughtExceptions Nova metoda za logovanje gresaka 
+ * Ubaciti visinu i sirinu prozora u config - gotovo, trebalo bi bolje iskoristiti 
+ * Postaviti search box na vrh prozora, a ne vertikalno centrirano - uradjeno 
+ * logging za greske(kod catch-eva)
+ * Uraditi backup(na pocetku init, staviti stare vrednosti u novi fajl, obrisati u save ili na kraju) - gotovo, overwrituje na svaki start 
+ * Error Handling za novu gen 
+ * Popraviti I/O - valjda gotovo 
+ * Ubacio datume kada je ucenik iznajmio knjigu i proveru pri pokretanju
