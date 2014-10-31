@@ -194,8 +194,11 @@ public class Ucenik implements Comparable<Ucenik> {
     public String getAsIOString() {
         StringBuilder string = new StringBuilder(ime);
         string.append(splitChar).append(razred);
-        for (UcenikKnjiga knjiga : knjige) {
+        for(UcenikKnjiga knjiga :knjige) {
             string.append(splitChar).append(knjiga.getAsIOString());
+        }
+        for(int i=knjige.length; i<Podaci.getMaxBrojUcenikKnjiga(); i++) {
+            string.append(splitChar);
         }
         return string.toString();
     }

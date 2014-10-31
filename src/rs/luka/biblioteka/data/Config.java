@@ -8,12 +8,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.String.valueOf;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static rs.luka.biblioteka.data.Podaci.getBrojKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
+import rs.luka.biblioteka.exceptions.ConfigException;
+import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.funkcije.Utils;
 
 /**
@@ -75,7 +78,8 @@ public class Config {
             + "razredi - String validnih razreda, razdvojenih zapetom\n"
             + "workingDir - radni direktorijum aplikacije";
 
-    private static final MultiMap vrednosti = new MultiMap();
+    private static final StringMultiMap vrednosti = new StringMultiMap();
+    private static final StringMultiMap limiti =  new StringMultiMap();
 
     //MINIMALNE I MAKSIMALNE VREDNOSTI ZA CONFIG
     private static final Limit SIRINA = new Limit(100, 3000);
@@ -83,7 +87,6 @@ public class Config {
     private static final Limit BR_KNJIGA = new Limit(1, 15);
     private static final Limit UC_KNJ_SIZE = new Limit(50, Integer.MAX_VALUE);
     private static final Limit DATE_LIMIT = new Limit(1, 365);
-    private static final Limit LOG_LEVEL = new Limit();
     private static final Limit SAVE_PERIOD = new Limit(0, Integer.MAX_VALUE);
     private static final Limit UNDO = new Limit(0, Integer.MAX_VALUE);
     
@@ -94,6 +97,7 @@ public class Config {
     public static void loadConfig() {
         setDefaults();
         defineSynonyms();
+        setLimits();
         configFile = new File(Utils.getWorkingDir() + "config.properties");
         config = new Properties(defaults);
         String path = null;
@@ -161,6 +165,19 @@ public class Config {
                 "Mogući razredi učenika (razdvojeni zapetom)");
         vrednosti.put("workingDir", "workingDir", "workingDirectory", "Radni direktorijum", "dataDir",
                 "Folder u kojem se čuvaju podaci");
+    }
+    
+    private static void setLimits() {
+        limiti.put("ucSize", UC_KNJ_SIZE.MIN, UC_KNJ_SIZE.MAX);
+        limiti.put("knjSize", UC_KNJ_SIZE.MIN, UC_KNJ_SIZE.MAX);
+        limiti.put("dateLimit", DATE_LIMIT.MIN, DATE_LIMIT.MAX);
+        limiti.put("knjigeS", SIRINA.MIN, SIRINA.MAX);
+        limiti.put("knjigeV", VISINA.MIN, VISINA.MAX);
+        limiti.put("uceniciS", SIRINA.MIN, SIRINA.MAX);
+        limiti.put("uceniciV", VISINA.MIN, VISINA.MAX);
+        limiti.put("brKnjiga", BR_KNJIGA.MIN, BR_KNJIGA.MAX);
+        limiti.put("savePeriod", SAVE_PERIOD.MIN, SAVE_PERIOD.MAX);
+        limiti.put("maxUndo", UNDO.MIN, UNDO.MAX);
     }
 
     /**
@@ -244,65 +261,26 @@ public class Config {
      *
      * @param key kljuc
      * @param val vrednost
-     * @see #isValid(java.lang.String, java.lang.String)
+     * @see #isNameValid(java.lang.String, java.lang.String)
      * @since 25.10.'14.
      */
     public static void set(String key, String val) {
-        if (!isValid(key, val)) {
+        if (!isNameValid(key, val)) {
             throw new IllegalArgumentException("Vrednost " + val + " nije validna za kljuc " + key);
         }
-        if ("ucSize".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("ucSize", Utils.limitedInteger(val, UC_KNJ_SIZE.MIN, UC_KNJ_SIZE.MAX));
-            LOGGER.log(Level.CONFIG, "ucSize pode\u0161en na {0}", config.getProperty("ucSize"));
-        } else if ("knjSize".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("knjSize", Utils.limitedInteger(val, UC_KNJ_SIZE.MIN, UC_KNJ_SIZE.MAX));
-            LOGGER.log(Level.CONFIG, "knjSize pode\u0161en na {0}", config.getProperty("knjSize"));
-        } else if ("firstRun".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("firstRun", val);
-            LOGGER.log(Level.CONFIG, "firstRun pode\u0161en na {0}", config.getProperty("firstRun"));
-        } else if ("dateLimit".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("dateLimit", Utils.limitedInteger(val, DATE_LIMIT.MIN, DATE_LIMIT.MAX));
-            LOGGER.log(Level.CONFIG, "dateLimit pode\u0161en na {0}", config.getProperty("dateLimit"));
-        } else if ("lookAndFeel".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("lookAndFeel", val);
-            LOGGER.log(Level.CONFIG, "lookAndFeel pode\u0161en na {0}", config.getProperty("lookAndFeel"));
-        } else if ("knjigeS".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("knjigeS", Utils.limitedInteger(val, SIRINA.MIN, SIRINA.MAX));
-            LOGGER.log(Level.CONFIG, "knjigeS pode\u0161en na {0}", config.getProperty("knjigeS"));
-        } else if ("uceniciS".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("uceniciS", Utils.limitedInteger(val, SIRINA.MIN, SIRINA.MAX));
-            LOGGER.log(Level.CONFIG, "uceniciS pode\u0161en na {0}", config.getProperty("uceniciS"));
-        } else if ("knjigeV".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("knjigeV", Utils.limitedInteger(val, VISINA.MIN, VISINA.MAX));
-            LOGGER.log(Level.CONFIG, "knjigeV pode\u0161en na {0}", config.getProperty("knjigeV"));
-        } else if ("uceniciV".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("uceniciV", Utils.limitedInteger(val, VISINA.MIN, VISINA.MAX));
-            LOGGER.log(Level.CONFIG, "uceniciV pode\u0161en na {0}", config.getProperty("uceniviV"));
-        } else if ("brKnjiga".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("brKnjiga", Utils.limitedInteger(val, BR_KNJIGA.MIN, BR_KNJIGA.MAX));
-            LOGGER.log(Level.CONFIG, "brKnjiga pode\u0161en na {0}", config.getProperty("brKnjiga"));
-        } else if ("bgBoja".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("bgBoja", val);
-            LOGGER.log(Level.CONFIG, "bgBoja pode\u0161en na {0}", config.getProperty("bgBoja"));
-        } else if ("fgBoja".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("fgBoja", val);
-            LOGGER.log(Level.CONFIG, "fgBoja pode\u0161en na {0}", config.getProperty("fgBoja"));
-        } else if("TFColor".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("TFColor", val);
-            LOGGER.log(Level.CONFIG, "TFColor pode\u0161en na {0}", config.getProperty("TFColor"));
-        } else if ("TFBoja".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("TFBoja", val);
-            LOGGER.log(Level.CONFIG, "TFBoja pode\u0161en na {0}", config.getProperty("TFBoja"));
-        } else if ("savePeriod".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("savePeriod", Utils.limitedInteger(val, SAVE_PERIOD.MIN, SAVE_PERIOD.MAX));
-            LOGGER.log(Level.CONFIG, "savePeriod pode\u0161en na {0}", config.getProperty("savePeriod"));
-        } else if ("maxUndo".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("maxUndo", Utils.limitedInteger(val, UNDO.MIN, UNDO.MAX));
-            LOGGER.log(Level.CONFIG, "maxUndo pode\u0161en na {0}", config.getProperty("maxUndo"));
-        } else if ("razredi".equalsIgnoreCase(vrednosti.getKey(key))) {
-            config.setProperty("razredi", val);
-            LOGGER.log(Level.CONFIG, "razredi pode\u0161en na {0}", config.getProperty("razredi"));
+        String realKey = vrednosti.getKey(key);
+        
+        check(realKey, val);
+        
+        if(limiti.containsKey(key)) {
+            ArrayList<String> lims = limiti.get(key);
+            config.setProperty(realKey, 
+                    Utils.limitedInteger(val, Integer.parseInt(lims.get(0)), Integer.parseInt(lims.get(1))));
         }
+        else {
+            config.setProperty(realKey, val);
+        }
+        LOGGER.log(Level.CONFIG, "{0} podešen na {1}", new String[]{key, val});
         storeConfig();
     }
 
@@ -317,7 +295,7 @@ public class Config {
      * @return true ako sme da postoji, false u suprotnom.
      * @since 24.10.'14.
      */
-    private static boolean isValid(String key, String val) {
+    private static boolean isNameValid(String key, String val) {
         if (!vrednosti.contains(key)) {
             System.out.println(key + " ne postoji");
             return false;
@@ -347,7 +325,8 @@ public class Config {
         if ("firstRun".equalsIgnoreCase(vrednosti.getKey(key)) || "TFBoja".equals(vrednosti.getKey(key))) {
             return val.equals("0") || val.equals("1") || val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false");
         }
-        if ("bgBoja".equalsIgnoreCase(vrednosti.getKey(key)) || "fgBoja".equals(vrednosti.getKey(key))) {
+        if ("bgBoja".equalsIgnoreCase(vrednosti.getKey(key)) || "fgBoja".equals(vrednosti.getKey(key))
+                || "TFColor".equalsIgnoreCase(vrednosti.getKey(key))) {
             try {
                 Color.decode(val);
             } catch (NumberFormatException ex) {
@@ -356,6 +335,15 @@ public class Config {
             return true;
         } else {
             return Utils.isInteger(val);
+        }
+    }
+    
+    private static void check(String key, String val) {
+        switch(key) {
+            case "brKnjiga": int valInt = Integer.parseInt(val);
+                for(int i=0; i<Podaci.getBrojUcenika(); i++)
+                if(Podaci.getUcenik(i).getBrojKnjiga() > valInt)
+                    throw new ConfigException("brKnjiga");
         }
     }
 

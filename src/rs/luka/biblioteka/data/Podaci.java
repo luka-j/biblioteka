@@ -268,7 +268,7 @@ public class Podaci {
         if (Config.hasKey("brKnjiga")) {
             LOGGER.log(Level.FINER, "uzimam maxBrojUcenikKnjiga iz configa: {0}", 
                     Config.get("brKnjiga"));
-            return parseUnsignedInt(Config.get("brKnjiga"));
+            return Config.getAsInt("brKnjiga");
         }
         if (ucenici.isEmpty()) {
             LOGGER.log(Level.FINER, "Nema učenika, maxBrojUcenikKnjiga je 0");

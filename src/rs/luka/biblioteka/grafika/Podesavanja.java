@@ -3,13 +3,10 @@ package rs.luka.biblioteka.grafika;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import static java.lang.Boolean.parseBoolean;
-import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,10 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import rs.luka.biblioteka.data.Config;
+import rs.luka.biblioteka.exceptions.ConfigException;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import static rs.luka.biblioteka.grafika.Grafika.getBgColor;
-import static rs.luka.biblioteka.grafika.Grafika.getFgColor;
-import static rs.luka.biblioteka.grafika.Grafika.getLabelFont;
 
 /**
  * Klasa za podesavanja - grafiku. Front-end za menjanje config-a.
@@ -72,6 +68,7 @@ public class Podesavanja {
                     showMessageDialog(pan, "Neka od unetih vrednosti nije broj."
                             + "\nProverite unos i pokušajte ponovo", "Loš unos",
                             JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
                 }
             }
         });
@@ -170,9 +167,16 @@ public class Podesavanja {
      * @throws PreviseKnjiga
      */
     private void sacuvaj() throws PreviseKnjiga {
-        for(int i=0; i<labels.length; i++) {
-            if(!textfields[i].getText().isEmpty())
-                Config.set(labels[i].getText(), textfields[i].getText());
+        try {
+            for(int i=0; i<labels.length; i++) {
+                if(!textfields[i].getText().isEmpty())
+                    Config.set(labels[i].getText(), textfields[i].getText());
+            }
+        }
+        catch(ConfigException ex) {
+            switch(ex.getMessage()) {
+                case "brKnjiga": throw new PreviseKnjiga(ex);
+            }
         }
     }
 

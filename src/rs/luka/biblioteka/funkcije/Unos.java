@@ -17,6 +17,7 @@ import static rs.luka.biblioteka.data.Podaci.indexOfUcenik;
 import rs.luka.biblioteka.data.Ucenik;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
+import rs.luka.biblioteka.grafika.Grafika;
 
 /**
  *
@@ -201,6 +202,6 @@ public class Unos {
         if (ugasiti == 0) {
             Init.exit(false);
         }*/
-        Init.init();
+        Grafika.reset();
     }
 }

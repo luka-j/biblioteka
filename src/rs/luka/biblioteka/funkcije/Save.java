@@ -28,7 +28,6 @@ public class Save {
      * @since 24.9.'14.(new)
      */
     public static void save() throws IOException {
-        System.out.println("Save");
         File data = new File("Data");
         if (!data.isDirectory()) {
             data.mkdir();

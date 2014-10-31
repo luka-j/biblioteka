@@ -28,4 +28,8 @@ public class PreviseKnjiga extends Exception {
     public PreviseKnjiga(int index, Throwable ex) {
         super(valueOf(index), ex);
     }
+    
+    public PreviseKnjiga(Throwable t) {
+        super(t);
+    }
 }

@@ -10,17 +10,17 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * MultiMap implementacija koja koristi 2 ArrayLista kao osnovu. Jedan sadrzi kljuceve, drugi listu Strigova
+ * StringMultiMap implementacija koja koristi 2 ArrayLista kao osnovu. Jedan sadrzi kljuceve, drugi listu Strigova
  * koji predstavljaju vrednosti. Dozvoljava null vrednosti.
  * @author luka
  * @since 25.10.'14.
  */
-public class MultiMap implements Map<String, ArrayList<String>> {
+public class StringMultiMap implements Map<String, ArrayList<String>> {
     private static final long serialVersionUID = 1L;
     private final List<String> keys;
     private final List<ArrayList<String>> values;
     
-    public MultiMap() {
+    public StringMultiMap() {
         keys = new ArrayList<>(18);
         values = new ArrayList<>(18);
     }
@@ -57,9 +57,9 @@ public class MultiMap implements Map<String, ArrayList<String>> {
 
     @Override
     public ArrayList<String> get(Object key) {
-        ArrayList<String> copy = new ArrayList<>();
-        Collections.copy(copy, values.get(keys.indexOf((String)key)));
-        return copy;
+        if(key==null || !this.containsKey(key))
+            return null;
+        return values.get(keys.indexOf((String)key));
     }
 
     @Override
@@ -138,12 +138,16 @@ public class MultiMap implements Map<String, ArrayList<String>> {
      * @since 25.10.'14.
      */
     public void put(String key, String... vals) {
-        int inx = keys.indexOf(key);
-        if(inx>-1) {
-            keys.remove(inx);
-            values.remove(inx);
+        replaceKey(key);
+        values.add(new ArrayList<>(Arrays.asList(vals)));
+    }
+    
+    public void put(String key, int... vals0) {
+        replaceKey(key);
+        String[] vals = new String[vals0.length];
+        for(int i=0; i<vals0.length; i++) {
+            vals[i] = String.valueOf(String.valueOf(vals0[i]));
         }
-        keys.add(key);
         values.add(new ArrayList<>(Arrays.asList(vals)));
     }
     
@@ -183,5 +187,14 @@ public class MultiMap implements Map<String, ArrayList<String>> {
     public String getLastValue(int inx) {
         ArrayList<String> vals = values.get(inx);
         return vals.get(vals.size()-1);
+    }
+    
+    private void replaceKey(String key) {
+        int inx = keys.indexOf(key);
+        if(inx>-1) {
+            keys.remove(inx);
+            values.remove(inx);
+        }
+        keys.add(key);
     }
 }

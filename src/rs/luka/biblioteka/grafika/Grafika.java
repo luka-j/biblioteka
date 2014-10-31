@@ -3,6 +3,7 @@
 //2141 linija, 25.10.'14.
 package rs.luka.biblioteka.grafika;
 
+import com.sun.org.apache.xml.internal.security.Init;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -61,6 +62,7 @@ public class Grafika {
      */
     private static Color TFColor = new Color(-1);
 
+    private static final JFrame win = new JFrame("Biblioteka");
     private static JPanel pan;
 
     /**
@@ -69,7 +71,6 @@ public class Grafika {
      */
     public static void Grafika() {
         setVariables();
-        JFrame win = new JFrame("Biblioteka");
         win.setSize(460, 220);
         win.setResizable(false);
         win.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -262,5 +263,10 @@ public class Grafika {
     
     protected static Color getTFColor() {
         return TFColor;
+    }
+    
+    public static void reset() {
+        win.dispose();
+        Init.init();
     }
 }

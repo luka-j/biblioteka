@@ -8,7 +8,8 @@
  */
 /**
  * @bugs 
- * brKnjiga ne radi - save funkcija - proveriti, nisam dugo pokusavao
+ * !! Uncompilable source code - unreported exception PreviseKnjiga kod dodavanja novog naslova
+ *    (naslov se normalno dodaje, ali throwuje exception nakon toga) !!
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije pri push(),
  * tako da setKnjiga throwuje Duplikat (da li smem ignorisati?)
  * Ucenici grafika: search rekurzija, tj. restart prozora (Postoji los i zamoran workaround)
@@ -30,6 +31,7 @@
  */
 /**
  * @changelog
+ * Popravio brKnjiga, poceo config checking
  * Ubacio Color TFColor, izbacio boolean TFBoja
  * Podesavanja prema configu
  * Pomerio changelog u fajl.
