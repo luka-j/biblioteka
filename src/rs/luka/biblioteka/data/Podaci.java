@@ -14,6 +14,7 @@ import static java.nio.file.Files.copy;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -139,8 +140,20 @@ public class Podaci {
                 LOGGER.log(Level.FINE, "Neki od fajlova ne postoji, obustavljam backup");
                 return;
             }
-            copy(knjigeF.toPath(), knjigeBackup.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            copy(uceniciF.toPath(), uceniciBackup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            if(knjigeF.length()==0) {
+                copy(knjigeBackup.toPath(), knjigeF.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                LOGGER.log(Level.WARNING, "Fajl sa podacima o knjigama je bio prazan, "
+                        + "zamenio sam ga sa backupom");
+            }
+            else
+                copy(knjigeF.toPath(), knjigeBackup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            if(uceniciF.length()==0) {
+                copy(uceniciBackup.toPath(), uceniciF.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                LOGGER.log(Level.WARNING, "Fajl sa podacima o ucenicima je bio prazan, "
+                        + "zamenio sam ga sa backupom");
+            }
+            else
+                copy(uceniciF.toPath(), uceniciBackup.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "I/O greška pri kreiranju backup-a", ex);
             showMessageDialog(null, "Doslo je do greske pri kreiranju backupa.",
@@ -296,6 +309,24 @@ public class Podaci {
         }
         return razredi;
     }
+    
+    /**
+     * Vraca iterator za listu knjige. 
+     * @return knjige.iterator()
+     * @since 1.11.'14.
+     */
+    public static Iterator<Knjiga> iteratorKnjiga() {
+        return knjige.iterator();
+    }
+    
+    /**
+     * Vraca iterator za listu ucenici.
+     * @return ucenici.iterator();
+     * @since 1.11.'14.
+     */
+    public static Iterator<Ucenik> iteratorUcenika() {
+        return ucenici.iterator();
+    }
 
     //boolean metode
     /**
@@ -317,7 +348,8 @@ public class Podaci {
 
     //SETTERI, ADD-eri
     /**
-     * addNas, refactored. Dodaje naslov i kolicinu.
+     * addNas, refactored. Pravi objekat Knjiga sa datim podacima i zove
+     * {@link #addKnjiga(rs.luka.biblioteka.data.Knjiga) } da ubaci objekat u listu.
      *
      * @param nas naslov
      * @param kol kolicina
@@ -331,8 +363,8 @@ public class Podaci {
     }
     
     /**
-     * Ekstraktuje podatke iz objekta Knjiga i zove metodu 
-     * {@link #addKnjiga(java.lang.String, int, java.lang.String)}.
+     * Dodaje dati objekat u listu sa knjigama. Loguje, pushuje objekat u undo stack i menja knjSize u configu.
+     * Ako dodje do exceptiona pri podesavanju configa, throwuje RuntimeException (workaround).
      * @param knj knjiga koja se dodaje
      * @throws Duplikat ako knjiga istog naslova vec postoji
      * @since 28.9.'14.
@@ -346,8 +378,8 @@ public class Podaci {
         String knjSize = Config.get("knjSize", "0");
         int knjSizeInt = parseInt(knjSize);
         knjSizeInt++;
-        Config.set("knjSize", valueOf(knjSizeInt));
-        LOGGER.log(Level.CONFIG, "knjSize povećan za 1");
+        try {Config.set("knjSize", valueOf(knjSizeInt));}
+        catch(Exception e) { throw new RuntimeException(e);} //workaround za uncompilable source code
     }
 
     /**
@@ -366,6 +398,7 @@ public class Podaci {
     
     /**
      * Dodaje dati objekat u listu sa ucenicima, loguje akciju i stavlja je u undo stack.
+     * Menja ucSize u configu.
      * @param ucenik ucenik koji se dodaje
      * @since 28.9.'14.
      */
@@ -378,7 +411,6 @@ public class Podaci {
         int ucSizeInt = parseInt(ucSize);
         ucSizeInt++;
         Config.set("ucSize", valueOf(ucSizeInt));
-        LOGGER.log(Level.CONFIG, "ucSize povećan za 1");
     }
 
     /**
@@ -411,28 +443,37 @@ public class Podaci {
     }
 
     /**
-     * delUc, refactored.
+     * delUc, refactored. Brise ucenika na datom indexu. Loguje akciju, pushuje u undo stack
+     * i smanjuje ucSize u configu za 1.
      *
      * @param inx index ucenika
-     * @since 31.6.'13 || 1.7.'13.
+     * @since 1.7.'13.
      */
     public static void obrisiUcenika(int inx) {
-        Ucenik uc = ucenici.get(inx);
-        obrisiUcenika(uc);
+        Ucenik ucenik = ucenici.get(inx);
+        ucenici.remove(inx);
+        LOGGER.log(Level.INFO, "Učenik obrisan: {0}", new Object[]{ucenik});
+        Undo.push(Akcija.BRISANJE_UCENIKA, new Object[]{ucenik});
+        String ucSize = Config.get("ucSize", "0");
+        int ucSizeInt = parseInt(ucSize);
+        ucSizeInt--;
+        Config.set("ucSize", valueOf(ucSizeInt));
     }
     
     /**
-     * Brise prvog Ucenika sa datim objektom (ako je equals).
+     * Trazi index prvog objekta u listi koji je {@link Ucenik#equals(java.lang.Object)}
+     * sa datim objektom i zove {@link #obrisiUcenika(int)} da ga obrise.
+     * 
      * @param ucenik Ucenik za brisanje
      * @return true ako je ucenik pronadjen i obrisan, false u suprotnom
      */
     public static boolean obrisiUcenika(Ucenik ucenik) {
-        if(ucenici.remove(ucenik)) {
-            LOGGER.log(Level.INFO, "Učenik obrisan: {0}", new Object[]{ucenik});
-            Undo.push(Akcija.BRISANJE_UCENIKA, new Object[]{ucenik});
+        int inx = ucenici.indexOf(ucenik);
+        if(inx>-1) {
+            obrisiUcenika(inx);
             return true;
         }
-        return false;
+        else return false;
     }
     
     /**

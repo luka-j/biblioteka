@@ -12,6 +12,7 @@ import static java.lang.Integer.parseInt;
 import static java.lang.Integer.parseUnsignedInt;
 import static java.lang.String.valueOf;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -575,6 +576,7 @@ public class Ucenici implements FocusListener {
 
     public void refreshLabels() {
         int maxKnjiga = getMaxBrojUcenikKnjiga();
+        Ucenik uc;
         selectAllUc = new JCheckBox("<html>Ucenici:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                 + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                 + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br></html>");
@@ -584,8 +586,9 @@ public class Ucenici implements FocusListener {
         selectAllUc.setBackground(Grafika.getBgColor());
 
         ucenici = new JCheckBox[Podaci.getBrojUcenika()];
+        Iterator<Ucenik> it = Podaci.iteratorUcenika();
         for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
-            ucenici[i] = new JCheckBox(getUcenik(i).getIme());
+            ucenici[i] = new JCheckBox(it.next().getIme());
             ucenici[i].setFont(Grafika.getLabelFont());
             ucenici[i].setForeground(Grafika.getFgColor());
             ucenici[i].setBackground(Grafika.getBgColor());
@@ -598,11 +601,13 @@ public class Ucenici implements FocusListener {
             knjige[i][0].setFont(Grafika.getLabelFont());
             knjige[i][0].setBackground(Grafika.getBgColor());
             knjige[i][0].setForeground(Grafika.getFgColor());
+            it=Podaci.iteratorUcenika();
             for (int j = 1; j < Podaci.getBrojUcenika() + 1; j++) {
-                if (getUcenik(j - 1).isKnjigaEmpty(i)) {
+                uc = it.next();
+                if (uc.isKnjigaEmpty(i)) {
                     knjige[i][j] = new JCheckBox(" "); //workaround, treba mi text zbog visine
                 } else {
-                    knjige[i][j] = new JCheckBox(getUcenik(j - 1).getNaslovKnjige(i));
+                    knjige[i][j] = new JCheckBox(uc.getNaslovKnjige(i));
                 }
                 knjige[i][j].setFont(Grafika.getLabelFont());
                 knjige[i][j].setForeground(Grafika.getFgColor());

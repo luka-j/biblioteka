@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.String.valueOf;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
@@ -16,7 +16,6 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static rs.luka.biblioteka.data.Podaci.getBrojKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
 import rs.luka.biblioteka.exceptions.ConfigException;
-import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.funkcije.Utils;
 
 /**
@@ -71,7 +70,7 @@ public class Config {
             + "brKnjiga - maksimalan broj knjiga koje ucenik moze da ima kod sebe\n"
             + "bgBoja - RGB vrednost, pozadinska boja svih prozora\n"
             + "fgBoja - RGB vrednost, boja fonta\n"
-            + "TFBoja - true ili false, da li boja polja za unos teksta zavisi od bgBoja\n"
+            + "TFColor - RGB vrednost, boja polja za unos teksta\n"
             + "logLevel - minimalan nivo poruka koje se loguju. Default je INFO\n"
             + "savePeriod - broj minuta na koji se vrsi automatsko cuvanje podataka\n"
             + "maxUndo - maksimalan broj akcija koje se nalaze u undo stack-u\n"
@@ -339,11 +338,28 @@ public class Config {
     }
     
     private static void check(String key, String val) {
+        Iterator<Ucenik> iterator;
         switch(key) {
             case "brKnjiga": int valInt = Integer.parseInt(val);
-                for(int i=0; i<Podaci.getBrojUcenika(); i++)
-                if(Podaci.getUcenik(i).getBrojKnjiga() > valInt)
-                    throw new ConfigException("brKnjiga");
+                iterator = Podaci.iteratorUcenika();
+                iterator.forEachRemaining((Ucenik uc) -> {
+                    if(uc.getBrojKnjiga() > valInt)
+                        throw new ConfigException("brKnjiga");
+                });
+            break;
+            case "razredi": String[] valsStr = val.split(","); int[] vals = new int[valsStr.length]; 
+                for(int i=0; i<vals.length; i++) {
+                    vals[i] = Integer.parseInt(valsStr[i]);
+                }
+                iterator = Podaci.iteratorUcenika();
+                iterator.forEachRemaining((Ucenik uc) -> {
+                    if(!Utils.arrayContains(vals, uc.getRazred()))
+                        throw new ConfigException("razredi");
+                });
+            break;
+            case "workingDir": File folder = new File(val);
+                if(!folder.isDirectory() && !folder.mkdir())
+                    throw new ConfigException("workingDir");
         }
     }
 
@@ -357,6 +373,11 @@ public class Config {
         config.setProperty(key, defaults.getProperty(key));
     }
 
+    /**
+     * Vraca nazive svih kljuceva u listi, ako imaju puno ime (vise reci sa razmakom).
+     * @return ime kljuca koja je user-friendly
+     * @since 26.10.'14.
+     */
     public static ArrayList<String> getUserFriendlyNames() {
         ArrayList<String> vals = new ArrayList<>();
         for (int i = 0; i < vrednosti.size(); i++) {

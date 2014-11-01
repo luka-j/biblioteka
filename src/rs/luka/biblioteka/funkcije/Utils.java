@@ -156,7 +156,7 @@ public class Utils {
      * @return true ako jeste, false ako nije
      */
     public static boolean isInteger(String str) {
-        if (str == null || str.isEmpty()) {
+        if (str == null || str.isEmpty() || str.length() > 11) {
             return false;
         }
         for (int i = 0; i < str.length(); i++) {

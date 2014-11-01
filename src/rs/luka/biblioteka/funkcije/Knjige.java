@@ -2,9 +2,11 @@ package rs.luka.biblioteka.funkcije;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
+import rs.luka.biblioteka.data.Knjiga;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.addKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getBrojKnjiga;
@@ -13,7 +15,9 @@ import static rs.luka.biblioteka.data.Podaci.getKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getMaxBrojUcenikKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import static rs.luka.biblioteka.data.Podaci.indexOfNaslov;
+import rs.luka.biblioteka.data.Ucenik;
 import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 
 /**
@@ -22,7 +26,7 @@ import rs.luka.biblioteka.exceptions.VrednostNePostoji;
  * @since 2.7.'13.
  */
 public class Knjige {
-    
+
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(Knjige.class.getName());
 
     /**
@@ -65,21 +69,18 @@ public class Knjige {
 
     /**
      * Proverava da li se knjiga datog naslova nalazi kod nekog ucenika, ako ne
-     * zove metodu za brisanje naslova iz liste. Radi exception handling.
+     * zove metodu za brisanje naslova iz liste.
      *
      * @param inx index knjige za brisanje
+     * @throws rs.luka.biblioteka.exceptions.PreviseKnjiga ako se kod nekog ucenika nalazi data knjiga.
      * @since 16.9.'14.
      */
-    public void obrisiNaslov(int inx) {
+    public void obrisiNaslov(int inx) throws PreviseKnjiga {
         String naslov = Podaci.getKnjiga(inx).getNaslov();
-        for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
-            if (Podaci.getUcenik(i).hasKnjiga(naslov)) {
-                LOGGER.log(Level.INFO, "Knjiga zauzeta. Brisanja naslova nije obavljeno");
-                JOptionPane.showMessageDialog(null, "Zauzeta knjiga", "Kod ucenika "
-                        + Podaci.getUcenik(i).getIme() + " se nalazi ova knjiga\n"
-                        + "Kada vrati knjigu, pokusajte ponovo.", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        Iterator<Ucenik> it = Podaci.iteratorUcenika();
+        while(it.hasNext()) {
+            if(it.next().hasKnjiga(naslov)) 
+                throw new PreviseKnjiga(inx);
         }
         Podaci.obrisiKnjigu(inx);
     }
@@ -96,20 +97,24 @@ public class Knjige {
         int brojKnjiga = getBrojKnjiga();
         ArrayList<Integer> inx = new ArrayList<>();
         inx.ensureCapacity(brojKnjiga / 16);
-        for (int i = 0; i < brojKnjiga; i++) {
-            if (getKnjiga(i).getNaslov().toLowerCase().startsWith(pocetak.toLowerCase())
-                    || getKnjiga(i).getPisac().toLowerCase().startsWith(pocetak)) { //startsWith ili equals?
+        Iterator <Knjiga> it = Podaci.iteratorKnjiga(); int i=0; Knjiga knj;
+        while(it.hasNext()) {
+            knj = it.next();
+            if (knj.getNaslov().toLowerCase().startsWith(pocetak.toLowerCase())
+                    || knj.getPisac().toLowerCase().startsWith(pocetak)) { //startsWith ili equals?
                 inx.add(i);
             }
+            i++;
         }
         if (inx.isEmpty()) {
-            for (int i = 0; i < brojKnjiga; i++) {
-                if (getKnjiga(i).getNaslov().toLowerCase().contains(pocetak.toLowerCase())) {
+            it = Podaci.iteratorKnjiga(); i=0;
+            while(it.hasNext()) {
+                if (it.next().getNaslov().toLowerCase().contains(pocetak.toLowerCase())) {
                     inx.add(i);
                 }
             }
         }
-        LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"", 
+        LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"",
                 new Object[]{inx.size(), pocetak});
         return inx;
     }
@@ -124,20 +129,24 @@ public class Knjige {
      * @since 25.6.'14.
      */
     public ArrayList<Point> pretraziUcenike(String knj) throws VrednostNePostoji {
-        ArrayList<Point> inx = new ArrayList<>();
+        final ArrayList<Point> inx = new ArrayList<>();
         try {
             inx.ensureCapacity(getKnjiga(indexOfNaslov(knj)).getKolicina() / 8);
         } catch (IndexOutOfBoundsException ex) {
             throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga, ex);
         }
-        for (int i = 0; i < getBrojUcenika(); i++) {
+        int i=0;
+        Iterator<Ucenik> it= Podaci.iteratorUcenika(); Ucenik uc;
+        while(it.hasNext()) {
+            uc=it.next();
             for (int j = 0; j < getMaxBrojUcenikKnjiga(); j++) {
-                if (getUcenik(i).getNaslovKnjige(j).equals(knj)) {
+                if (uc.getNaslovKnjige(j).equals(knj)) {
                     inx.add(new Point(j, i));
                 }
             }
+            i++;
         }
-        LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"", 
+        LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"",
                 new Object[]{inx.size(), knj});
         return inx;
     }

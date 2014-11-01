@@ -3,6 +3,7 @@ package rs.luka.biblioteka.grafika;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileNotFoundException;
 import static java.lang.String.valueOf;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -68,7 +69,17 @@ public class Podesavanja {
                     showMessageDialog(pan, "Neka od unetih vrednosti nije broj."
                             + "\nProverite unos i pokušajte ponovo", "Loš unos",
                             JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
+                } catch (FileNotFoundException ex) {
+                    LOGGER.log(Level.WARNING, "Na datoj putanji nije napravljen folder."
+                            + "IO greška ili loša putanja.");
+                    showMessageDialog(null, "Na datoj putanji radnog direktorijuma nije napravljen "
+                            + "novi folder.\nProverite da li je putanja ispravna i da li postoje "
+                            + "odgovarajuće dozvole i pokušajte ponovo.", "I/O greška", 
+                            JOptionPane.ERROR_MESSAGE);
+                } catch (IllegalArgumentException ex) {
+                    LOGGER.log(Level.INFO, "Postoje učenici sa razredom koji po novom podešavanju nije validan");
+                    showMessageDialog(null, "Neki učenici pohađaju razred koji nije određen kao validan\n"
+                            + "Proverite vrednosti i pokušajte ponovo.", "Loši razredi", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -166,7 +177,7 @@ public class Podesavanja {
      *
      * @throws PreviseKnjiga
      */
-    private void sacuvaj() throws PreviseKnjiga {
+    private void sacuvaj() throws PreviseKnjiga, FileNotFoundException, IllegalArgumentException {
         try {
             for(int i=0; i<labels.length; i++) {
                 if(!textfields[i].getText().isEmpty())
@@ -176,6 +187,8 @@ public class Podesavanja {
         catch(ConfigException ex) {
             switch(ex.getMessage()) {
                 case "brKnjiga": throw new PreviseKnjiga(ex);
+                case "razredi": throw new IllegalArgumentException(ex);
+                case "workingDir": throw new FileNotFoundException();
             }
         }
     }

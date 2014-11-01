@@ -8,11 +8,10 @@ import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
-import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
-import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.funkcije.Utils;
 
 /**
@@ -29,6 +28,7 @@ public class Datumi {
      * DateFormat koriscen za I/O.
      */
     public static final SimpleDateFormat df = new SimpleDateFormat("ddMMyy");
+    private static long razlika;
 
     /**
      * Proverava da li neki od ucenika zadrzava knjigu predugo. Limit se uzima
@@ -40,18 +40,16 @@ public class Datumi {
         try (final FileWriter predugoFW = new FileWriter(new File(Utils.getWorkingDir() + "predugo.txt"))) {
             int limit = parseInt(Config.get("dateLimit"));
             if(limit==0) return;
-            long razlika;
-            Ucenik ucenik;
-            for (int i = 0; i < getBrojUcenika(); i++) {
-                ucenik = getUcenik(i);
-                for (int j = 0; j < ucenik.getMaxBrojKnjiga(); j++) {
-                    if (!ucenik.isKnjigaEmpty(j) && (razlika = 
-                            date.getTime() / SEKUNDI_U_DANU - ucenik.getTimeKnjige(j) / SEKUNDI_U_DANU) > limit) {
-                        predugo.append(ucenik.getIme()).append(" : ").append(ucenik.getNaslovKnjige(j)).append(", ")
+            Iterator<Ucenik> it = Podaci.iteratorUcenika();
+            it.forEachRemaining((Ucenik uc) -> {
+                for (int j = 0; j < uc.getMaxBrojKnjiga(); j++) {
+                    if (!uc.isKnjigaEmpty(j) && (razlika = 
+                            date.getTime() / SEKUNDI_U_DANU - uc.getTimeKnjige(j) / SEKUNDI_U_DANU) > limit) {
+                        predugo.append(uc.getIme()).append(" : ").append(uc.getNaslovKnjige(j)).append(", ")
                                 .append(valueOf(razlika)).append(" dana").append('\n');
                     }
                 }
-            }
+            });
             String predugoStr = predugo.toString();
             if (!predugoStr.isEmpty()) {
                 LOGGER.log(Level.FINE, "Provera datuma gotova. Neki učenici imaju knjige predugo kod sebe.");

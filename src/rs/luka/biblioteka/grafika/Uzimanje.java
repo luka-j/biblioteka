@@ -3,7 +3,6 @@ package rs.luka.biblioteka.grafika;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import static java.lang.Integer.parseUnsignedInt;
 import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -14,7 +13,6 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import rs.luka.biblioteka.data.Podaci;
-import static rs.luka.biblioteka.data.Podaci.getMaxBrojUcenikKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
@@ -92,15 +90,10 @@ public class Uzimanje {
                 showMessageDialog(null, "Učenik je vec iznajmio knjigu tog naslova.",
                         "Duplikat", JOptionPane.ERROR_MESSAGE);
             } catch (PreviseKnjiga ex) {
-                StringBuilder UKBuilder = new StringBuilder();
-                int ucInx = parseUnsignedInt(ex.getMessage());
-                for (int i = 0; i < getMaxBrojUcenikKnjiga(); i++) {
-                    UKBuilder.append(getUcenik(ucInx).getNaslovKnjige(i)).append('\n');
-                }
-                LOGGER.log(Level.INFO, "Učenik {0} ima previše knjiga kod sebe: {1}",
-                        new Object[]{getUcenik(ucInx).getIme(), UKBuilder.toString()});
-                showMessageDialog(null, "Učenik trenutno ima previše knjiga kod sebe :\n"
-                        + UKBuilder.toString(), "Previše knjiga", JOptionPane.ERROR_MESSAGE);
+                LOGGER.log(Level.INFO, "Učenik {0} ima previše knjiga kod sebe",
+                        ex.getMessage());
+                showMessageDialog(null, "Učenik trenutno ima previše knjiga kod sebe :\n",
+                        "Previše knjiga", JOptionPane.ERROR_MESSAGE);
             }
         };
         in.addActionListener(unesi);

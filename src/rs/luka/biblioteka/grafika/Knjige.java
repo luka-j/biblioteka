@@ -13,6 +13,7 @@ import static java.lang.Integer.parseInt;
 import static java.lang.Math.min;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -41,9 +42,9 @@ import rs.luka.biblioteka.exceptions.VrednostNePostoji;
  * @author Luka
  */
 public class Knjige implements FocusListener {
-    
-    private static final java.util.logging.Logger LOGGER = 
-            java.util.logging.Logger.getLogger(Knjige.class.getName());
+
+    private static final java.util.logging.Logger LOGGER
+            = java.util.logging.Logger.getLogger(Knjige.class.getName());
 
     /**
      * searchBox za pretrazivanje knjiga.
@@ -116,24 +117,26 @@ public class Knjige implements FocusListener {
         //bi moglo da se obrise dovoljno mesta pri pretrazi (da se poravna sa naslovima)
         JLabel[] pisac = new JLabel[Podaci.getBrojKnjiga()];
         Component[] pisacSpace = new Component[Podaci.getBrojKnjiga()];
+        Iterator<Knjiga> it = Podaci.iteratorKnjiga(); Knjiga knj;
         for (int i = 0; i < knjige.length; i++) {
+            knj = it.next();
             knjige[i] = new JCheckBox();
-            knjige[i].setText(Podaci.getKnjiga(i).getNaslov());
+            knjige[i].setText(knj.getNaslov());
             knjige[i].setFont(Grafika.getLabelFont());
             knjige[i].setForeground(Grafika.getFgColor());
             knjige[i].setBackground(Grafika.getBgColor());
             knjPan.add(knjige[i]);
-            
-            pisac[i] = new JLabel(Podaci.getKnjiga(i).getPisac());
+
+            pisac[i] = new JLabel(knj.getPisac());
             pisac[i].setFont(Grafika.getLabelFont());
             pisac[i].setForeground(Grafika.getFgColor());
             pisac[i].setBackground(Grafika.getBgColor());
-            pisacSpace[i] = Box.createRigidArea(new Dimension(0,8)); //jcheckbox ima padding 
+            pisacSpace[i] = Box.createRigidArea(new Dimension(0, 8)); //jcheckbox ima padding 
             //po defaultu, ovo poravnava text kolicine se naslovom. setMinimumSize ne radi.
             pisacPan.add(pisacSpace[i]);
             pisacPan.add(pisac[i]);
 
-            kolicina[i] = new JLabel(String.valueOf(Podaci.getKnjiga(i).getKolicina()));
+            kolicina[i] = new JLabel(String.valueOf(knj.getKolicina()));
             kolicina[i].setFont(Grafika.getLabelFont());
             kolicina[i].setForeground(Grafika.getFgColor());
             kolSpace[i] = Box.createRigidArea(new Dimension(0, 8)); //vidi iznad
@@ -152,22 +155,34 @@ public class Knjige implements FocusListener {
         obrisi.addActionListener((ActionEvent e) -> {
             boolean selected = false;
             rs.luka.biblioteka.funkcije.Knjige obj = new rs.luka.biblioteka.funkcije.Knjige(); //ostao sam bez inspiracije
-            for(int i=0; i<knjige.length; i++) {
-                if(knjige[i].isSelected()) {
-                    obj.obrisiNaslov(i);
+            for (int i = 0; i < knjige.length; i++) {
+                if (knjige[i].isSelected()) {
                     selected = true;
+                    try {
+                        obj.obrisiNaslov(i);
+                    } catch (PreviseKnjiga ex) {
+                        LOGGER.log(Level.INFO, "Knjiga zauzeta. Brisanja naslova nije obavljeno");
+                        JOptionPane.showMessageDialog(null, "Kod nekog ucenika "
+                                + " se nalazi ova knjiga\nKada vrati knjigu, pokusajte ponovo.", 
+                                "Zauzeta knjiga", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
-            if(!selected) {
-                String naslov = Dijalozi.showTextFieldDialog("Brisanje naslova", 
-                "Unesite naslov koji želite da obrišete i pritisnite enter:", "");
+            if (!selected) {
+                String naslov = Dijalozi.showTextFieldDialog("Brisanje naslova",
+                        "Unesite naslov koji želite da obrišete i pritisnite enter:", "");
                 try {
                     obj.obrisiNaslov(Podaci.indexOfNaslov(naslov));
                 } catch (VrednostNePostoji ex) {
                     LOGGER.log(Level.INFO, "Unet naslov {0} ne postoji", naslov);
                     JOptionPane.showMessageDialog(null, "Naslov koji ste uneli ne postoji.\n"
-                            + "Proverite unos i pokušajte ponovo", "Greška pri brisanju naslova", 
+                            + "Proverite unos i pokušajte ponovo", "Greška pri brisanju naslova",
                             JOptionPane.ERROR_MESSAGE);
+                } catch (PreviseKnjiga ex) {
+                    LOGGER.log(Level.INFO, "Knjiga zauzeta. Brisanja naslova nije obavljeno");
+                    JOptionPane.showMessageDialog(null, "Zauzeta knjiga", "Kod nekog ucenika "
+                            + " se nalazi ova knjiga\n"
+                            + "Kada vrati knjigu, pokusajte ponovo.", JOptionPane.ERROR_MESSAGE);
                 }
             }
             win.dispose();
@@ -195,10 +210,10 @@ public class Knjige implements FocusListener {
                     LOGGER.log(Level.FINER, "Prikazujem dugme za uzimanje br {0}", kol);
                     uzmiBut[kol] = new JButton("Iznajmi knjigu");
                     uzmiBut[kol].setSize(140, 23);
-                    uzmiBut[kol].setLocation(5, 
+                    uzmiBut[kol].setLocation(5,
                             knjige[kol].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
                     uzmiBut[kol].addActionListener((ActionEvent ae) -> {
-                        String ucenik = Dijalozi.showTextFieldDialog("Iznajmljivanje knjige", 
+                        String ucenik = Dijalozi.showTextFieldDialog("Iznajmljivanje knjige",
                                 "Unesite ime učenika koji iznajmljuje knjigu i pritisnite enter:", "");
                         try {
                             Podaci.uzmiKnjigu(kol, ucenik);
@@ -206,13 +221,13 @@ public class Knjige implements FocusListener {
                             LOGGER.log(Level.INFO, "Kod učenika {0} se "
                                     + "trenutno nalazi previše knjiga", ucenik);
                             JOptionPane.showMessageDialog(null, "Kod učenika se "
-                                    + "trenutno nalazi previše knjiga", 
+                                    + "trenutno nalazi previše knjiga",
                                     "Greška pri iznajmljivanju", JOptionPane.ERROR_MESSAGE);
                         } catch (Duplikat ex) {
                             LOGGER.log(Level.INFO, "Kod učenika {0} se već nalazi "
                                     + "knjiga naslova {1}", new Object[]{ucenik, Podaci.getKnjiga(kol).getNaslov()});
                             JOptionPane.showMessageDialog(null, "Kod učenika se "
-                                    + "već nalazi knjiga tog naslova", 
+                                    + "već nalazi knjiga tog naslova",
                                     "Greška pri iznajmljivanju", JOptionPane.ERROR_MESSAGE);
                         } catch (NemaViseKnjiga ex) {
                             LOGGER.log(Level.INFO, "Nema više knjiga naslova {0} "
@@ -284,8 +299,10 @@ public class Knjige implements FocusListener {
 
     /**
      * Prozor za upisivanje novog naslova.
+     *
      * @since jako davno (pocetak)
      */
+
     private void novi() {
         //----------JFrame&JPanel-----------------------------------------------
         final JFrame nnF = new JFrame("Unos novog naslova");
@@ -319,7 +336,7 @@ public class Knjige implements FocusListener {
         pisacTF.setFont(Grafika.getLabelFont());
         pisacTF.setForeground(Grafika.getFgColor());
         pisacTF.setCaretColor(Grafika.getFgColor());
-            pisacTF.setBackground(Grafika.getTFColor());
+        pisacTF.setBackground(Grafika.getTFColor());
         nnPan.add(pisacTF);
         JLabel kolicina = new JLabel("Unesite količinu:");
         kolicina.setBounds(15, 165, 300, 30);
@@ -331,8 +348,8 @@ public class Knjige implements FocusListener {
         kolTF.setFont(Grafika.getLabelFont());
         kolTF.setForeground(Grafika.getFgColor());
         kolTF.setCaretColor(Grafika.getFgColor());
-            kolTF.setBackground(Grafika.getTFColor());
-        
+        kolTF.setBackground(Grafika.getTFColor());
+
         nnPan.add(kolTF);
         //----------JButton-----------------------------------------------------
         JButton unos = new JButton("Unesi podatke");
@@ -420,13 +437,13 @@ public class Knjige implements FocusListener {
                 ucenici.setSize(new Dimension(300, (inx.size() + 1) * 21));
                 ucenici.setLocation(10, 10);
                 ucenici.setFont(Grafika.getLabelFont());
-                ucenici.setText("<html>Učenici kod kojih je trenutno knjiga:<br>" 
+                ucenici.setText("<html>Učenici kod kojih je trenutno knjiga:<br>"
                         + ucBuild.toString() + "</html>");
                 JLabel datumi = new JLabel();
                 datumi.setLocation(310, 10);
                 datumi.setSize(new Dimension(225, (inx.size() + 1) * 21));
                 datumi.setFont(Grafika.getLabelFont());
-                datumi.setText("<html>Datum kada je knjiga iznajmljena:<br>" 
+                datumi.setText("<html>Datum kada je knjiga iznajmljena:<br>"
                         + dateBuild.toString() + "</html>");
 
                 JButton ok = new JButton("OK");
@@ -459,12 +476,12 @@ public class Knjige implements FocusListener {
                 showMessageDialog(null, "Trenutno se tražena knjiga ne nalazi ni kod koga.",
                         "Niko nije iznajmio knjigu", JOptionPane.INFORMATION_MESSAGE);
             }
-            
+
         };
         naslovTF.addActionListener(listener);
         naslovTF.setBounds(20, 50, 200, 25);
         naslovTF.setFont(Grafika.getLabelFont());
-            naslovTF.setBackground(Grafika.getTFColor());
+        naslovTF.setBackground(Grafika.getTFColor());
         naslovTF.setForeground(Grafika.getFgColor());
         naslovTF.setCaretColor(Grafika.getFgColor());
         panS.add(naslovTF);

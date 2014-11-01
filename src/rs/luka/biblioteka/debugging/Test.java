@@ -14,11 +14,11 @@ public class Test {
 
     public void testUnos() {
         int i = 0, j = 0;
-        for (i = 0; i < 550; i++) {
+        for (i = 0; i < 500; i++) {
             Podaci.addUcenik("Pera Peric " + i, (i%8)+1, new String[]{});
         }
-        for (j = 0; j < 200; j++) {
-            try {Podaci.addKnjiga("Knjiga o dzungli " + j, j, "Imaginaran");} 
+        for (j = 0; j < 500; j++) {
+            try {Podaci.addKnjiga("Knjiga o dzungli " + j, j%100, "Imaginaran " + j%3);} 
             catch (Duplikat ex) {}
         }
     }

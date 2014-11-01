@@ -163,15 +163,15 @@ public class Ucenik implements Comparable<Ucenik> {
     }
     
     public String getNaslovKnjige(int i) {
-        return knjige[i].getNaslov();
+        return getKnjiga(i).getNaslov();
     }
     
     public String getDatumKnjige(int i) {
-        return knjige[i].getDatumAsString();
+        return getKnjiga(i).getDatumAsString();
     }
     
     public long getTimeKnjige(int i) {
-        return knjige[i].getDatum().getTime();
+        return getKnjiga(i).getDatum().getTime();
     }
     
     private UcenikKnjiga[] getKnjige() {
@@ -179,7 +179,9 @@ public class Ucenik implements Comparable<Ucenik> {
     }
 
     private UcenikKnjiga getKnjiga(int i) {
-        return knjige[i];
+        if(knjige.length>i)
+            return knjige[i];
+        else return new UcenikKnjiga();
     }
 
     /**
@@ -249,7 +251,9 @@ public class Ucenik implements Comparable<Ucenik> {
     }
     
     public boolean isKnjigaEmpty(int i) {
-        return knjige[i].isEmpty();
+        if(knjige.length>i)
+            return knjige[i].isEmpty();
+        else return false;
     }
 
     //SETTERI
@@ -273,7 +277,7 @@ public class Ucenik implements Comparable<Ucenik> {
                 return;
             }
         }
-        throw new PreviseKnjiga("Ucenik.java: previse knjiga");
+        throw new PreviseKnjiga(ime);
     }
 
     /**

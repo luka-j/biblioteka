@@ -4,10 +4,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Level;
+import rs.luka.biblioteka.data.Knjiga;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.getBrojKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
+import rs.luka.biblioteka.data.Ucenik;
 
 /**
  *
@@ -53,8 +56,9 @@ public class Save {
         }
         ucenici.createNewFile();
         try (BufferedWriter fwU = new BufferedWriter(new FileWriter(ucenici))) {
-            for (int i = 0; i < getBrojUcenika(); i++) {
-                fwU.write(Podaci.getUcenik(i).getAsIOString());
+            Iterator<Ucenik> it = Podaci.iteratorUcenika();
+            while(it.hasNext()) {
+                fwU.write(it.next().getAsIOString());
                 fwU.write('\n');
             }
         }
@@ -76,9 +80,10 @@ public class Save {
             return;
         }
         knjige.createNewFile();
+        Iterator<Knjiga> it = Podaci.iteratorKnjiga();
         try (BufferedWriter fwN = new BufferedWriter(new FileWriter(knjige))) {
-            for (int i = 0; i < getBrojKnjiga(); i++) {
-                fwN.write(Podaci.getKnjiga(i).getAsIOString());
+            while(it.hasNext()) {
+                fwN.write(it.next().getAsIOString());
                 fwN.write('\n');
             }
         }

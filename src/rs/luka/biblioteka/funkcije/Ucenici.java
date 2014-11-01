@@ -2,6 +2,7 @@ package rs.luka.biblioteka.funkcije;
 
 import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import rs.luka.biblioteka.data.Podaci;
@@ -18,9 +19,9 @@ import rs.luka.biblioteka.exceptions.VrednostNePostoji;
  * @author Luka
  */
 public class Ucenici {
-    
-    private static final java.util.logging.Logger LOGGER = 
-            java.util.logging.Logger.getLogger(Ucenici.class.getName());
+
+    private static final java.util.logging.Logger LOGGER
+            = java.util.logging.Logger.getLogger(Ucenici.class.getName());
 
     /**
      * Metoda za dodavanje ucenika sa praznim knjigama.
@@ -33,8 +34,9 @@ public class Ucenici {
      */
     public void dodajUcenika(String ime, int raz) {
         String knjige[] = new String[Podaci.getMaxBrojUcenikKnjiga()];
-        for(int i=0; i<knjige.length; i++)
+        for (int i = 0; i < knjige.length; i++) {
             knjige[i] = "";
+        }
         addUcenik(ime, raz, knjige);
     }
 
@@ -93,19 +95,25 @@ public class Ucenici {
         int brojUcenika = getBrojUcenika();
         ArrayList<Integer> inx = new ArrayList<>();
         inx.ensureCapacity(brojUcenika / 32);
-        for (int i = 0; i < brojUcenika; i++) {
-            if (getUcenik(i).getIme().toLowerCase().startsWith(pocetak.toLowerCase())) {
+        Iterator<Ucenik> it = Podaci.iteratorUcenika();
+        int i = 0;
+        while (it.hasNext()) {
+            if (it.next().getIme().toLowerCase().startsWith(pocetak.toLowerCase())) {
                 inx.add(i);
             }
+            i++;
         }
         if (inx.isEmpty()) {
-            for (int i = 0; i < brojUcenika; i++) {
-                if (getUcenik(i).getIme().toLowerCase().contains(pocetak.toLowerCase())) {
+            it = Podaci.iteratorUcenika();
+            i = 0;
+            while (it.hasNext()) {
+                if (it.next().getIme().toLowerCase().contains(pocetak.toLowerCase())) {
                     inx.add(i);
                 }
+                i++;
             }
         }
-        LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"", 
+        LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"",
                 new Object[]{inx.size(), pocetak});
         return inx;
     }

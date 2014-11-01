@@ -8,29 +8,29 @@
  */
 /**
  * @bugs 
- * !! Uncompilable source code - unreported exception PreviseKnjiga kod dodavanja novog naslova
- *    (naslov se normalno dodaje, ali throwuje exception nakon toga) !!
+ * Uzimanje knjige ne radi na test podacima (?)
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije pri push(),
  * tako da setKnjiga throwuje Duplikat (da li smem ignorisati?)
  * Ucenici grafika: search rekurzija, tj. restart prozora (Postoji los i zamoran workaround)
- * Pretraga ucenika po knjigama - grafika za male brojeve
+ * Pretraga ucenika po knjigama - grafika za male brojeve, pregled ucenika za velike brojeve (checkboxovi)
  * undoVracanje postavlja datum na trenutni, umesto datum iznajmljivanja knjige
  */
 /**
  * @todo 
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING)
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception
- * Napisati proveru vrednosti za config (brKnjiga !! i dr)
  * auto-restore podataka iz backupa (ako je sve unisteno)
- * GridBagLayout za grafiku 
- * Srediti Config#set, zameniti if petlju parsiranjem vrednosti
- * Pocistiti reference, listenere, ostatak koda (staviti UcenikKnjiga u Ucenik.java, srediti funkcije.Unos)
+ * GridBagLayout za grafiku, bugfixovi, positioning za velike brojeve (1.5k+ ucenika)
+ * Pocistiti reference, listenere, izbaciti indexe gde moze, ostatak koda i organizaciju(UK -> Uc)
  * BeanShell (bsh) konzola
  * Ubaciti kvačice (šđžčć)
  * Izbaciti sve preostale workaround-ove
+ * Optimizovati memoriju i vreme
  */
 /**
  * @changelog
+ * Ubacio i koristio iterator ucenika i knjiga gde je moguce
+ * Uradio osnovnu proveru podataka za config
  * Popravio brKnjiga, poceo config checking
  * Ubacio Color TFColor, izbacio boolean TFBoja
  * Podesavanja prema configu
@@ -123,6 +123,7 @@ public class Init {
      */
     public static void main(String[] args) {
         setDefaultUncaughtExceptionHandler(new Handler());
+        
         JFrame initWin = new JFrame("Učitavanje podataka...");
         initWin.setSize(250, 80);
         initWin.setLocationRelativeTo(null);
@@ -180,12 +181,11 @@ public class Init {
      * @param sacuvaj
      */
     public static void exit(boolean sacuvaj) {
-        Save save = new Save();
         String opcije[] = {"Da", "Ne"};
         LOGGER.log(Level.INFO, "Izlazim iz programa... Čuvam podatke: {0}", sacuvaj);
         if (sacuvaj) {
             try {
-                save.save();
+                Save.save();
                 finalizeLogger();
                 System.exit(0);
             } catch (IOException ex) {
@@ -229,7 +229,6 @@ public class Init {
      * isti proces. BLOKIRA TRENUTNI THREAD DO ZAUSTAVLJANJA PROGRAMA !!!
      */
     private static void autosave() {
-        Save save;
         if(Config.get("savePeriod").equals("0")) {
             LOGGER.log(Level.FINE, "autosave isključen. Gasim main Thread");
             return;
@@ -243,10 +242,9 @@ public class Init {
         }
         while (true) {
             try {
-                save = new Save();
                 Thread.sleep(autosave_period);
                 LOGGER.log(Level.FINER, "autosaving...");
-                save.save();
+                Save.save();
             } catch (InterruptedException ex) { //ne bi trebalo da se desi; ako se desi, ignorisati
                 LOGGER.log(Level.WARNING, "autosave interrupted", ex);
             } catch (IOException ex) {

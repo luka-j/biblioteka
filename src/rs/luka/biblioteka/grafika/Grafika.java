@@ -48,22 +48,30 @@ public class Grafika {
      * Font koji se koristi za JLabele. Menja se samo preko configa i zvanjem 
      * {@link #setVariables} metode za refresh.
      */
-    private static final Font labelFont = new Font("Segoe UI", Font.PLAIN, 15);
+    private static final Font labelFont;
     /**
      * Pozadinska boja za prozore.
      */
-    private static Color bgColor = new Color(40, 255, 40, 220);
+    private static Color bgColor;
     /**
      * Boja fonta.
      */
-    private static Color fgColor = new Color(0);
+    private static Color fgColor;
     /**
      * Boja textFieldova. 
      */
-    private static Color TFColor = new Color(-1);
+    private static Color TFColor;
 
-    private static final JFrame win = new JFrame("Biblioteka");
+    private static final JFrame win;
     private static JPanel pan;
+    
+    static {
+        win = new JFrame("Biblioteka");
+        labelFont = new Font("Segoe UI", Font.PLAIN, 15);
+        bgColor = new Color(40, 255, 40, 220); //zelena
+        fgColor = new Color(0); //crna
+        TFColor = new Color(-1); //bela
+    }
 
     /**
      * Iscrtava glavni prozor. Pri zatvaranju zove
@@ -266,7 +274,6 @@ public class Grafika {
     }
     
     public static void reset() {
-        win.dispose();
         Init.init();
     }
 }

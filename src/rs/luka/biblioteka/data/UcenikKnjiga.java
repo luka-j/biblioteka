@@ -75,6 +75,11 @@ public class UcenikKnjiga {
             datum = new Date(uk.getDatum().getTime());
         }
     }
+    
+    UcenikKnjiga() {
+        naslov = "";
+        datum=null;
+    }
 
     //GETTERI
     public String getNaslov() {
