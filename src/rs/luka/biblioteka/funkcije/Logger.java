@@ -29,18 +29,25 @@ public class Logger {
      */
     private static Level LOGGING_LEVEL = Level.INFO;
     
+    private static int FILE_SIZE_LIMIT;
+    private static int FILE_COUNT;
+    
     /**
      * Inicijalizuje logger, postavlja handlere i logging level.
      * @since 18.9.'14.
      */
     public static void initLogger() {
-        LOGGING_LEVEL = /*Level.parse(Config.get("logLevel"))*/ Level.CONFIG;
+        LOGGING_LEVEL = Level.parse(Config.get("logLevel"));
+        FILE_SIZE_LIMIT = Config.getAsInt("logSizeLimit");
+        FILE_COUNT = Config.getAsInt("logFileCount");
         ROOT_LOGGER.setLevel(LOGGING_LEVEL);
         try {
-            handler = new FileHandler(Utils.getWorkingDir() + "biblioteka.log", true);
+            handler = new FileHandler(Utils.getWorkingDir() + "biblioteka.log", 
+                    FILE_SIZE_LIMIT, FILE_COUNT, true);
             handler.setEncoding("UTF-8");
             handler.setFormatter(new SimpleFormatter());
             handler.setLevel(LOGGING_LEVEL);
+            
             ROOT_LOGGER.addHandler(handler);
             //za debugging:
             //for(java.util.logging.Handler handler0 : java.util.logging.Logger.getLogger("").getHandlers())
@@ -48,13 +55,12 @@ public class Logger {
             //        handler0.setLevel(Level.FINE);
             //        System.out.println("found");}
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Greska pri inicijalizaciji loggera.\n"
-                    + "Neke funkcije logovanja verovatno nece raditi", "I/O Greska",
+            JOptionPane.showMessageDialog(null, "Greška pri inicijalizaciji loggera.\n"
+                    + "Neke funkcije logovanja neće raditi", "I/O Greska",
                     JOptionPane.ERROR_MESSAGE);
         } catch (SecurityException ex) {
-            JOptionPane.showMessageDialog(null, "Sigurnosna greska pri inicijalizaciji loggera.\n"
-                    + "Neke funkcije logovanja verovatno nece raditi", 
-                    "Sigurnosna greska", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Sigurnosna greška pri inicijalizaciji loggera.\n"
+                    + "Neke funkcije logovanja neće raditi", "Sigurnosna greška", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -66,5 +72,6 @@ public class Logger {
     public static void finalizeLogger() {
         ROOT_LOGGER.log(Level.INFO, "Program izlazi. Gasim logger.");
         handler.close();
+        ROOT_LOGGER.removeHandler(handler);
     }
 }

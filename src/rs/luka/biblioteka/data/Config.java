@@ -57,14 +57,12 @@ public class Config {
      * Komentar za config fajl, koji se upisuje na pocetku fajla.
      */
     private static final String configMsg = "ucSize i knjSize - koliko ima ucenika i knjiga, "
-            + "velicina lista. Moze i bez toga, ali ovako bi trebalo da je brze i "
-            + "sprecava nepotrebne OutOfMemory greske\n"
+            + "predvidjena velicina lista. Opciono.\n"
             + "firstRun - true ili false, oznacava da li se program pokrece po prvi put. Ako da, "
             + "otvara prozor za unos podataka.\n"
             + "dateLimit - broj dana koliko ucenik moze da zadrzi knjigu kod sebe. Default je 14\n"
             + "lookAndFeel - generalni izgled prozora i grafickih komponenti. Vrednosti:"
-            + "system - uzima sistemski stil, crossOcean - crossPlatform default, "
-            + "crossMetal - slicno kao crossOcean, malo tamnije, bio je default ranije\n"
+            + "system, ocean, metal, nimbus, motif. Izbegavati nimbus i motif\n"
             + "uceniciS i uceniciV - sirina i visina prozora za pregled ucenika\n"
             + "knjigeS i knjigeV - sirina i visina prozora za pregled knjiga\n"
             + "brKnjiga - maksimalan broj knjiga koje ucenik moze da ima kod sebe\n"
@@ -75,7 +73,8 @@ public class Config {
             + "savePeriod - broj minuta na koji se vrsi automatsko cuvanje podataka\n"
             + "maxUndo - maksimalan broj akcija koje se nalaze u undo stack-u\n"
             + "razredi - String validnih razreda, razdvojenih zapetom\n"
-            + "workingDir - radni direktorijum aplikacije";
+            + "workingDir - radni direktorijum aplikacije\n"
+            + "logSizeLimit i logCount - broj i velicina log fajla (fajlova)";
 
     private static final StringMultiMap vrednosti = new StringMultiMap();
     private static final StringMultiMap limiti =  new StringMultiMap();
@@ -88,6 +87,8 @@ public class Config {
     private static final Limit DATE_LIMIT = new Limit(1, 365);
     private static final Limit SAVE_PERIOD = new Limit(0, Integer.MAX_VALUE);
     private static final Limit UNDO = new Limit(0, Integer.MAX_VALUE);
+    private static final Limit LOG_SIZE = new Limit(0, 100_000_000);
+    private static final Limit LOG_COUNT = new Limit(0, 100);
     
 
     /**
@@ -121,12 +122,14 @@ public class Config {
         defaults.setProperty("ucSize", valueOf(getBrojUcenika()));
         defaults.setProperty("firstRun", "true");
         defaults.setProperty("dateLimit", "14");
-        defaults.setProperty("lookAndFeel", "crossOcean");
+        defaults.setProperty("lookAndFeel", "ocean");
         defaults.setProperty("brKnjiga", "3");
         defaults.setProperty("TFBoja", "false");
         defaults.setProperty("logLevel", "INFO");
         defaults.setProperty("savePeriod", "5");
         defaults.setProperty("maxUndo", "50");
+        defaults.setProperty("logSizeLimit", "2000000");
+        defaults.setProperty("logFileCount", "2");
     }
 
     /**
@@ -140,7 +143,8 @@ public class Config {
         vrednosti.put("firstRun", "firstRun", "prvoPokretanje");
         vrednosti.put("dateLimit", "dateLimit", "maxDana", "zadrzavanje", "zadrzavanjeKnjige",
                 "Broj dana koji učenik sme da zadrži knjigu kod sebe");
-        vrednosti.put("lookAndFeel", "lookAndFeel", "LaF", "LnF", "izgled", "Izgled aplikacije (system, crossOcean ili crossMetal)");
+        vrednosti.put("lookAndFeel", "lookAndFeel", "LaF", "LnF", "izgled", 
+                "Izgled aplikacije (system, ocean, nimbus ili motif)");
         vrednosti.put("knjigeS", "knjigeS", "knjigeW", "knjigeSirina", "knjSirina", "sirinaKnjProzora",
                 "Širina prozora za pregled knjiga");
         vrednosti.put("knjigeV", "knjigeV", "knjigeH", "knjigeVisina", "knjVisina", "visinaKnjProzora",
@@ -164,6 +168,10 @@ public class Config {
                 "Mogući razredi učenika (razdvojeni zapetom)");
         vrednosti.put("workingDir", "workingDir", "workingDirectory", "Radni direktorijum", "dataDir",
                 "Folder u kojem se čuvaju podaci");
+        vrednosti.put("logSizeLimit", "logSizeLimit", "logSize", "logLimit", "logFileSizeLimit", 
+                "Maksimalna veličina log fajla (bajtova)");
+        vrednosti.put("logFileCount", "logFileCount", "logCount", "logFileNumber", 
+                "Maksimalan broj log fajlova");
     }
     
     private static void setLimits() {
@@ -177,6 +185,8 @@ public class Config {
         limiti.put("brKnjiga", BR_KNJIGA.MIN, BR_KNJIGA.MAX);
         limiti.put("savePeriod", SAVE_PERIOD.MIN, SAVE_PERIOD.MAX);
         limiti.put("maxUndo", UNDO.MIN, UNDO.MAX);
+        limiti.put("logSizeLimit", LOG_SIZE.MIN, LOG_SIZE.MAX);
+        limiti.put("logFileCount", LOG_COUNT.MIN, LOG_COUNT.MAX);
     }
 
     /**
@@ -189,6 +199,8 @@ public class Config {
             LOGGER.log(Level.SEVERE, "I/O greška pri čuvanju konfiguracijskog fajla", ex);
             showMessageDialog(null, "Greška pri čuvanju konfiguracijskog fajla",
                     "I/O greška", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Greška pri čuvanji konfiguracijskog fajla.\n"
+                    + "Najnovije promene podešavanja nisu sačuvane.", "I/O greška", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -299,6 +311,7 @@ public class Config {
             System.out.println(key + " ne postoji");
             return false;
         }
+        val = val.toLowerCase();
         if ("razredi".equalsIgnoreCase(vrednosti.getKey(key))) {
             String[] razredi = val.split(",");
             for (String razred : razredi) {
@@ -311,18 +324,18 @@ public class Config {
         }
         if ("logLevel".equalsIgnoreCase(vrednosti.getKey(key))) {
             try {
-                Level.parse(val);
+                Level.parse(val.toUpperCase());
             } catch (IllegalArgumentException ex) {
                 return false;
             }
             return true;
         }
         if ("lookAndFeel".equalsIgnoreCase(vrednosti.getKey(key))) {
-            return val.equalsIgnoreCase("system") || val.equalsIgnoreCase("crossOcean")
-                    || val.equalsIgnoreCase("crossMetal");
+            return val.equals("system") || val.equals("ocean") || val.equals("metal") || 
+                    val.equals("Nimbus") || val.equals("motif");
         }
         if ("firstRun".equalsIgnoreCase(vrednosti.getKey(key)) || "TFBoja".equals(vrednosti.getKey(key))) {
-            return val.equals("0") || val.equals("1") || val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false");
+            return val.equals("0") || val.equals("1") || val.equals("true") || val.equals("false");
         }
         if ("bgBoja".equalsIgnoreCase(vrednosti.getKey(key)) || "fgBoja".equals(vrednosti.getKey(key))
                 || "TFColor".equalsIgnoreCase(vrednosti.getKey(key))) {

@@ -1,10 +1,10 @@
 /**
- * @lastmod 26.10.'14. 
- * Podesavanja - grafika, TFColor
+ * @lastmod 7.11.'14. 
+ * config dorada
  */
 /**
  * @curr 
- * undo/redo
+ * config, cleanup
  */
 /**
  * @bugs 
@@ -22,6 +22,7 @@
  * auto-restore podataka iz backupa (ako je sve unisteno)
  * GridBagLayout za grafiku, bugfixovi, positioning za velike brojeve (1.5k+ ucenika)
  * Pocistiti reference, listenere, izbaciti indexe gde moze, ostatak koda i organizaciju(UK -> Uc)
+ * napisati resolveSynonyms posle load-a configa
  * BeanShell (bsh) konzola
  * Ubaciti kvačice (šđžčć)
  * Izbaciti sve preostale workaround-ove
@@ -29,6 +30,8 @@
  */
 /**
  * @changelog
+ * Dinamicko odredjivanje velicine prozora podesavanja, LosFormat exception, misc(,) bugfixes
+ * Dodao logSize i logCount u config, nimbus i motif LaF
  * Ubacio i koristio iterator ucenika i knjiga gde je moguce
  * Uradio osnovnu proveru podataka za config
  * Popravio brKnjiga, poceo config checking

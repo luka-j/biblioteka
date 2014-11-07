@@ -19,7 +19,6 @@ public class VrednostNePostoji extends Exception {
     }
 
     public enum vrednost {
-
         Ucenik, Knjiga, UcenikKnjiga, drugo
     }
 }

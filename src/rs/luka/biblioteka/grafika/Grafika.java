@@ -22,6 +22,7 @@ import static javax.swing.JOptionPane.showOptionDialog;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import static javax.swing.UIManager.getCrossPlatformLookAndFeelClassName;
 import static javax.swing.UIManager.getSystemLookAndFeelClassName;
 import static javax.swing.UIManager.setLookAndFeel;
@@ -41,11 +42,11 @@ import static rs.luka.biblioteka.funkcije.Utils.parseBoolean;
  * @author luka
  */
 public class Grafika {
-    
+
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(Grafika.class.getName());
 
     /**
-     * Font koji se koristi za JLabele. Menja se samo preko configa i zvanjem 
+     * Font koji se koristi za JLabele. Menja se samo preko configa i zvanjem
      * {@link #setVariables} metode za refresh.
      */
     private static final Font labelFont;
@@ -58,13 +59,13 @@ public class Grafika {
      */
     private static Color fgColor;
     /**
-     * Boja textFieldova. 
+     * Boja textFieldova.
      */
     private static Color TFColor;
 
     private static final JFrame win;
     private static JPanel pan;
-    
+
     static {
         win = new JFrame("Biblioteka");
         labelFont = new Font("Segoe UI", Font.PLAIN, 15);
@@ -88,13 +89,13 @@ public class Grafika {
                 LOGGER.log(Level.FINE, "Iniciram zatvaranje aplikacije i "
                         + "prikazujem dijalog za čuvanje podataka.");
                 String[] opcije = {"Da", "Ne"};
-                int sacuvaj = showOptionDialog(null, "Sacuvati izmene?",
+                int sacuvaj = showOptionDialog(null, "Sačuvati izmene?",
                         "Izlaz", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                         null, opcije, opcije[0]); //0 za da, 1 za ne, -1 za X
                 if (sacuvaj != -1) {
                     LOGGER.log(Level.FINE, "Izlaz otkazan. Ostajem u aplikaciji.");
                     exit(!parseBoolean(sacuvaj)); //0 oznacava false (sacuvati), a 1 true (brisati)
-                                            //drugim recima, cuva samo ako je odabrana prva opcija
+                    //drugim recima, cuva samo ako je odabrana prva opcija
                 }
 
             }
@@ -148,16 +149,38 @@ public class Grafika {
         podesavanjaBut.setBounds(285, 110, 130, 40);
         podesavanjaBut.setFocusable(false);
         pan.add(podesavanjaBut);
-        
+
         //----------InputMaps---------------------------------------------------
         pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl Z"), "undo");
         pan.getActionMap().put("undo", new Action() {
-            @Override public Object getValue(String key) {return null;}
-            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
-            @Override public void setEnabled(boolean b) {}
-            @Override public boolean isEnabled() {return true;}
-            @Override public void addPropertyChangeListener(PropertyChangeListener listener) {throw new UnsupportedOperationException();}
-            @Override public void removePropertyChangeListener(PropertyChangeListener listener) {throw new UnsupportedOperationException();}
+            @Override
+            public Object getValue(String key) {
+                return null;
+            }
+
+            @Override
+            public void putValue(String key, Object value) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setEnabled(boolean b) {
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+
+            @Override
+            public void addPropertyChangeListener(PropertyChangeListener listener) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void removePropertyChangeListener(PropertyChangeListener listener) {
+                throw new UnsupportedOperationException();
+            }
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -166,12 +189,34 @@ public class Grafika {
         });
         pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl Y"), "redo");
         pan.getActionMap().put("redo", new Action() {
-            @Override public Object getValue(String key) {return null;}
-            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
-            @Override public void setEnabled(boolean b) {}
-            @Override public boolean isEnabled() {return true;}
-            @Override public void addPropertyChangeListener(PropertyChangeListener listener) {throw new UnsupportedOperationException();}
-            @Override public void removePropertyChangeListener(PropertyChangeListener listener) {throw new UnsupportedOperationException();}
+            @Override
+            public Object getValue(String key) {
+                return null;
+            }
+
+            @Override
+            public void putValue(String key, Object value) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setEnabled(boolean b) {
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+
+            @Override
+            public void addPropertyChangeListener(PropertyChangeListener listener) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void removePropertyChangeListener(PropertyChangeListener listener) {
+                throw new UnsupportedOperationException();
+            }
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -180,12 +225,34 @@ public class Grafika {
         });
         pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl shift T"), "console");
         pan.getActionMap().put("console", new Action() {
-            @Override public Object getValue(String key) {return null;}
-            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
-            @Override public void setEnabled(boolean b) {}
-            @Override public boolean isEnabled() {return true;}
-            @Override public void addPropertyChangeListener(PropertyChangeListener listener) {throw new UnsupportedOperationException();}
-            @Override public void removePropertyChangeListener(PropertyChangeListener listener) {throw new UnsupportedOperationException();}
+            @Override
+            public Object getValue(String key) {
+                return null;
+            }
+
+            @Override
+            public void putValue(String key, Object value) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setEnabled(boolean b) {
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+
+            @Override
+            public void addPropertyChangeListener(PropertyChangeListener listener) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void removePropertyChangeListener(PropertyChangeListener listener) {
+                throw new UnsupportedOperationException();
+            }
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -208,7 +275,7 @@ public class Grafika {
             fgColor = new Color(parseInt(Config.get("fgBoja")));
             LOGGER.log(Level.CONFIG, "fgBoja: {0}", fgColor.toString());
         }
-        if(Config.hasKey("TFColor")) {
+        if (Config.hasKey("TFColor")) {
             TFColor = new Color(Config.getAsInt("TFColor"));
             LOGGER.log(Level.CONFIG, "TFColor: {0}", TFColor.toString());
         }
@@ -229,21 +296,34 @@ public class Grafika {
     public static void loadLnF() {
         try {
             String LaF = Config.get("lookAndFeel");
-            if (LaF.equalsIgnoreCase("system")) {
-                setLookAndFeel(getSystemLookAndFeelClassName());
-            } else if (LaF.startsWith("cross")) {
-                setLookAndFeel(getCrossPlatformLookAndFeelClassName());
-                if (LaF.endsWith("Metal")) {
+            LaF = LaF.toLowerCase();
+            switch (LaF) {
+                case "system":
+                    setLookAndFeel(getSystemLookAndFeelClassName());
+                    break;
+                case "ocean":
+                    setLookAndFeel(getCrossPlatformLookAndFeelClassName());
+                    break;
+                case "metal":
+                    setLookAndFeel(getCrossPlatformLookAndFeelClassName());
                     setCurrentTheme(new DefaultMetalTheme());
-                }
-                if (LaF.endsWith("Ocean")) {
-                    setCurrentTheme(new OceanTheme());
-                }
+                    break;
+                case "nimbus":
+                    setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+                    break;
+                case "motif":
+                    setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+            }
+            System.out.println("system LaF: " + getSystemLookAndFeelClassName());
+            System.out.println("cross LaF: " + getCrossPlatformLookAndFeelClassName());
+            System.out.println("sve");
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                System.out.println(info.getName() + "\t" + info.getClassName());
             }
             LOGGER.log(Level.CONFIG, "lookAndFeel: {0}", UIManager.getLookAndFeel());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             LOGGER.log(Level.SEVERE, "Greška pri postavljanju teme (Look and Feel).", ex);
-            showMessageDialog(null, "Došlo je do greške pri postavljanju teme.", 
+            showMessageDialog(null, "Došlo je do greške pri postavljanju teme.",
                     "LookAndFeel greška", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -268,11 +348,11 @@ public class Grafika {
     protected static Color getFgColor() {
         return fgColor;
     }
-    
+
     protected static Color getTFColor() {
         return TFColor;
     }
-    
+
     public static void reset() {
         Init.init();
     }

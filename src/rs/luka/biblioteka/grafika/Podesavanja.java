@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.exceptions.ConfigException;
+import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import static rs.luka.biblioteka.grafika.Grafika.getBgColor;
 
@@ -43,7 +44,6 @@ public class Podesavanja {
     public void podesavanja() {
         //----------JFrame&JPanel-----------------------------------------------
         JFrame win = new JFrame("Podešavanja");
-        win.setSize(600, 580);
         win.setResizable(false);
         win.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         win.addWindowListener(new WindowAdapter() {
@@ -76,38 +76,24 @@ public class Podesavanja {
                             + "novi folder.\nProverite da li je putanja ispravna i da li postoje "
                             + "odgovarajuće dozvole i pokušajte ponovo.", "I/O greška", 
                             JOptionPane.ERROR_MESSAGE);
-                } catch (IllegalArgumentException ex) {
+                } catch (LosFormat ex) {
                     LOGGER.log(Level.INFO, "Postoje učenici sa razredom koji po novom podešavanju nije validan");
                     showMessageDialog(null, "Neki učenici pohađaju razred koji nije određen kao validan\n"
-                            + "Proverite vrednosti i pokušajte ponovo.", "Loši razredi", JOptionPane.ERROR_MESSAGE);
+                            + "Proverite vrednosti i pokušajte ponovo.", "Loš razred",JOptionPane.ERROR_MESSAGE);
+                } catch(IllegalArgumentException ex) {
+                    LOGGER.log(Level.WARNING, "Neka od vrednosti podešavanja nije validna\n");
+                    showMessageDialog(null, "Neka od unetih vrednosti nije validna. "
+                            + "Proverite sve i pokušajte ponovo", "Loša vrednost", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-        win.setLocationRelativeTo(null);
         pan = new JPanel(null);
         pan.setBackground(getBgColor());
         win.setContentPane(pan);
-        //----------JButtons&JCheckBoxes----------------------------------------
-        JButton promeniBojuBut = new JButton("Pozadinska boja");
-        promeniBojuBut.addActionListener((ActionEvent e3) -> {
-            promeniBoju("bg");
-        });
-        promeniBojuBut.setBounds(20, 500, 190, 35);
-        pan.add(promeniBojuBut);
-        JButton promeniFgBojuBut = new JButton("Boja fonta");
-        promeniFgBojuBut.addActionListener((ActionEvent e) -> {
-            promeniBoju("fg");
-        });
-        promeniFgBojuBut.setBounds(220, 500, 180, 35);
-        pan.add(promeniFgBojuBut);
-        JButton promeniTFBojuBut = new JButton("Boja polja za unos");
-        promeniTFBojuBut.addActionListener((ActionEvent e) -> {
-            promeniBoju("tf");
-        });
-        promeniTFBojuBut.setBounds(410, 500, 180, 35);
-        pan.add(promeniTFBojuBut);
         //---------JLabels&JTextFields------------------------------------------
         ArrayList<String> names = Config.getUserFriendlyNames();
+        win.setSize(600, 20 + names.size()*40 + 80); //win.setSize             !
+        win.setLocationRelativeTo(null); //win.setLocation                     !
         labels = new JLabel[names.size()];
         textfields = new JTextField[names.size()];
         for(int i=0; i<labels.length; i++) {
@@ -125,6 +111,25 @@ public class Podesavanja {
                 textfields[i].setBackground(Grafika.getTFColor());
             pan.add(textfields[i]);
         }
+        //----------JButtons&JCheckBoxes----------------------------------------
+        JButton promeniBojuBut = new JButton("Pozadinska boja");
+        promeniBojuBut.addActionListener((ActionEvent e3) -> {
+            promeniBoju("bg");
+        });
+        promeniBojuBut.setBounds(20, 25 + 40*names.size(), 190, 35);
+        pan.add(promeniBojuBut);
+        JButton promeniFgBojuBut = new JButton("Boja fonta");
+        promeniFgBojuBut.addActionListener((ActionEvent e) -> {
+            promeniBoju("fg");
+        });
+        promeniFgBojuBut.setBounds(220, 25 + 40*names.size(), 180, 35);
+        pan.add(promeniFgBojuBut);
+        JButton promeniTFBojuBut = new JButton("Boja polja za unos");
+        promeniTFBojuBut.addActionListener((ActionEvent e) -> {
+            promeniBoju("tf");
+        });
+        promeniTFBojuBut.setBounds(410, 25 + 40*names.size(), 180, 35);
+        pan.add(promeniTFBojuBut);
         win.setVisible(true);
     }
 
@@ -177,7 +182,7 @@ public class Podesavanja {
      *
      * @throws PreviseKnjiga
      */
-    private void sacuvaj() throws PreviseKnjiga, FileNotFoundException, IllegalArgumentException {
+    private void sacuvaj() throws PreviseKnjiga, FileNotFoundException, IllegalArgumentException, LosFormat {
         try {
             for(int i=0; i<labels.length; i++) {
                 if(!textfields[i].getText().isEmpty())
@@ -187,8 +192,9 @@ public class Podesavanja {
         catch(ConfigException ex) {
             switch(ex.getMessage()) {
                 case "brKnjiga": throw new PreviseKnjiga(ex);
-                case "razredi": throw new IllegalArgumentException(ex);
+                case "razredi": throw new LosFormat("razredi", ex);
                 case "workingDir": throw new FileNotFoundException();
+                default: throw new IllegalArgumentException(ex);
             }
         }
     }
