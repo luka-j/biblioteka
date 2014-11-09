@@ -39,7 +39,7 @@ public class Unos {
     public void UnosGrafika() {
         win = new JFrame("Unos");
         win.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        win.setSize(320, 120);
+        win.setSize(340, 120);
         win.setLocation(250, 120);
         win.setResizable(false);
         JPanel pan = new JPanel(null);
@@ -50,14 +50,14 @@ public class Unos {
         knj.addActionListener((ActionEvent e1) -> {
             UnosKnjige();
         });
-        knj.setBounds(25, 20, 100, 40);
+        knj.setBounds(25, 20, 130, 40);
         pan.add(knj);
 
-        JButton uc = new JButton("Unos ucenika");
+        JButton uc = new JButton("Unos učenika");
         uc.addActionListener((ActionEvent e2) -> {
             UnosUcenici();
         });
-        uc.setBounds(160, 20, 115, 40);
+        uc.setBounds(180, 20, 130, 40);
         pan.add(uc);
         win.setVisible(true);
     }

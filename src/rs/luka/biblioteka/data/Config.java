@@ -9,6 +9,7 @@ import java.io.IOException;
 import static java.lang.String.valueOf;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
@@ -106,6 +107,7 @@ public class Config {
             path = configFile.getCanonicalPath();
             FileReader configFR = new FileReader(configFile);
             Config.config.load(configFR);
+            resolveSynonyms();
         } catch (FileNotFoundException FNFex) {
             showMessageDialog(null, "Konfiguracijski fajl nije pronadjen. Lokacija: " + path);
         } catch (IOException ex) {
@@ -134,7 +136,6 @@ public class Config {
 
     /**
      * Podesava sinonime za kljuceve u configu.
-     *
      * @since 25.10.'14.
      */
     private static void defineSynonyms() {
@@ -168,12 +169,16 @@ public class Config {
                 "Mogući razredi učenika (razdvojeni zapetom)");
         vrednosti.put("workingDir", "workingDir", "workingDirectory", "Radni direktorijum", "dataDir",
                 "Folder u kojem se čuvaju podaci");
-        vrednosti.put("logSizeLimit", "logSizeLimit", "logSize", "logLimit", "logFileSizeLimit", 
-                "Maksimalna veličina log fajla (bajtova)");
-        vrednosti.put("logFileCount", "logFileCount", "logCount", "logFileNumber", 
+        vrednosti.put("logSizeLimit", "logSizeLimit", "logSize", "logLimit", "logFileSizeLimit", "velicinaLogFajla", 
+                "Maksimalna veličina log fajla u bajtovima");
+        vrednosti.put("logFileCount", "logFileCount", "logCount", "logFileNumber", "brojLogFajlova", 
                 "Maksimalan broj log fajlova");
     }
     
+    /**
+     * Postavlja limite u mapi koristeći vrednosti iz fieldova.
+     * @since 11.'14
+     */
     private static void setLimits() {
         limiti.put("ucSize", UC_KNJ_SIZE.MIN, UC_KNJ_SIZE.MAX);
         limiti.put("knjSize", UC_KNJ_SIZE.MIN, UC_KNJ_SIZE.MAX);
@@ -187,6 +192,21 @@ public class Config {
         limiti.put("maxUndo", UNDO.MIN, UNDO.MAX);
         limiti.put("logSizeLimit", LOG_SIZE.MIN, LOG_SIZE.MAX);
         limiti.put("logFileCount", LOG_COUNT.MIN, LOG_COUNT.MAX);
+    }
+    
+    /**
+     * Radi iteraciju preko configa i zamenjuje ključeve ako su sinonimi sa glavnim (iz mape vrednosti).
+     * @since 7.11.'14.
+     */
+    private static void resolveSynonyms() {
+        Entry e;
+        for (Iterator<Entry<Object, Object>> it = config.entrySet().iterator(); it.hasNext();) {
+            e = it.next();
+            if(!vrednosti.containsKey(e.getKey())) {
+                config.put(vrednosti.getKey((String) e.getKey()), e.getValue());
+                it.remove();
+            }
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * @lastmod 7.11.'14. 
+ * @lastmod 9.11.'14. 
  * config dorada
  */
 /**
@@ -22,7 +22,6 @@
  * auto-restore podataka iz backupa (ako je sve unisteno)
  * GridBagLayout za grafiku, bugfixovi, positioning za velike brojeve (1.5k+ ucenika)
  * Pocistiti reference, listenere, izbaciti indexe gde moze, ostatak koda i organizaciju(UK -> Uc)
- * napisati resolveSynonyms posle load-a configa
  * BeanShell (bsh) konzola
  * Ubaciti kvačice (šđžčć)
  * Izbaciti sve preostale workaround-ove

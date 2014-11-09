@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.SimpleFormatter;
 import javax.swing.JOptionPane;
 import rs.luka.biblioteka.data.Config;
@@ -42,7 +43,7 @@ public class Logger {
         FILE_COUNT = Config.getAsInt("logFileCount");
         ROOT_LOGGER.setLevel(LOGGING_LEVEL);
         try {
-            handler = new FileHandler(Utils.getWorkingDir() + "biblioteka.log", 
+            handler = new FileHandler(Utils.getWorkingDir() + "biblioteka.log%g", 
                     FILE_SIZE_LIMIT, FILE_COUNT, true);
             handler.setEncoding("UTF-8");
             handler.setFormatter(new SimpleFormatter());

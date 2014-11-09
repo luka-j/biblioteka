@@ -117,7 +117,7 @@ public class Grafika {
         /**
          * Pregled ucenika.
          */
-        JButton uc = new JButton("Ucenici");
+        JButton uc = new JButton("Učenici");
         uc.addActionListener((ActionEvent e) -> {
             new Ucenici().pregledUcenika();
         });
@@ -127,13 +127,13 @@ public class Grafika {
         /**
          * Dugme za cuvanje podataka.
          */
-        JButton saveBut = new JButton("Sacuvaj podatke");
+        JButton saveBut = new JButton("Sačuvaj podatke");
         saveBut.addActionListener((ActionEvent e) -> {
             try {
                 Save.save();
             } catch (IOException ex) {
-                showMessageDialog(null, "Doslo je do greske pri "
-                        + "cuvanju fajlova", "I/O Greska", JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, "Došlo je do greške pri "
+                        + "čuvanju fajlova", "I/O Greska", JOptionPane.ERROR_MESSAGE);
             }
         });
         saveBut.setBounds(25, 110, 170, 40);
@@ -142,7 +142,7 @@ public class Grafika {
         /**
          * Dugme za otvaranje prozora za podesavanja.
          */
-        JButton podesavanjaBut = new JButton("Podesavanja");
+        JButton podesavanjaBut = new JButton("Podešavanja");
         podesavanjaBut.addActionListener((ActionEvent e) -> {
             new Podesavanja().podesavanja();
         });
@@ -153,35 +153,15 @@ public class Grafika {
         //----------InputMaps---------------------------------------------------
         pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl Z"), "undo");
         pan.getActionMap().put("undo", new Action() {
-            @Override
-            public Object getValue(String key) {
-                return null;
-            }
-
-            @Override
-            public void putValue(String key, Object value) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setEnabled(boolean b) {
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-
-            @Override
-            public void addPropertyChangeListener(PropertyChangeListener listener) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void removePropertyChangeListener(PropertyChangeListener listener) {
-                throw new UnsupportedOperationException();
-            }
-
+            @Override public Object getValue(String key) {return null;}
+            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
+            @Override public void setEnabled(boolean b) { }
+            @Override public boolean isEnabled() {return true;}
+            @Override public void addPropertyChangeListener(PropertyChangeListener l) 
+            {throw new UnsupportedOperationException();}
+            @Override public void removePropertyChangeListener(PropertyChangeListener listener) 
+            {throw new UnsupportedOperationException();}
+            
             @Override
             public void actionPerformed(ActionEvent e) {
                 Undo.undo();
@@ -189,35 +169,15 @@ public class Grafika {
         });
         pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl Y"), "redo");
         pan.getActionMap().put("redo", new Action() {
-            @Override
-            public Object getValue(String key) {
-                return null;
-            }
-
-            @Override
-            public void putValue(String key, Object value) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setEnabled(boolean b) {
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-
-            @Override
-            public void addPropertyChangeListener(PropertyChangeListener listener) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void removePropertyChangeListener(PropertyChangeListener listener) {
-                throw new UnsupportedOperationException();
-            }
-
+            @Override public Object getValue(String key) {return null;}
+            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
+            @Override public void setEnabled(boolean b) { }
+            @Override public boolean isEnabled() {return true;}
+            @Override public void addPropertyChangeListener(PropertyChangeListener l) 
+            {throw new UnsupportedOperationException();}
+            @Override public void removePropertyChangeListener(PropertyChangeListener listener) 
+            {throw new UnsupportedOperationException();}
+            
             @Override
             public void actionPerformed(ActionEvent e) {
                 Undo.redo();
@@ -225,34 +185,14 @@ public class Grafika {
         });
         pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl shift T"), "console");
         pan.getActionMap().put("console", new Action() {
-            @Override
-            public Object getValue(String key) {
-                return null;
-            }
-
-            @Override
-            public void putValue(String key, Object value) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setEnabled(boolean b) {
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-
-            @Override
-            public void addPropertyChangeListener(PropertyChangeListener listener) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void removePropertyChangeListener(PropertyChangeListener listener) {
-                throw new UnsupportedOperationException();
-            }
+            @Override public Object getValue(String key) {return null;}
+            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
+            @Override public void setEnabled(boolean b) { }
+            @Override public boolean isEnabled() {return true;}
+            @Override public void addPropertyChangeListener(PropertyChangeListener l) 
+            {throw new UnsupportedOperationException();}
+            @Override public void removePropertyChangeListener(PropertyChangeListener listener) 
+            {throw new UnsupportedOperationException();}
 
             @Override
             public void actionPerformed(ActionEvent e) {
