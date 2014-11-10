@@ -12,7 +12,10 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -31,7 +34,9 @@ import javax.swing.WindowConstants;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import static javax.swing.plaf.metal.MetalLookAndFeel.setCurrentTheme;
 import javax.swing.plaf.metal.OceanTheme;
+import javax.swing.undo.UndoManager;
 import rs.luka.biblioteka.data.Config;
+import rs.luka.biblioteka.debugging.Console;
 import static rs.luka.biblioteka.funkcije.Init.exit;
 import rs.luka.biblioteka.funkcije.Save;
 import rs.luka.biblioteka.funkcije.Undo;
@@ -119,7 +124,7 @@ public class Grafika {
          */
         JButton uc = new JButton("Učenici");
         uc.addActionListener((ActionEvent e) -> {
-            new Ucenici().pregledUcenika();
+            new Ucenici();
         });
         uc.setBounds(300, 40, 100, 40);
         uc.setFocusable(false);
@@ -151,54 +156,21 @@ public class Grafika {
         pan.add(podesavanjaBut);
 
         //----------InputMaps---------------------------------------------------
+        Console console = new rs.luka.biblioteka.debugging.Console();
+        Method consoleMethod = null, undoMethod = null, redoMethod=null;
+        try {
+            consoleMethod = console.getClass().getDeclaredMethod("console", null);
+            undoMethod = Undo.class.getDeclaredMethod("undo", null);
+            redoMethod = Undo.class.getDeclaredMethod("redo", null);
+        } catch (NoSuchMethodException | SecurityException ex) {
+            LOGGER.log(Level.SEVERE, "Greška pri kreiranju neke od metoda", ex);
+        }
         pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl Z"), "undo");
-        pan.getActionMap().put("undo", new Action() {
-            @Override public Object getValue(String key) {return null;}
-            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
-            @Override public void setEnabled(boolean b) { }
-            @Override public boolean isEnabled() {return true;}
-            @Override public void addPropertyChangeListener(PropertyChangeListener l) 
-            {throw new UnsupportedOperationException();}
-            @Override public void removePropertyChangeListener(PropertyChangeListener listener) 
-            {throw new UnsupportedOperationException();}
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Undo.undo();
-            }
-        });
+        pan.getActionMap().put("undo", generateAction(undoMethod, null));
         pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl Y"), "redo");
-        pan.getActionMap().put("redo", new Action() {
-            @Override public Object getValue(String key) {return null;}
-            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
-            @Override public void setEnabled(boolean b) { }
-            @Override public boolean isEnabled() {return true;}
-            @Override public void addPropertyChangeListener(PropertyChangeListener l) 
-            {throw new UnsupportedOperationException();}
-            @Override public void removePropertyChangeListener(PropertyChangeListener listener) 
-            {throw new UnsupportedOperationException();}
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Undo.redo();
-            }
-        });
+        pan.getActionMap().put("redo", generateAction(redoMethod, null));
         pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl shift T"), "console");
-        pan.getActionMap().put("console", new Action() {
-            @Override public Object getValue(String key) {return null;}
-            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
-            @Override public void setEnabled(boolean b) { }
-            @Override public boolean isEnabled() {return true;}
-            @Override public void addPropertyChangeListener(PropertyChangeListener l) 
-            {throw new UnsupportedOperationException();}
-            @Override public void removePropertyChangeListener(PropertyChangeListener listener) 
-            {throw new UnsupportedOperationException();}
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new rs.luka.biblioteka.debugging.Console().console();
-            }
-        });
+        pan.getActionMap().put("console", generateAction(consoleMethod, console));
         //----------------------------------------------------------------------
         win.setVisible(true);
     }
@@ -266,6 +238,28 @@ public class Grafika {
             showMessageDialog(null, "Došlo je do greške pri postavljanju teme.",
                     "LookAndFeel greška", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    private static Action generateAction(Method invoke, Object obj) {
+        return new Action() {
+            @Override public Object getValue(String key) {return null;}
+            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
+            @Override public void setEnabled(boolean b) { }
+            @Override public boolean isEnabled() {return true;}
+            @Override public void addPropertyChangeListener(PropertyChangeListener l) 
+            {throw new UnsupportedOperationException();}
+            @Override public void removePropertyChangeListener(PropertyChangeListener listener) 
+            {throw new UnsupportedOperationException();}
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    invoke.invoke(obj);
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    Logger.getLogger(Grafika.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                }
+            };
     }
 
     /**

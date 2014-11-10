@@ -1,6 +1,6 @@
 /**
- * @lastmod 9.11.'14. 
- * config dorada
+ * @lastmod 10.11.'14. 
+ * grafika za ucenike cleanup
  */
 /**
  * @curr 
@@ -11,7 +11,6 @@
  * Uzimanje knjige ne radi na test podacima (?)
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije pri push(),
  * tako da setKnjiga throwuje Duplikat (da li smem ignorisati?)
- * Ucenici grafika: search rekurzija, tj. restart prozora (Postoji los i zamoran workaround)
  * Pretraga ucenika po knjigama - grafika za male brojeve, pregled ucenika za velike brojeve (checkboxovi)
  * undoVracanje postavlja datum na trenutni, umesto datum iznajmljivanja knjige
  */
@@ -29,6 +28,10 @@
  */
 /**
  * @changelog
+ * Pocistio metode i fieldove za pregledUcenika, listeneri se generisu posebno, pregledUcenika() iz konstruktora
+ * Popravio workaround za prazno search polje, sad sve radi dobro
+ * Sredio grafiku za Ucenike, sada se sastoji od Ucenici (pregledUcenika) i UceniciUtils (sve ostalo)
+ * Popravio bug sa brisanjem ucenika
  * Dinamicko odredjivanje velicine prozora podesavanja, LosFormat exception, misc(,) bugfixes
  * Dodao logSize i logCount u config, nimbus i motif LaF
  * Ubacio i koristio iterator ucenika i knjiga gde je moguce

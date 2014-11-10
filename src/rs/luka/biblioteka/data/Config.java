@@ -243,6 +243,7 @@ public class Config {
      * @return String vrednost
      */
     public static String get(String key) {
+        if(key==null) return null;
         return config.getProperty(vrednosti.getKey(key));
     }
 
@@ -267,23 +268,29 @@ public class Config {
      * @since 25.10'.14.
      */
     public static int getAsInt(String key) {
-        return Integer.parseInt(config.getProperty(vrednosti.getKey(key)));
+        return Integer.parseInt(get(key));
+    }
+    
+    public static int getAsInt(String key, String def) {
+        return Integer.parseInt(get(key, def));
     }
 
     /**
      * Vraca boolean reprezentaciju trazenog kljuca ili njegovog sinonima. Ako
-     * je kljuc int, koristi {@link Utils#parseBoolean(int)} da dobije boolean,
-     * u suprotnom uporedjuje String sa "true".
+     * je vrednost kljuca int, koristi {@link Utils#parseBoolean(int)} da dobije 
+     * boolean, u suprotnom uporedjuje String sa "true".
      *
      * @param key kljuc koji se trazi ili sinonim.
      * @return boolean koji se dobija na opisani nacin
      * @since 25.10'.14.
      */
     public static boolean getAsBool(String key) {
-        if (Utils.isInteger(key)) {
-            return Utils.parseBoolean(Integer.parseInt(key));
+        String val = get(key);
+        if(val==null) return false;
+        if (Utils.isInteger(val)) {
+            return Utils.parseBoolean(Integer.parseInt(val));
         }
-        return key.equalsIgnoreCase("true");
+        return val.equalsIgnoreCase("true");
     }
 
     /**
