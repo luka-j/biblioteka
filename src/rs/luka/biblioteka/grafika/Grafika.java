@@ -33,8 +33,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import static javax.swing.plaf.metal.MetalLookAndFeel.setCurrentTheme;
-import javax.swing.plaf.metal.OceanTheme;
-import javax.swing.undo.UndoManager;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.debugging.Console;
 import static rs.luka.biblioteka.funkcije.Init.exit;
@@ -114,7 +112,7 @@ public class Grafika {
          */
         JButton pregledBut = new JButton("Knjige");
         pregledBut.addActionListener((ActionEvent e5) -> {
-            new Knjige().pregledKnjiga();
+            new Knjige();
         });
         pregledBut.setBounds(60, 40, 100, 40);
         pregledBut.setFocusable(false);
@@ -258,8 +256,8 @@ public class Grafika {
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     Logger.getLogger(Grafika.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                }
-            };
+            }
+        };
     }
 
     /**

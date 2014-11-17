@@ -49,6 +49,7 @@ public class Ucenici implements FocusListener {
     private JCheckBox[] ucenici;
 
     public Ucenici() {
+        butPan = new JPanel();
         knjSeparatori = new JSeparator[Podaci.getMaxBrojUcenikKnjiga()][Ucenik.getBrojRazreda()];
         ucSeparatori = new JSeparator[Ucenik.getBrojRazreda()];
         knjigePan = new JPanel[getMaxBrojUcenikKnjiga()];
@@ -56,6 +57,7 @@ public class Ucenici implements FocusListener {
         win = new JFrame("Pregled učenika");
         pan = new JPanel();
         scroll = new JScrollPane(pan);
+        split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scroll, butPan);
         this.uzmiBut = new JButton[Podaci.getBrojUcenika()];
         this.vratiBut = new JButton[Podaci.getBrojUcenika()];
         this.searchBox = new JTextField("Pretrazi ucenike...");
@@ -69,7 +71,33 @@ public class Ucenici implements FocusListener {
      * @since 1.7.'13.
      */
     private void pregledUcenika() {
-        //----------JFrame&panels-----------------------------------------------
+        initPanels();
+        initText();
+        setTextAndSeparators();
+        initButtons();
+        initMainListeners();
+        initSearchBox();
+        win.setVisible(true);
+    }
+    
+    
+    private static final int maxKnjiga = getMaxBrojUcenikKnjiga();
+    private final JSplitPane split;
+    private final JPanel butPan;
+    private JFrame win;
+    private final JSeparator[][] knjSeparatori;
+    private final JSeparator[] ucSeparatori;
+    private final JPanel[] knjigePan;
+    private final JPanel uceniciPan;
+    private final JScrollPane scroll;
+    private final JPanel pan;
+    private final JTextField searchBox;
+    private JCheckBox selectAllUc;
+    private final JButton[] vratiBut;
+    private final JButton[] uzmiBut;
+    private final JPanel sidePan = new JPanel(null);
+    
+    private void initPanels() {
         int sirina, visina;
         sirina = Config.getAsInt("uceniciS", valueOf(165 * getMaxBrojUcenikKnjiga() + 350));
         visina = Config.getAsInt("uceniciV", "600");
@@ -84,10 +112,8 @@ public class Ucenici implements FocusListener {
         pan.setAutoscrolls(true);
         scroll.add(scroll.createVerticalScrollBar());
         scroll.getVerticalScrollBar().setUnitIncrement(16);
-        JPanel butPan = new JPanel();
         butPan.setBackground(Grafika.getBgColor());
         butPan.setLayout(new FlowLayout(FlowLayout.CENTER));
-        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scroll, butPan);
         split.setOneTouchExpandable(false);
         split.setDividerLocation(visina - 90);
         uceniciPan.setLayout(new BoxLayout(uceniciPan, BoxLayout.Y_AXIS));
@@ -100,123 +126,10 @@ public class Ucenici implements FocusListener {
         sidePan.setBackground(Grafika.getBgColor());
         sidePan.setPreferredSize(new Dimension(150, (Podaci.getBrojUcenika() + 1) * 25));
         win.setContentPane(split);
-        //----------JLabels,JSeparators&JCheckBoxes-----------------------------
-        Podaci.sortUcenike();
-        int maxKnjiga = getMaxBrojUcenikKnjiga();
-        refreshLabels(); //postavlja labele i ucenike (text)
-        uceniciPan.add(selectAllUc);
-        pan.add(uceniciPan);
-
-        for (int i = 0; i < ucSeparatori.length; i++) {
-            ucSeparatori[i] = new JSeparator(SwingConstants.HORIZONTAL);
-        }
-        int[] razredi = Podaci.getGraniceRazreda();
-        int razredIterator = 0;
-        for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
-            uceniciPan.add(ucenici[i]);
-            if (i == razredi[razredIterator]) {
-                uceniciPan.add(ucSeparatori[razredIterator]);
-                razredIterator++;
-            }
-        }
-        for (JSeparator[] knjSeparatori0 : knjSeparatori) {
-            for (int i = 0; i < knjSeparatori0.length; i++) { //ne moze preko for : loopa.
-                knjSeparatori0[i] = new JSeparator(SwingConstants.HORIZONTAL);
-            }
-        }
-        for (int i = 0; i < maxKnjiga; i++) {
-            razredIterator = 0;
-            for (int j = 0; j < Podaci.getBrojUcenika() + 1; j++) {
-                knjigePan[i].add(knjige[i][j]);
-                if (j - 1 == razredi[razredIterator]) {
-                    knjigePan[i].add(knjSeparatori[i][razredIterator]);
-                    razredIterator++;
-                }
-            }
-            pan.add(knjigePan[i]);
-        }
-        //----------JButtons----------------------------------------------------
-        UceniciUtils utils = new UceniciUtils();
-        JButton noviUc = new JButton("Dodati novog ucenika");
-        noviUc.setPreferredSize(new Dimension(200, 35));
-        noviUc.addActionListener((ActionEvent e) -> {
-            utils.dodajNovogUcenika();
-        });
-        butPan.add(noviUc);
-        JButton delUc = new JButton("Obrisati ucenika");
-        delUc.setPreferredSize(new Dimension(150, 35));
-        delUc.addActionListener((ActionEvent e) -> {
-            obrisiUcenika();
-        });
-        butPan.add(delUc);
-        JButton novaGen = new JButton("Uneti novu generaciju");
-        novaGen.setPreferredSize(new Dimension(200, 35));
-        novaGen.addActionListener((ActionEvent e) -> {
-            utils.dodajNovuGeneraciju();
-        });
-        butPan.add(novaGen);
-        //----------Listeners---------------------------------------------------
-        selectAllUc.addItemListener((ItemEvent e) -> {
-            selectAllUc();
-        });
-        for (int i = 0; i < maxKnjiga; i++) {
-            final int red = i;
-            knjige[i][0].addItemListener((ItemEvent e) -> {
-                selectAllKnj(red);
-            });
-        }
-        for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
-            final int red = i; //uvek ekvivalentno i, final zbog lambde
-            ucenici[i].addItemListener((ItemEvent e) -> {
-                setUceniciCheckboxListener(red);
-            });
-
-            //knjige
-            for (int j = 0; j < maxKnjiga; j++) {
-                final int kol = j; //uvek ekvivalentno j, final zbog lambde
-                knjige[kol][red + 1].addItemListener((ItemEvent e) -> {
-                    //uzimanje
-                    if (knjige[kol][red + 1].getText().equals(" ")) {
-                        setKnjigeUzimanjeListener(red);
-                    } //vracanje
-                    else {
-                        setKnjigeVracanjeListener(kol, red);
-                    }
-                    sidePan.repaint();
-                });
-            }
-        }
-        //----------search------------------------------------------------------
-        searchBox.addFocusListener(this);
-        searchBox.addActionListener((ActionEvent e) -> {
-            setSearchListener();
-        });
-        searchBox.setBounds(0, 0, 150, 27);
-        searchBox.setFont(Grafika.getLabelFont());
-        searchBox.setBackground(Grafika.getTFColor());
-        searchBox.setForeground(Grafika.getFgColor());
-        searchBox.setCaretColor(Grafika.getFgColor());
-        sidePan.add(searchBox);
-
-        pan.add(sidePan);
-        win.setVisible(true);
     }
-    private JFrame win;
-    private final JSeparator[][] knjSeparatori;
-    private final JSeparator[] ucSeparatori;
-    private final JPanel[] knjigePan;
-    private final JPanel uceniciPan;
-    private final JScrollPane scroll;
-    private final JPanel pan;
-    private final JTextField searchBox;
-    private JCheckBox selectAllUc;
-    private final JButton[] vratiBut;
-    private final JButton[] uzmiBut;
-    private final JPanel sidePan = new JPanel(null);
-
-    //==========HELPERS=========================================================
-    public void refreshLabels() {
-        int maxKnjiga = getMaxBrojUcenikKnjiga();
+    
+    private void initText() {
+        Podaci.sortUcenike();
         Ucenik uc;
         selectAllUc = new JCheckBox("<html>Ucenici:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                 + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -255,10 +168,112 @@ public class Ucenici implements FocusListener {
                 knjige[i][j].setBackground(Grafika.getBgColor());
             }
         }
-        LOGGER.log(Level.FINE, "Postavio labele učenika");
+        LOGGER.log(Level.FINE, "Postavio labele učenika"); 
+        uceniciPan.add(selectAllUc);
+        pan.add(uceniciPan);
+    }
+    
+    private void setTextAndSeparators() {
+        for (int i = 0; i < ucSeparatori.length; i++) {
+            ucSeparatori[i] = new JSeparator(SwingConstants.HORIZONTAL);
+        }
+        int[] razredi = Podaci.getGraniceRazreda();
+        int razredIterator = 0;
+        for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
+            uceniciPan.add(ucenici[i]);
+            if (i == razredi[razredIterator]) {
+                uceniciPan.add(ucSeparatori[razredIterator]);
+                razredIterator++;
+            }
+        }
+        for (JSeparator[] knjSeparatori0 : knjSeparatori) {
+            for (int i = 0; i < knjSeparatori0.length; i++) { //ne moze preko for : loopa.
+                knjSeparatori0[i] = new JSeparator(SwingConstants.HORIZONTAL);
+            }
+        }
+        for (int i = 0; i < maxKnjiga; i++) {
+            razredIterator = 0;
+            for (int j = 0; j < Podaci.getBrojUcenika() + 1; j++) {
+                knjigePan[i].add(knjige[i][j]);
+                if (j - 1 == razredi[razredIterator]) {
+                    knjigePan[i].add(knjSeparatori[i][razredIterator]);
+                    razredIterator++;
+                }
+            }
+            pan.add(knjigePan[i]);
+        }
+    }
+    
+    private void initButtons() {
+        JButton noviUc = new JButton("Dodati novog ucenika");
+        noviUc.setPreferredSize(new Dimension(200, 35));
+        noviUc.addActionListener((ActionEvent e) -> {
+            new UceniciUtils().dodajNovogUcenika();
+        });
+        butPan.add(noviUc);
+        JButton delUc = new JButton("Obrisati ucenika");
+        delUc.setPreferredSize(new Dimension(150, 35));
+        delUc.addActionListener((ActionEvent e) -> {
+            obrisiUcenika();
+        });
+        butPan.add(delUc);
+        JButton novaGen = new JButton("Uneti novu generaciju");
+        novaGen.setPreferredSize(new Dimension(200, 35));
+        novaGen.addActionListener((ActionEvent e) -> {
+            new UceniciUtils().dodajNovuGeneraciju();
+        });
+        butPan.add(novaGen);
+    }
+    
+    private void initMainListeners() {
+        selectAllUc.addItemListener((ItemEvent e) -> {
+            selectAllUc();
+        });
+        for (int i = 0; i < maxKnjiga; i++) {
+            final int red = i;
+            knjige[i][0].addItemListener((ItemEvent e) -> {
+                selectAllKnj(red);
+            });
+        }
+        for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
+            final int red = i; //uvek ekvivalentno i, final zbog lambde
+            ucenici[i].addItemListener((ItemEvent e) -> {
+                setUceniciCheckboxListener(red);
+            });
+
+            //knjige
+            for (int j = 0; j < maxKnjiga; j++) {
+                final int kol = j; //uvek ekvivalentno j, final zbog lambde
+                knjige[kol][red + 1].addItemListener((ItemEvent e) -> {
+                    //uzimanje
+                    if (knjige[kol][red + 1].getText().equals(" ")) {
+                        setKnjigeUzimanjeListener(red);
+                    } //vracanje
+                    else {
+                        setKnjigeVracanjeListener(kol, red);
+                    }
+                    sidePan.repaint();
+                });
+            }
+        }
+    }
+    
+    private void initSearchBox() {
+        searchBox.addFocusListener(this);
+        searchBox.addActionListener((ActionEvent e) -> {
+            setSearchListener();
+        });
+        searchBox.setBounds(0, 0, 150, 27);
+        searchBox.setFont(Grafika.getLabelFont());
+        searchBox.setBackground(Grafika.getTFColor());
+        searchBox.setForeground(Grafika.getFgColor());
+        searchBox.setCaretColor(Grafika.getFgColor());
+        sidePan.add(searchBox);
+
+        pan.add(sidePan);
     }
 
-    //----------LISTENERS-------------------------------------------------------
+    //----------METODE ZA LISTENERE---------------------------------------------
     /**
      * Radi iteraciju preko svih checkboxova i ako je selectall selektovan i
      * dati checkbox je vidljiv, selektuje ga. Ako to ne vazi, deselektuje
@@ -315,7 +330,6 @@ public class Ucenici implements FocusListener {
 
     private void setUceniciCheckboxListener(int red) {
         boolean selected = false;
-        int maxKnjiga = Podaci.getMaxBrojUcenikKnjiga();
         for (int k = 0; k < maxKnjiga; k++) {
             if (knjige[k][red + 1].isSelected()) {
                 selected = true; //makar jedan selektovan checkbox
@@ -362,7 +376,6 @@ public class Ucenici implements FocusListener {
 
     private void setKnjigeUzimanjeListener(int red) {
         boolean selected = false;
-        int maxKnjiga = Podaci.getMaxBrojUcenikKnjiga();
         for (int k = 0; k < maxKnjiga; k++) {
             if (knjige[k][red + 1].isSelected()) {
                 selected = true; //makar jedan selektovan checkbox
@@ -403,7 +416,6 @@ public class Ucenici implements FocusListener {
 
     private void setKnjigeVracanjeListener(int kol, int red) {
         boolean selected = false;
-        int maxKnjiga = Podaci.getMaxBrojUcenikKnjiga();
         for (int k = 0; k < maxKnjiga; k++) {
             if (knjige[k][red + 1].isSelected()) {
                 selected = true; //makar jedan selektovan checkbox 
@@ -456,7 +468,6 @@ public class Ucenici implements FocusListener {
     }
 
     private void setSearchListener() {
-        int maxKnjiga = Podaci.getMaxBrojUcenikKnjiga();
         LOGGER.log(Level.FINE, "Počinjem pretragu (grafički)");
         if (searchBox.getText().isEmpty()) {
             win.dispose();
