@@ -2,6 +2,7 @@ package rs.luka.biblioteka.grafika;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -11,7 +12,6 @@ import static java.lang.Integer.parseInt;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -23,6 +23,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.data.Knjiga;
 import rs.luka.biblioteka.data.Podaci;
@@ -39,10 +40,12 @@ public class Knjige implements FocusListener {
     private static final java.util.logging.Logger LOGGER
             = java.util.logging.Logger.getLogger(Knjige.class.getName());
 
+    private static final String SEARCH_TEXT = "Pretraži knjige";
+    private static final Insets INSET = new Insets(0, 0, 10, 8);
     /**
      * searchBox za pretrazivanje knjiga.
      */
-    private final JTextField searchBox = new JTextField("Pretraži knjige...");
+    private final JTextField searchBox = new JTextField(SEARCH_TEXT);
 
     private int sirina, visina;
     
@@ -109,20 +112,17 @@ public class Knjige implements FocusListener {
         knjPan.setLayout(new BoxLayout(knjPan, BoxLayout.Y_AXIS));
         knjPan.setBackground(Grafika.getBgColor());
         mainPan.add(knjPan);
-        mainPan.add(Box.createHorizontalStrut(10));
         pisacPan.setLayout(new BoxLayout(pisacPan, BoxLayout.Y_AXIS));
         pisacPan.setBackground(Grafika.getBgColor());
         mainPan.add(pisacPan);
-        mainPan.add(Box.createHorizontalStrut(10));
         kolPan.setLayout(new BoxLayout(kolPan, BoxLayout.Y_AXIS));
         kolPan.setBackground(Grafika.getBgColor());
         mainPan.add(kolPan);
-        mainPan.add(Box.createHorizontalStrut(10));
         sidePan.setBackground(Grafika.getBgColor());
         sidePan.setPreferredSize(new Dimension(140, (Podaci.getBrojKnjiga() + 1) * 26));
         mainPan.add(sidePan);
-        mainPan.add(Box.createHorizontalStrut(10));
         scroll.add(scroll.createVerticalScrollBar());
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
         butPan.setBackground(Grafika.getBgColor());
         butPan.setLayout(new FlowLayout(FlowLayout.CENTER));
         split.setOneTouchExpandable(false);
@@ -134,12 +134,15 @@ public class Knjige implements FocusListener {
         selectAll.setFont(Grafika.getLabelFont());
         selectAll.setForeground(Grafika.getFgColor());
         selectAll.setBackground(Grafika.getBgColor());
+        selectAll.setBorder(new EmptyBorder(INSET));
         knjPan.add(selectAll);
         pisacTitle.setFont(Grafika.getLabelFont());
         pisacTitle.setForeground(Grafika.getFgColor()); //bgColor nije neophodan za labele
+        pisacTitle.setBorder(new EmptyBorder(INSET));
         pisacPan.add(pisacTitle);
         kolicinaTitle.setFont(Grafika.getLabelFont());
         kolicinaTitle.setForeground(Grafika.getFgColor());
+        kolicinaTitle.setBorder(new EmptyBorder(INSET));
         kolPan.add(kolicinaTitle);
         //----------------------------------------------------------------------
         Iterator<Knjiga> it = Podaci.iteratorKnjiga();
@@ -148,7 +151,7 @@ public class Knjige implements FocusListener {
             knj = it.next();
             knjige[i] = new JCheckBox();
             knjige[i].setText(knj.getNaslov());
-            knjige[i].setBorder(null);
+            knjige[i].setBorder(new EmptyBorder(INSET));
             knjige[i].setMinimumSize(new Dimension(300, 30));
             knjige[i].setFont(Grafika.getLabelFont());
             knjige[i].setForeground(Grafika.getFgColor());
@@ -156,12 +159,14 @@ public class Knjige implements FocusListener {
             knjPan.add(knjige[i]);
 
             pisac[i] = new JLabel(knj.getPisac());
+            pisac[i].setBorder(new EmptyBorder(INSET));
             pisac[i].setFont(Grafika.getLabelFont());
             pisac[i].setForeground(Grafika.getFgColor());
             pisac[i].setBackground(Grafika.getBgColor());
             pisacPan.add(pisac[i]);
 
             kolicina[i] = new JLabel(String.valueOf(knj.getKolicina()));
+            kolicina[i].setBorder(new EmptyBorder(INSET));
             kolicina[i].setFont(Grafika.getLabelFont());
             kolicina[i].setForeground(Grafika.getFgColor());
             kolPan.add(kolicina[i]);
@@ -217,16 +222,16 @@ public class Knjige implements FocusListener {
 
     private void obrisiNaslov() {
         boolean selected = false;
-        rs.luka.biblioteka.funkcije.Knjige obj = new rs.luka.biblioteka.funkcije.Knjige(); //ostao sam bez inspiracije
+        rs.luka.biblioteka.funkcije.Knjige inst = new rs.luka.biblioteka.funkcije.Knjige(); //ostao sam bez inspiracije
         for (int i = 0; i < knjige.length; i++) {
             if (knjige[i].isSelected()) {
                 selected = true;
                 try {
-                    obj.obrisiNaslov(i);
+                    inst.obrisiNaslov(i);
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Knjiga zauzeta. Brisanja naslova nije obavljeno");
-                    JOptionPane.showMessageDialog(null, "Kod nekog ucenika "
-                            + " se nalazi ova knjiga\nKada vrati knjigu, pokusajte ponovo.",
+                    JOptionPane.showMessageDialog(null, "Kod nekog učenika " + " se nalazi knjiga " 
+                            + knjige[i].getText()+ ".\nKada vrati knjigu, pokušajte ponovo.",
                             "Zauzeta knjiga", JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -235,7 +240,7 @@ public class Knjige implements FocusListener {
             String naslov = Dijalozi.showTextFieldDialog("Brisanje naslova",
                     "Unesite naslov koji želite da obrišete i pritisnite enter:", "");
             try {
-                obj.obrisiNaslov(Podaci.indexOfNaslov(naslov));
+                inst.obrisiNaslov(Podaci.indexOfNaslov(naslov));
             } catch (VrednostNePostoji ex) {
                 LOGGER.log(Level.INFO, "Unet naslov {0} ne postoji", naslov);
                 JOptionPane.showMessageDialog(null, "Naslov koji ste uneli ne postoji.\n"
@@ -325,7 +330,7 @@ public class Knjige implements FocusListener {
                 pisac[i].setVisible(false);
             }
         }
-        int y = (int) (((Podaci.getBrojKnjiga() + 1 - nasIndexes.size()) * 24.8) / 2); //priblizno !!
+        int y = (int)((Podaci.getBrojKnjiga() +1 - nasIndexes.size()) * 24.5) / 2; //priblizno !!
         scroll.getViewport().setViewPosition(new Point(10, y));  //izuzetno los workaround
         searchBox.setLocation(searchBox.getX(), y);
 
@@ -344,12 +349,15 @@ public class Knjige implements FocusListener {
 
     @Override
     public void focusGained(FocusEvent e) {
-        if (searchBox.getText().equals("Pretrazi knjige...")) {
+        if (searchBox.getText().equals(SEARCH_TEXT)) {
             searchBox.setText("");
         }
     }
 
     @Override
     public void focusLost(FocusEvent e) {
+        if(searchBox.getText().isEmpty()) {
+            searchBox.setText(SEARCH_TEXT);
+        }
     }
 }

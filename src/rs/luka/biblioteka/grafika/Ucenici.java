@@ -2,6 +2,7 @@ package rs.luka.biblioteka.grafika;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -25,6 +26,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.getMaxBrojUcenikKnjiga;
@@ -47,6 +49,8 @@ public class Ucenici implements FocusListener {
      */
     private JCheckBox[][] knjige;
     private JCheckBox[] ucenici;
+    private static final String SEARCH_TEXT = "Pretraži učenike...";
+    private static final Insets INSET = new Insets(0, 0, 8, 10);
 
     public Ucenici() {
         butPan = new JPanel();
@@ -60,7 +64,7 @@ public class Ucenici implements FocusListener {
         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scroll, butPan);
         this.uzmiBut = new JButton[Podaci.getBrojUcenika()];
         this.vratiBut = new JButton[Podaci.getBrojUcenika()];
-        this.searchBox = new JTextField("Pretrazi ucenike...");
+        this.searchBox = new JTextField(SEARCH_TEXT);
         pregledUcenika();
     }
 
@@ -138,6 +142,7 @@ public class Ucenici implements FocusListener {
         selectAllUc.setFont(Grafika.getLabelFont());
         selectAllUc.setForeground(Grafika.getFgColor());
         selectAllUc.setBackground(Grafika.getBgColor());
+        selectAllUc.setBorder(new EmptyBorder(INSET));
 
         ucenici = new JCheckBox[Podaci.getBrojUcenika()];
         Iterator<Ucenik> it = Podaci.iteratorUcenika();
@@ -146,7 +151,7 @@ public class Ucenici implements FocusListener {
             ucenici[i].setFont(Grafika.getLabelFont());
             ucenici[i].setForeground(Grafika.getFgColor());
             ucenici[i].setBackground(Grafika.getBgColor());
-            ucenici[i].setMinimumSize(new Dimension(180, 20));
+            ucenici[i].setBorder(new EmptyBorder(INSET));
         }
 
         for (int i = 0; i < maxKnjiga; i++) {
@@ -155,14 +160,15 @@ public class Ucenici implements FocusListener {
             knjige[i][0].setFont(Grafika.getLabelFont());
             knjige[i][0].setBackground(Grafika.getBgColor());
             knjige[i][0].setForeground(Grafika.getFgColor());
+            knjige[i][0].setBorder(new EmptyBorder(INSET));
             it = Podaci.iteratorUcenika();
             for (int j = 1; j < Podaci.getBrojUcenika() + 1; j++) {
                 uc = it.next();
-                if (uc.isKnjigaEmpty(i)) {
-                    knjige[i][j] = new JCheckBox(" "); //workaround, treba mi text zbog visine
-                } else {
-                    knjige[i][j] = new JCheckBox(uc.getNaslovKnjige(i));
+                knjige[i][j] = new JCheckBox(" ");
+                if(!uc.isKnjigaEmpty(i) && i<uc.getMaxBrojKnjiga()) {
+                    knjige[i][j].setText(uc.getNaslovKnjige(i));
                 }
+                knjige[i][j].setBorder(new EmptyBorder(INSET));
                 knjige[i][j].setFont(Grafika.getLabelFont());
                 knjige[i][j].setForeground(Grafika.getFgColor());
                 knjige[i][j].setBackground(Grafika.getBgColor());
@@ -522,13 +528,15 @@ public class Ucenici implements FocusListener {
     //==========FOCUS============================================================
     @Override
     public void focusGained(FocusEvent e) {
-        if (searchBox.getText().equals("Pretrazi ucenike...")) {
+        if (searchBox.getText().equals(SEARCH_TEXT)) {
             searchBox.setText("");
         }
     }
 
     @Override
     public void focusLost(FocusEvent e) {
-        //
+        if(searchBox.getText().isEmpty()) {
+            searchBox.setText(SEARCH_TEXT);
+        }
     }
 }

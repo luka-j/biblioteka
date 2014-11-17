@@ -1,6 +1,6 @@
 /**
- * @lastmod 10.11.'14. 
- * grafika za ucenike cleanup
+ * @lastmod 17.11.'14. 
+ * grafika...
  */
 /**
  * @curr 
@@ -8,10 +8,12 @@
  */
 /**
  * @bugs 
+ * SearchBox positioning, ne centrirati panele, smanjiti scrollpanel
  * Uzimanje knjige ne radi na test podacima (?)
+ * Test ubacuje ucenike sa 0 knjiga u podatke (videti konstruktor)
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije pri push(),
  * tako da setKnjiga throwuje Duplikat (da li smem ignorisati?)
- * Pretraga ucenika po knjigama - grafika za male brojeve, pregled ucenika za velike brojeve (checkboxovi)
+ * Pregled ucenika za velike brojeve (par hiljada)
  * undoVracanje postavlja datum na trenutni, umesto datum iznajmljivanja knjige
  */
 /**
@@ -19,7 +21,7 @@
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING)
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception
  * auto-restore podataka iz backupa (ako je sve unisteno)
- * GridBagLayout za grafiku, bugfixovi, positioning za velike brojeve (1.5k+ ucenika)
+ * Grafika, ciscenje, bugfixing
  * Pocistiti reference, listenere, izbaciti indexe gde moze, ostatak koda i organizaciju(UK -> Uc)
  * BeanShell (bsh) konzola
  * Ubaciti kvačice (šđžčć)
@@ -28,6 +30,10 @@
  */
 /**
  * @changelog
+ * EmptyBorders i Insets za sve komponente, regulisani iz fieldova
+ * BETA faza
+ * Razlaganje metoda za grafiku
+ * Grafika za knjige cleanup
  * Pocistio metode i fieldove za pregledUcenika, listeneri se generisu posebno, pregledUcenika() iz konstruktora
  * Popravio workaround za prazno search polje, sad sve radi dobro
  * Sredio grafiku za Ucenike, sada se sastoji od Ucenici (pregledUcenika) i UceniciUtils (sve ostalo)

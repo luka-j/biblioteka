@@ -251,11 +251,11 @@ public class Ucenik implements Comparable<Ucenik> {
     }
     
     public boolean isKnjigaEmpty(int i) {
-        if(knjige.length>i)
+        if(i<knjige.length)
             return knjige[i].isEmpty();
         else return false;
     }
-
+    
     //SETTERI
     /**
      * Ubacuje novu knjigu kod ucenika na sledece prazno mesto.
