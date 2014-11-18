@@ -1,16 +1,15 @@
 /**
- * @lastmod 17.11.'14. 
- * grafika...
+ * @lastmod 18.11.'14. 
+ * grafika, searchbox popravljen
  */
 /**
  * @curr 
- * config, cleanup
+ * grafika...
  */
 /**
  * @bugs 
- * SearchBox positioning, ne centrirati panele, smanjiti scrollpanel
- * Uzimanje knjige ne radi na test podacima (?)
- * Test ubacuje ucenike sa 0 knjiga u podatke (videti konstruktor)
+ * Brisanje knjiga (i ucenika?)
+ * Uzimanje knjige ne radi na test podacima (?), test ubacuje ucenike sa 0 knjiga u podatke (videti konstruktor)
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije pri push(),
  * tako da setKnjiga throwuje Duplikat (da li smem ignorisati?)
  * Pregled ucenika za velike brojeve (par hiljada)
@@ -21,15 +20,15 @@
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING)
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception
  * auto-restore podataka iz backupa (ako je sve unisteno)
- * Grafika, ciscenje, bugfixing
- * Pocistiti reference, listenere, izbaciti indexe gde moze, ostatak koda i organizaciju(UK -> Uc)
+ * Bugfixing, optimizacija koda, ciscenje koda (izbaciti konstante, organizovati sve, UK -> Uc)
  * BeanShell (bsh) konzola
  * Ubaciti kvačice (šđžčć)
  * Izbaciti sve preostale workaround-ove
- * Optimizovati memoriju i vreme
  */
 /**
  * @changelog
+ * pretraga ucenika po knjigama iz searchBoxa za ucenike
+ * searchBox bug popravljen
  * EmptyBorders i Insets za sve komponente, regulisani iz fieldova
  * BETA faza
  * Razlaganje metoda za grafiku
@@ -80,7 +79,7 @@ import static rs.luka.biblioteka.data.Datumi.proveriDatum;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.loadData;
 import rs.luka.biblioteka.grafika.Grafika;
-import static rs.luka.biblioteka.grafika.Grafika.Grafika;
+import static rs.luka.biblioteka.grafika.Grafika.glavniProzor;
 import static rs.luka.biblioteka.grafika.Grafika.loadLnF;
 import rs.luka.biblioteka.debugging.Test;
 import static rs.luka.biblioteka.funkcije.Logger.finalizeLogger;
@@ -176,7 +175,7 @@ public class Init {
         setWorkingDir();
         initLogger();
         loadLnF();
-        Grafika(); //
+        glavniProzor(); //
         setValidRazred();
         loadData();
         //new Test().testUnos();

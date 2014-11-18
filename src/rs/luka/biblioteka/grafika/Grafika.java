@@ -3,7 +3,6 @@
 //2141 linija, 25.10.'14.
 package rs.luka.biblioteka.grafika;
 
-import com.sun.org.apache.xml.internal.security.Init;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -35,6 +34,7 @@ import javax.swing.plaf.metal.DefaultMetalTheme;
 import static javax.swing.plaf.metal.MetalLookAndFeel.setCurrentTheme;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.debugging.Console;
+import rs.luka.biblioteka.funkcije.Init;
 import static rs.luka.biblioteka.funkcije.Init.exit;
 import rs.luka.biblioteka.funkcije.Save;
 import rs.luka.biblioteka.funkcije.Undo;
@@ -81,7 +81,7 @@ public class Grafika {
      * Iscrtava glavni prozor. Pri zatvaranju zove
      * {@link rs.luka.biblioteka.funkcije.Init#exit}
      */
-    public static void Grafika() {
+    public static void glavniProzor() {
         setVariables();
         win.setSize(460, 220);
         win.setResizable(false);
@@ -96,11 +96,10 @@ public class Grafika {
                         "Izlaz", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                         null, opcije, opcije[0]); //0 za da, 1 za ne, -1 za X
                 if (sacuvaj != -1) {
-                    LOGGER.log(Level.FINE, "Izlaz otkazan. Ostajem u aplikaciji.");
                     exit(!parseBoolean(sacuvaj)); //0 oznacava false (sacuvati), a 1 true (brisati)
                     //drugim recima, cuva samo ako je odabrana prva opcija
                 }
-
+                LOGGER.log(Level.FINE, "Izlaz otkazan. Ostajem u aplikaciji.");
             }
         });
         win.setLocationRelativeTo(null);

@@ -1,8 +1,11 @@
 package rs.luka.biblioteka.funkcije;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import static java.net.URLDecoder.decode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -191,5 +194,18 @@ public class Utils {
      */
     public static String limitedInteger(String val, int min, int max) {
         return String.valueOf(limitedInteger(Integer.valueOf(val), min, max));
+    }
+    
+    /**
+     * Pretvara listu Point-ova u listu Integer-a tako što uzima x koordinatu, a ignoriše y.
+     * @param list lista koja se treba pretvoriti
+     * @return x koordinate u listi
+     */
+    public static ArrayList<Integer> extractXFromPointList(List<Point> list) {
+        ArrayList<Integer> ret = new ArrayList<>(list.size());
+        for(Point e : list) {
+            ret.add(e.x);
+        }
+        return ret;
     }
 }

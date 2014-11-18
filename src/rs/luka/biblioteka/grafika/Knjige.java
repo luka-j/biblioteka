@@ -1,5 +1,6 @@
 package rs.luka.biblioteka.grafika;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -12,6 +13,7 @@ import static java.lang.Integer.parseInt;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -41,7 +43,7 @@ public class Knjige implements FocusListener {
             = java.util.logging.Logger.getLogger(Knjige.class.getName());
 
     private static final String SEARCH_TEXT = "Pretraži knjige";
-    private static final Insets INSET = new Insets(0, 0, 10, 8);
+    private static final Insets INSET = new Insets(5, 0, 5, 8);
     /**
      * searchBox za pretrazivanje knjiga.
      */
@@ -111,15 +113,19 @@ public class Knjige implements FocusListener {
         mainPan.setAutoscrolls(true);
         knjPan.setLayout(new BoxLayout(knjPan, BoxLayout.Y_AXIS));
         knjPan.setBackground(Grafika.getBgColor());
+        knjPan.setAlignmentY(0);
         mainPan.add(knjPan);
         pisacPan.setLayout(new BoxLayout(pisacPan, BoxLayout.Y_AXIS));
         pisacPan.setBackground(Grafika.getBgColor());
+        pisacPan.setAlignmentY(0);
         mainPan.add(pisacPan);
         kolPan.setLayout(new BoxLayout(kolPan, BoxLayout.Y_AXIS));
         kolPan.setBackground(Grafika.getBgColor());
+        kolPan.setAlignmentY(0);
         mainPan.add(kolPan);
         sidePan.setBackground(Grafika.getBgColor());
         sidePan.setPreferredSize(new Dimension(140, (Podaci.getBrojKnjiga() + 1) * 26));
+        sidePan.setAlignmentY(0);
         mainPan.add(sidePan);
         scroll.add(scroll.createVerticalScrollBar());
         scroll.getVerticalScrollBar().setUnitIncrement(16);
@@ -268,7 +274,7 @@ public class Knjige implements FocusListener {
             LOGGER.log(Level.FINER, "Prikazujem dugme za uzimanje br {0}", kol);
             uzmiBut[kol] = new JButton("Iznajmi knjigu");
             uzmiBut[kol].setSize(140, 23);
-            uzmiBut[kol].setLocation(5,
+            uzmiBut[kol].setLocation(0,
                     knjige[kol].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
             uzmiBut[kol].addActionListener((ActionEvent ae) -> {
                 String ucenik = Dijalozi.showTextFieldDialog("Iznajmljivanje knjige",
@@ -330,12 +336,8 @@ public class Knjige implements FocusListener {
                 pisac[i].setVisible(false);
             }
         }
-        int y = (int)((Podaci.getBrojKnjiga() +1 - nasIndexes.size()) * 24.5) / 2; //priblizno !!
-        scroll.getViewport().setViewPosition(new Point(10, y));  //izuzetno los workaround
-        searchBox.setLocation(searchBox.getX(), y);
-
-        mainPan.revalidate();
-        mainPan.repaint();
+        
+        sidePan.setMaximumSize(new Dimension(140, (nasIndexes.size() +1) * selectAll.getHeight()));
         LOGGER.log(Level.FINE, "Pretraga obavljena (grafički)");
     }
     

@@ -373,7 +373,7 @@ public class Podaci {
         if(naslovExists(knj.getNaslov()))
             throw new Duplikat(vrednost.Knjiga);
         knjige.add(knj);
-        LOGGER.log(Level.INFO, "Naslov dodat:", new Object[]{knj});
+        LOGGER.log(Level.INFO, "Naslov dodat: {0}", knj);
         Undo.push(Akcija.DODAVANJE_KNJIGE, new Object[]{knj});
         String knjSize = Config.get("knjSize", "0");
         int knjSizeInt = parseInt(knjSize);

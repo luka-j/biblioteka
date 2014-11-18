@@ -3,7 +3,6 @@ package rs.luka.biblioteka.grafika;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -34,6 +33,7 @@ import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.data.Ucenik;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
+import rs.luka.biblioteka.funkcije.Utils;
 
 /**
  * @since 1.7.'13.
@@ -50,7 +50,7 @@ public class Ucenici implements FocusListener {
     private JCheckBox[][] knjige;
     private JCheckBox[] ucenici;
     private static final String SEARCH_TEXT = "Pretraži učenike...";
-    private static final Insets INSET = new Insets(0, 0, 8, 10);
+    private static final Insets INSET = new Insets(5, 0, 5, 8);
 
     public Ucenici() {
         butPan = new JPanel();
@@ -103,7 +103,7 @@ public class Ucenici implements FocusListener {
     
     private void initPanels() {
         int sirina, visina;
-        sirina = Config.getAsInt("uceniciS", valueOf(165 * getMaxBrojUcenikKnjiga() + 350));
+        sirina = Config.getAsInt("uceniciS", valueOf(170 * getMaxBrojUcenikKnjiga() + 350));
         visina = Config.getAsInt("uceniciV", "600");
         win.setSize(sirina, visina);
         LOGGER.log(Level.CONFIG, "Postavljam visinu prozora sa učenicima na {0}, širinu na {1}",
@@ -122,13 +122,16 @@ public class Ucenici implements FocusListener {
         split.setDividerLocation(visina - 90);
         uceniciPan.setLayout(new BoxLayout(uceniciPan, BoxLayout.Y_AXIS));
         uceniciPan.setBackground(Grafika.getBgColor());
+        uceniciPan.setAlignmentY(0);
         for (int i = 0; i < getMaxBrojUcenikKnjiga(); i++) {
             knjigePan[i] = new JPanel();
             knjigePan[i].setLayout(new BoxLayout(knjigePan[i], BoxLayout.Y_AXIS));
             knjigePan[i].setBackground(Grafika.getBgColor());
+            knjigePan[i].setAlignmentY(0);
         }
         sidePan.setBackground(Grafika.getBgColor());
         sidePan.setPreferredSize(new Dimension(150, (Podaci.getBrojUcenika() + 1) * 25));
+        sidePan.setAlignmentY(0);
         win.setContentPane(split);
     }
     
@@ -244,7 +247,7 @@ public class Ucenici implements FocusListener {
         for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
             final int red = i; //uvek ekvivalentno i, final zbog lambde
             ucenici[i].addItemListener((ItemEvent e) -> {
-                setUceniciCheckboxListener(red);
+                showUceniciButton(red);
             });
 
             //knjige
@@ -253,10 +256,10 @@ public class Ucenici implements FocusListener {
                 knjige[kol][red + 1].addItemListener((ItemEvent e) -> {
                     //uzimanje
                     if (knjige[kol][red + 1].getText().equals(" ")) {
-                        setKnjigeUzimanjeListener(red);
+                        uzimanjeKnjige(red);
                     } //vracanje
                     else {
-                        setKnjigeVracanjeListener(kol, red);
+                        vracanjeKnjige(kol, red);
                     }
                     sidePan.repaint();
                 });
@@ -267,7 +270,7 @@ public class Ucenici implements FocusListener {
     private void initSearchBox() {
         searchBox.addFocusListener(this);
         searchBox.addActionListener((ActionEvent e) -> {
-            setSearchListener();
+            search();
         });
         searchBox.setBounds(0, 0, 150, 27);
         searchBox.setFont(Grafika.getLabelFont());
@@ -334,7 +337,7 @@ public class Ucenici implements FocusListener {
         new Ucenici();
     }
 
-    private void setUceniciCheckboxListener(int red) {
+    private void showUceniciButton(int red) {
         boolean selected = false;
         for (int k = 0; k < maxKnjiga; k++) {
             if (knjige[k][red + 1].isSelected()) {
@@ -380,7 +383,7 @@ public class Ucenici implements FocusListener {
         sidePan.repaint();
     }
 
-    private void setKnjigeUzimanjeListener(int red) {
+    private void uzimanjeKnjige(int red) {
         boolean selected = false;
         for (int k = 0; k < maxKnjiga; k++) {
             if (knjige[k][red + 1].isSelected()) {
@@ -420,7 +423,7 @@ public class Ucenici implements FocusListener {
         }
     }
 
-    private void setKnjigeVracanjeListener(int kol, int red) {
+    private void vracanjeKnjige(int kol, int red) {
         boolean selected = false;
         for (int k = 0; k < maxKnjiga; k++) {
             if (knjige[k][red + 1].isSelected()) {
@@ -473,24 +476,26 @@ public class Ucenici implements FocusListener {
         }
     }
 
-    private void setSearchListener() {
+    private void search() {
         LOGGER.log(Level.FINE, "Počinjem pretragu (grafički)");
-        if (searchBox.getText().isEmpty()) {
-            win.dispose();
-            new Ucenici();
-            return;
-        }
         for (JSeparator sep : ucSeparatori) {
             uceniciPan.remove(sep); //remove ili samo reset ??
         }
         for (int i = 0; i < maxKnjiga; i++) {
-            for (int j = 0; j < knjSeparatori.length; j++) {
+            for (int j = 0; j < knjSeparatori[i].length; j++) {
                 knjigePan[i].remove(knjSeparatori[i][j]);
             }
         }
 
         rs.luka.biblioteka.funkcije.Ucenici funkcije = new rs.luka.biblioteka.funkcije.Ucenici();
         ArrayList<Integer> ucIndexes = funkcije.pretraziUcenike(searchBox.getText());
+        
+        if(ucIndexes.isEmpty() && Podaci.naslovExists(searchBox.getText())) {
+            try {
+                ucIndexes = Utils.extractXFromPointList
+                        (new rs.luka.biblioteka.funkcije.Knjige().pretraziUcenike(searchBox.getText()));
+            } catch (VrednostNePostoji ex) {/*nikad, zbog provere u if-u*/}
+        }
 
         Ucenik uc;
         for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
@@ -517,9 +522,7 @@ public class Ucenici implements FocusListener {
             }
         }
 
-        int y = (int) (((Podaci.getBrojUcenika() + 1 - ucIndexes.size()) * 24.8) / 2); //priblizno !!
-        scroll.getViewport().setViewPosition(new Point(10, y));  //izuzetno los workaround
-        searchBox.setLocation(searchBox.getX(), y);
+        sidePan.setMaximumSize(new Dimension(150, (ucIndexes.size() + 1)*selectAllUc.getHeight()));
 
         pan.revalidate();
         pan.repaint();
