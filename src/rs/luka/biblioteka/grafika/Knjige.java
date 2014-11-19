@@ -229,11 +229,12 @@ public class Knjige implements FocusListener {
     private void obrisiNaslov() {
         boolean selected = false;
         rs.luka.biblioteka.funkcije.Knjige inst = new rs.luka.biblioteka.funkcije.Knjige(); //ostao sam bez inspiracije
-        for (int i = 0; i < knjige.length; i++) {
+        for (int i = 0, realI = 0; i < knjige.length; i++, realI++) {
             if (knjige[i].isSelected()) {
                 selected = true;
                 try {
-                    inst.obrisiNaslov(i);
+                    inst.obrisiNaslov(realI);
+                    realI--;
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Knjiga zauzeta. Brisanja naslova nije obavljeno");
                     JOptionPane.showMessageDialog(null, "Kod nekog učenika " + " se nalazi knjiga " 

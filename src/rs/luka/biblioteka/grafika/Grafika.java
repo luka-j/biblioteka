@@ -1,6 +1,7 @@
 //1645 linija, 24.8.'14.
 //1994 linije, 24.9.'14.
 //2141 linija, 25.10.'14.
+//2317 linija, 18.11.'14. (trenutno)
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Color;

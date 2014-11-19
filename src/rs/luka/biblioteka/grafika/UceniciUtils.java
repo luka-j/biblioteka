@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Dialog;
@@ -21,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.WindowConstants;
 import static rs.luka.biblioteka.data.Podaci.indexOfUcenik;
+import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 
@@ -91,6 +87,11 @@ public class UceniciUtils {
                 LOGGER.log(Level.INFO, "Razred novog učenika ({0}) je prevelik "
                         + "ili nije broj", razTF.getText());
                 showMessageDialog(null, "Razred ucenika je prevelik.", "Los razred", JOptionPane.ERROR_MESSAGE);
+            } catch (Duplikat ex) {
+                LOGGER.log(Level.INFO, "Već postoji učenik sa istim imenom i prezimenom i razredom {0} i {1}"
+                        + "Novi učenik nije dodat.", new Object[]{ucTF.getText(), razTF.getText()});
+                showMessageDialog(null, "Već postoji učenik koji ide u isti razred sa istim imenom i prezimenom"
+                        + "Novi učenik ne može biti dodat", "Duplikat", JOptionPane.ERROR_MESSAGE);
             }
         });
         pan.add(but);

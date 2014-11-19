@@ -5,12 +5,14 @@ import static java.util.Arrays.asList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
+import javax.swing.JOptionPane;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.addUcenik;
 import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import static rs.luka.biblioteka.data.Podaci.povecajRazred;
 import rs.luka.biblioteka.data.Ucenik;
+import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 
@@ -32,7 +34,7 @@ public class Ucenici {
      * velicine
      * @since 1.8.'13.
      */
-    public void dodajUcenika(String ime, int raz) {
+    public void dodajUcenika(String ime, int raz) throws Duplikat {
         String knjige[] = new String[Podaci.getMaxBrojUcenikKnjiga()];
         for (int i = 0; i < knjige.length; i++) {
             knjige[i] = "";
@@ -46,7 +48,7 @@ public class Ucenici {
      * @param ime ime ucenika
      * @since 1.8.'13.
      */
-    public void dodajUcenika(String ime) {
+    public void dodajUcenika(String ime) throws Duplikat {
         dodajUcenika(ime, Ucenik.getPrviRazred());
     }
 
@@ -77,7 +79,12 @@ public class Ucenici {
         LOGGER.log(Level.INFO, "Iniciram dodavanje nove generacije...");
         List<String> ucenici = asList(novaGen.split("\\s*,\\s*"));
         ucenici.stream().forEach((ucenik) -> {
-            dodajUcenika(ucenik);
+            try {
+                dodajUcenika(ucenik);
+            } catch (Duplikat ex) {
+                JOptionPane.showMessageDialog(null, "Uneli ste dva učenika sa istim imenom i prezimenom. "
+                        + "Jedan od njih neće biti unet.", "Duplikat", JOptionPane.WARNING_MESSAGE);
+            }
         });
         povecajRazred();
         LOGGER.log(Level.INFO, "Nova generacija uspešno dodata i stara je obrisana.");

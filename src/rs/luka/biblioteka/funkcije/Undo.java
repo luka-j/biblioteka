@@ -255,7 +255,7 @@ class UndoAkcija {
      * (dodavanje ili brisanje) odredjena je doWhat kodom
      * @since 15.10.'14.
      */
-    private void ucenici() {
+    private void ucenici() throws Duplikat {
         if (doWhat == DODAVANJE) {
             Podaci.addUcenik(ucenik);
         } else if (doWhat == BRISANJE) {

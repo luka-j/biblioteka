@@ -1,18 +1,16 @@
 /**
- * @lastmod 18.11.'14. 
- * grafika, searchbox popravljen
+ * @lastmod 19.11.'14. 
+ * popravio brisanje knjiga i uzimanje knjiga (moram rucno da vratim ako dodje do exceptiona)
  */
 /**
  * @curr 
- * grafika...
+ * organizacija koda, ciscenje, misc. funkcije
  */
 /**
  * @bugs 
- * Brisanje knjiga (i ucenika?)
- * Uzimanje knjige ne radi na test podacima (?), test ubacuje ucenike sa 0 knjiga u podatke (videti konstruktor)
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije pri push(),
  * tako da setKnjiga throwuje Duplikat (da li smem ignorisati?)
- * Pregled ucenika za velike brojeve (par hiljada)
+ * generiše max. 1250 dugmadi za uzimanje (?)
  * undoVracanje postavlja datum na trenutni, umesto datum iznajmljivanja knjige
  */
 /**
@@ -23,27 +21,13 @@
  * Bugfixing, optimizacija koda, ciscenje koda (izbaciti konstante, organizovati sve, UK -> Uc)
  * BeanShell (bsh) konzola
  * Ubaciti kvačice (šđžčć)
+ * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e)
  * Izbaciti sve preostale workaround-ove
  */
 /**
  * @changelog
- * pretraga ucenika po knjigama iz searchBoxa za ucenike
- * searchBox bug popravljen
- * EmptyBorders i Insets za sve komponente, regulisani iz fieldova
- * BETA faza
- * Razlaganje metoda za grafiku
- * Grafika za knjige cleanup
- * Pocistio metode i fieldove za pregledUcenika, listeneri se generisu posebno, pregledUcenika() iz konstruktora
- * Popravio workaround za prazno search polje, sad sve radi dobro
- * Sredio grafiku za Ucenike, sada se sastoji od Ucenici (pregledUcenika) i UceniciUtils (sve ostalo)
- * Popravio bug sa brisanjem ucenika
- * Dinamicko odredjivanje velicine prozora podesavanja, LosFormat exception, misc(,) bugfixes
- * Dodao logSize i logCount u config, nimbus i motif LaF
- * Ubacio i koristio iterator ucenika i knjiga gde je moguce
- * Uradio osnovnu proveru podataka za config
- * Popravio brKnjiga, poceo config checking
- * Ubacio Color TFColor, izbacio boolean TFBoja
- * Podesavanja prema configu
+ * Popravio uzimanje knjiga
+ * Popravio brisanje knjiga
  * Pomerio changelog u fajl.
  */
 //2771 linija, sa svim klasama osim onih iz legacy package-a. 24.11.'13.
@@ -54,10 +38,12 @@
 //3913 linija, 24.8.'14. (bez changeloga, koji ima 45)
 //4434 linija, 24.9.'14. (cleanup)
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
+//6237 linija, 18.11.'14. (trenutno)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
+//1436 linija, 18.11.'14. (trenutno)
 package rs.luka.biblioteka.funkcije;
 
 import java.awt.Color;
@@ -163,7 +149,7 @@ public class Init {
      * @see Utils#setWorkingDir
      * @see Logger#initLogger
      * @see Grafika#loadLnF
-     * @see Grafika#Grafika
+     * @see Grafika#glavniProzor
      * @see rs.luka.biblioteka.data.Ucenik#setValidRazred
      * @see Podaci#loadData
      * @see rs.luka.biblioteka.data.Datumi#proveriDatum

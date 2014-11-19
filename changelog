@@ -1,3 +1,20 @@
+ * pretraga ucenika po knjigama iz searchBoxa za ucenike
+ * searchBox bug popravljen
+ * EmptyBorders i Insets za sve komponente, regulisani iz fieldova
+ * BETA faza
+ * Razlaganje metoda za grafiku
+ * Grafika za knjige cleanup
+ * Pocistio metode i fieldove za pregledUcenika, listeneri se generisu posebno, pregledUcenika() iz konstruktora
+ * Popravio workaround za prazno search polje, sad sve radi dobro
+ * Sredio grafiku za Ucenike, sada se sastoji od Ucenici (pregledUcenika) i UceniciUtils (sve ostalo)
+ * Popravio bug sa brisanjem ucenika
+ * Dinamicko odredjivanje velicine prozora podesavanja, LosFormat exception, misc(,) bugfixes
+ * Dodao logSize i logCount u config, nimbus i motif LaF
+ * Ubacio i koristio iterator ucenika i knjiga gde je moguce
+ * Uradio osnovnu proveru podataka za config
+ * Popravio brKnjiga, poceo config checking
+ * Ubacio Color TFColor, izbacio boolean TFBoja
+ * Podesavanja prema configu
  * Encapsulation i sinonimi za config
  * MultiMap implementacija sa ArrayListama
  * Jos sredjivanja koda, priprema za spajanje UcenikKnjiga sa Ucenik.java

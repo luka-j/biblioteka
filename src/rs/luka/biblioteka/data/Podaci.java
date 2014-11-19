@@ -1,6 +1,7 @@
 //919 linija, 24.8.'14
 //1145 linija, 24.9.'14.
 //1855 linija, 25.10.'14.
+//2078 linija, 18.11.'14. (trenutno)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -391,7 +392,7 @@ public class Podaci {
      * datumom kada su iznajmljene
      * @since kraj jula '13.
      */
-    public static void addUcenik(String ime, int razred, String[] knjige) {
+    public static void addUcenik(String ime, int razred, String[] knjige) throws Duplikat {
         Ucenik uc = new Ucenik(ime, razred, knjige);
         addUcenik(uc);
     }
@@ -402,7 +403,9 @@ public class Podaci {
      * @param ucenik ucenik koji se dodaje
      * @since 28.9.'14.
      */
-    public static void addUcenik(Ucenik ucenik) {
+    public static void addUcenik(Ucenik ucenik) throws Duplikat {
+        if(ucenici.indexOf(ucenik)!=-1)
+            throw new Duplikat(ucenik.toString() + "već postoji");
         ucenici.add(ucenik);
         
         LOGGER.log(Level.INFO, "Učenik dodat: ", new Object[]{ucenik.toString()});
@@ -535,14 +538,22 @@ public class Podaci {
      */
     public static void uzmiKnjigu(int ucIndex, Knjiga knjiga) 
             throws PreviseKnjiga, NemaViseKnjiga, VrednostNePostoji, Duplikat {
-        int knjIndex = indexOfNaslov(knjiga.getNaslov());
+        int knjIndex = knjige.indexOf(knjiga); //vraca original, zbog equals() metode u Knjiga.java
+        if(knjIndex<0)
+            throw new VrednostNePostoji(vrednost.Knjiga);
         Ucenik uc = ucenici.get(ucIndex);
-        uc.setKnjiga(knjige.get(knjIndex).getNaslov());
-        knjige.get(knjIndex).smanjiKolicinu();
-        LOGGER.log(Level.INFO, "Učenik {0} je iznajmio knjigu {1}", 
-                new Object[]{ucenici.get(ucIndex).getIme(), knjiga.getNaslov()});
-        Undo.push(Akcija.UZIMANJE, new Object[]{uc, knjige.get(knjige.indexOf(knjiga))});
-        //moram da pushujem original, a getKnjiga (odakle dolazi argument) vraca kopiju
+        Knjiga knj = knjige.get(knjIndex);
+        try {
+            uc.setKnjiga(knjige.get(knjIndex).getNaslov());
+            knj.smanjiKolicinu();
+            LOGGER.log(Level.INFO, "Učenik {0} je iznajmio knjigu {1}", 
+                    new Object[]{ucenici.get(ucIndex).getIme(), knjiga.getNaslov()});
+            Undo.push(Akcija.UZIMANJE, new Object[]{uc, knj});
+        }
+        catch(NemaViseKnjiga ex) { //ako ne može da smanji količinu, moram da vratim kako je bilo
+            uc.clearKnjiga(knjiga.getNaslov());
+            throw ex;
+        }
     }
     
     /**
@@ -565,11 +576,19 @@ public class Podaci {
             ucIndex = indexes.get(Dijalozi.viseRazreda(indexes));
         else
             ucIndex = indexes.get(0);
-        ucenici.get(ucIndex).setKnjiga(knjige.get(knjIndex).getNaslov());
-        knjige.get(knjIndex).smanjiKolicinu();
-        LOGGER.log(Level.INFO, "Učenik {0} je iznajmio knjigu {1}", 
-                new Object[]{ucenik, knjige.get(knjIndex).getNaslov()});
-        Undo.push(Akcija.UZIMANJE, new Object[]{ucenici.get(ucIndex), knjige.get(knjIndex)});
+        Ucenik uc = ucenici.get(ucIndex);
+        Knjiga knj = knjige.get(knjIndex);
+        try {
+            uc.setKnjiga(knjige.get(knjIndex).getNaslov());
+            knj.smanjiKolicinu();
+            LOGGER.log(Level.INFO, "Učenik {0} je iznajmio knjigu {1}", 
+                    new Object[]{ucenik, knjige.get(knjIndex).getNaslov()});
+            Undo.push(Akcija.UZIMANJE, new Object[]{ucenici.get(ucIndex), knjige.get(knjIndex)});
+        }
+        catch(NemaViseKnjiga ex) { //ako ne može da smanji količinu, moram da vratim kako je bilo
+            uc.clearKnjiga(knj.getNaslov());
+            throw ex;
+        }
     }
     
     /**
