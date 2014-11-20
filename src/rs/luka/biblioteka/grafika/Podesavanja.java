@@ -203,7 +203,7 @@ public class Podesavanja {
      * Ponovo postavlja boje svih komponenata prozora.
      */
     protected void refresh() {
-        Grafika.refresh();
+        Grafika.setVariables();
         pan.setBackground(getBgColor());
         for(int i=0; i<labels.length; i++) {
             labels[i].setForeground(Grafika.getFgColor());

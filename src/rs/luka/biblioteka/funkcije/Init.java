@@ -65,7 +65,7 @@ import static rs.luka.biblioteka.data.Datumi.proveriDatum;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.loadData;
 import rs.luka.biblioteka.grafika.Grafika;
-import static rs.luka.biblioteka.grafika.Grafika.glavniProzor;
+import static rs.luka.biblioteka.grafika.Grafika.initGrafika;
 import static rs.luka.biblioteka.grafika.Grafika.loadLnF;
 import rs.luka.biblioteka.debugging.Test;
 import static rs.luka.biblioteka.funkcije.Logger.finalizeLogger;
@@ -161,12 +161,13 @@ public class Init {
         setWorkingDir();
         initLogger();
         loadLnF();
-        glavniProzor(); //
         setValidRazred();
         loadData();
         //new Test().testUnos();
         proveriDatum();
         initUndo();
+        initGrafika(); //
+        new rs.luka.biblioteka.grafika.Ucenici();
         
         LOGGER.log(Level.INFO, "Inicijalizacija programa gotova.");
     }

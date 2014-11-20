@@ -2,38 +2,52 @@ package rs.luka.biblioteka.grafika;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import static java.lang.String.valueOf;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
+import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.getMaxBrojUcenikKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.data.Ucenik;
+import rs.luka.biblioteka.debugging.Console;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
+import rs.luka.biblioteka.funkcije.Save;
+import rs.luka.biblioteka.funkcije.Undo;
 import rs.luka.biblioteka.funkcije.Utils;
+import static rs.luka.biblioteka.grafika.Grafika.generateEmptyAction;
 
 /**
  * @since 1.7.'13.
@@ -50,7 +64,7 @@ public class Ucenici implements FocusListener {
     private JCheckBox[][] knjige;
     private JCheckBox[] ucenici;
     private static final String SEARCH_TEXT = "Pretraži učenike...";
-    private static final Insets INSET = new Insets(5, 0, 5, 8);
+    private static final Insets INSET = new Insets(5, 5, 5, 5);
 
     public Ucenici() {
         butPan = new JPanel();
@@ -62,9 +76,12 @@ public class Ucenici implements FocusListener {
         pan = new JPanel();
         scroll = new JScrollPane(pan);
         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scroll, butPan);
-        this.uzmiBut = new JButton[Podaci.getBrojUcenika()];
-        this.vratiBut = new JButton[Podaci.getBrojUcenika()];
-        this.searchBox = new JTextField(SEARCH_TEXT);
+        uzmiBut = new JButton[Podaci.getBrojUcenika()];
+        vratiBut = new JButton[Podaci.getBrojUcenika()];
+        searchBox = new JTextField(SEARCH_TEXT);
+        selectAllUc = new JCheckBox("<html>Ucenici:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br></html>");
         pregledUcenika();
     }
 
@@ -82,13 +99,14 @@ public class Ucenici implements FocusListener {
         initMainListeners();
         initSearchBox();
         win.setVisible(true);
+        setInputMaps();
     }
     
     
     private static final int maxKnjiga = getMaxBrojUcenikKnjiga();
     private final JSplitPane split;
     private final JPanel butPan;
-    private JFrame win;
+    private final JFrame win;
     private final JSeparator[][] knjSeparatori;
     private final JSeparator[] ucSeparatori;
     private final JPanel[] knjigePan;
@@ -96,21 +114,27 @@ public class Ucenici implements FocusListener {
     private final JScrollPane scroll;
     private final JPanel pan;
     private final JTextField searchBox;
-    private JCheckBox selectAllUc;
+    private final JCheckBox selectAllUc;
     private final JButton[] vratiBut;
     private final JButton[] uzmiBut;
     private final JPanel sidePan = new JPanel(null);
     
     private void initPanels() {
         int sirina, visina;
-        sirina = Config.getAsInt("uceniciS", valueOf(170 * getMaxBrojUcenikKnjiga() + 350));
+        sirina = Config.getAsInt("uceniciS", valueOf(170 * getMaxBrojUcenikKnjiga() + 360));
         visina = Config.getAsInt("uceniciV", "600");
         win.setSize(sirina, visina);
         LOGGER.log(Level.CONFIG, "Postavljam visinu prozora sa učenicima na {0}, širinu na {1}",
                 new Object[]{visina, sirina});
         win.setLocationRelativeTo(null);
         //win.setResizable(false);
-        win.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        win.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        win.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Grafika.cleanup();
+            }
+        });
         pan.setLayout(new BoxLayout(pan, BoxLayout.X_AXIS));
         pan.setBackground(Grafika.getBgColor());
         pan.setAutoscrolls(true);
@@ -119,7 +143,7 @@ public class Ucenici implements FocusListener {
         butPan.setBackground(Grafika.getBgColor());
         butPan.setLayout(new FlowLayout(FlowLayout.CENTER));
         split.setOneTouchExpandable(false);
-        split.setDividerLocation(visina - 90);
+        split.setDividerLocation(visina - 100);
         uceniciPan.setLayout(new BoxLayout(uceniciPan, BoxLayout.Y_AXIS));
         uceniciPan.setBackground(Grafika.getBgColor());
         uceniciPan.setAlignmentY(0);
@@ -135,12 +159,27 @@ public class Ucenici implements FocusListener {
         win.setContentPane(split);
     }
     
+    private void setInputMaps() {
+        Console console = new rs.luka.biblioteka.debugging.Console();
+        Method consoleMethod = null, undoMethod = null, redoMethod=null;
+        try {
+            consoleMethod = console.getClass().getDeclaredMethod("console", null);
+            undoMethod = Undo.class.getDeclaredMethod("undo", null);
+            redoMethod = Undo.class.getDeclaredMethod("redo", null);
+        } catch (NoSuchMethodException | SecurityException ex) {
+            LOGGER.log(Level.SEVERE, "Greška pri kreiranju neke od metoda", ex);
+        }
+        pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl Z"), "undo");
+        pan.getActionMap().put("undo", generateEmptyAction(undoMethod, null));
+        pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl Y"), "redo");
+        pan.getActionMap().put("redo", generateEmptyAction(redoMethod, null));
+        pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl shift T"), "console");
+        pan.getActionMap().put("console", generateEmptyAction(consoleMethod, console));
+    }
+    
     private void initText() {
         Podaci.sortUcenike();
         Ucenik uc;
-        selectAllUc = new JCheckBox("<html>Ucenici:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br></html>");
         knjige = new JCheckBox[maxKnjiga][Podaci.getBrojUcenika() + 1];
         selectAllUc.setFont(Grafika.getLabelFont());
         selectAllUc.setForeground(Grafika.getFgColor());
@@ -232,6 +271,72 @@ public class Ucenici implements FocusListener {
             new UceniciUtils().dodajNovuGeneraciju();
         });
         butPan.add(novaGen);
+        
+        butPan.add(Box.createRigidArea(new Dimension(100, 1)));
+        /**
+         * Pregled Knjiga.
+         */
+        JButton pregledBut;
+        try {
+            Image buttonIcon = ImageIO.read(new File(Utils.getWorkingDir() + "knjige.png"));
+            pregledBut = new JButton(new ImageIcon(buttonIcon));
+            pregledBut.setToolTipText("Pregled knjiga");
+        } catch(IOException ex) {
+            pregledBut = new JButton("Knjige");
+            LOGGER.log(Level.SEVERE, "IO greška pri učitavanju slike za dugme za pregled knjiga", ex);
+        }
+        pregledBut.addActionListener((ActionEvent e5) -> {
+            new Knjige();
+        });
+        pregledBut.setFocusable(false);
+        //pregledBut.setBackground(Color.WHITE);
+        pregledBut.setContentAreaFilled(false); // ??
+        pregledBut.setBorder(null);
+        butPan.add(pregledBut);
+        /**
+         * Dugme za cuvanje podataka.
+         */
+        JButton saveBut;
+        try {
+            Image buttonIcon = ImageIO.read(new File(Utils.getWorkingDir() + "save.png"));
+            saveBut = new JButton(new ImageIcon(buttonIcon));
+            saveBut.setToolTipText("Sačuvaj podatke");
+        } catch (IOException ex) {
+            saveBut = new JButton("Sačuvaj");
+            LOGGER.log(Level.SEVERE, "IO greška pri učitavanju slike za dugme za čuvanje", ex);
+        }
+        saveBut.addActionListener((ActionEvent e) -> {
+            try {
+                Save.save();
+            } catch (IOException ex) {
+                showMessageDialog(null, "Došlo je do greške pri "
+                        + "čuvanju fajlova", "I/O Greska", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        saveBut.setFocusable(false);
+        saveBut.setBorder(null);
+        saveBut.setContentAreaFilled(false);
+        butPan.add(saveBut);
+        /**
+         * Dugme za otvaranje prozora za podesavanja.
+         */
+        JButton podesavanjaBut;
+        try {
+            Image buttonIcon = ImageIO.read(new File(Utils.getWorkingDir() + "gear.png"));
+            podesavanjaBut = new JButton(new ImageIcon(buttonIcon));
+            podesavanjaBut.setToolTipText("Podešavanja");
+            
+        } catch (IOException ex) {
+            podesavanjaBut = new JButton("Podešavanja");
+            LOGGER.log(Level.SEVERE, "IO greška pri učitavanju slike za dugme za podešavanja", ex);
+        }
+        podesavanjaBut.addActionListener((ActionEvent e) -> {
+            new Podesavanja().podesavanja();
+        });
+        podesavanjaBut.setFocusable(false);
+        podesavanjaBut.setBorder(null);
+        podesavanjaBut.setContentAreaFilled(false);
+        butPan.add(podesavanjaBut);
     }
     
     private void initMainListeners() {
