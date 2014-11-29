@@ -105,7 +105,9 @@ public class Ucenik implements Comparable<Ucenik> {
     //KONSTRUKTORI:
     public Ucenik(String ime, int razred, String[] knjige) {
         this.ime = ime;
-        if (Utils.arrayContains(validRazred, razred)) {
+        /*if(razred < 1) {
+            this.razred = validRazred[0];
+        } else*/ if (Utils.arrayContains(validRazred, razred)) {
             this.razred = razred;
         } else {
             throw new NumberFormatException("Loš razred: " + razred);
@@ -320,10 +322,15 @@ public class Ucenik implements Comparable<Ucenik> {
     }
 
     /**
-     * Povecava razred ucenika za 1.
+     * Povecava razred ucenika na sledeci (po redosledu u validRazred).
      */
     protected void povecajRazred() {
-        razred++;
+        for(int i=0; i<validRazred.length; i++) {
+            if(razred == validRazred[i]) {
+                razred = validRazred[i+1];
+                break;
+            }
+        }
     }
 
     //OVERRIDES

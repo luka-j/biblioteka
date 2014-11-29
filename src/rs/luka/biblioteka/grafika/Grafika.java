@@ -1,7 +1,7 @@
 //1645 linija, 24.8.'14.
 //1994 linije, 24.9.'14.
 //2141 linija, 25.10.'14.
-//2317 linija, 18.11.'14. (trenutno)
+//2570 linija, 29.11.'14.
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Color;
@@ -27,7 +27,6 @@ import javax.swing.plaf.metal.DefaultMetalTheme;
 import static javax.swing.plaf.metal.MetalLookAndFeel.setCurrentTheme;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.funkcije.Init;
-import static rs.luka.biblioteka.funkcije.Init.exit;
 import static rs.luka.biblioteka.funkcije.Utils.parseBoolean;
 
 /**
@@ -68,6 +67,7 @@ public class Grafika {
      * {@link rs.luka.biblioteka.funkcije.Init#exit}
      */
     public static void initGrafika() {
+        loadLnF();
         setVariables();
     }
 
@@ -92,7 +92,12 @@ public class Grafika {
     /**
      * Ucitava temu (Look and Feel).
      */
-    public static void loadLnF() {
+    protected static void loadLnF() {
+        System.out.println("system LaF: " + getSystemLookAndFeelClassName());
+        System.out.println("cross LaF: " + getCrossPlatformLookAndFeelClassName());
+        System.out.println("sve");
+        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+            System.out.println(info.getName() + "\t" + info.getClassName());
         try {
             String LaF = Config.get("lookAndFeel");
             LaF = LaF.toLowerCase();
@@ -112,12 +117,6 @@ public class Grafika {
                     break;
                 case "motif":
                     setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-            }
-            System.out.println("system LaF: " + getSystemLookAndFeelClassName());
-            System.out.println("cross LaF: " + getCrossPlatformLookAndFeelClassName());
-            System.out.println("sve");
-            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                System.out.println(info.getName() + "\t" + info.getClassName());
             }
             LOGGER.log(Level.CONFIG, "lookAndFeel: {0}", UIManager.getLookAndFeel());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
@@ -175,10 +174,11 @@ public class Grafika {
     }
 
     public static void reset() {
+        Ucenici.close();
         Init.init();
     }
     
-    protected static void cleanup() {
+    protected static void exit() {
         LOGGER.log(Level.FINE, "Iniciram zatvaranje aplikacije i "
                         + "prikazujem dijalog za čuvanje podataka.");
         String[] opcije = {"Da", "Ne"};
@@ -186,7 +186,7 @@ public class Grafika {
                 "Izlaz", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, opcije, opcije[0]); //0 za da, 1 za ne, -1 za X
         if (sacuvaj != -1) {
-            exit(!parseBoolean(sacuvaj)); //0 oznacava false (sacuvati), a 1 true (brisati)
+            Init.exit(!parseBoolean(sacuvaj)); //0 oznacava false (sacuvati), a 1 true (brisati)
             //drugim recima, cuva samo ako je odabrana prva opcija
         }
         LOGGER.log(Level.FINE, "Izlaz otkazan. Ostajem u aplikaciji.");

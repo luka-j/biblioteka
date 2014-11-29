@@ -21,6 +21,7 @@ import rs.luka.biblioteka.exceptions.ConfigException;
 import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import static rs.luka.biblioteka.grafika.Grafika.getBgColor;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  * Klasa za podesavanja - grafiku. Front-end za menjanje config-a.
@@ -92,19 +93,21 @@ public class Podesavanja {
         win.setContentPane(pan);
         //---------JLabels&JTextFields------------------------------------------
         ArrayList<String> names = Config.getUserFriendlyNames();
-        win.setSize(600, 20 + names.size()*40 + 80); //win.setSize             !
-        win.setLocationRelativeTo(null); //win.setLocation                     !
+        win.setSize(PODESAVANJA_WIDTH, PODESAVANJA_FIXED_HEIGHT + names.size()*PODESAVANJA_HEIGHT_PER_LABEL); 
+        win.setLocationRelativeTo(null); //win.setLocation                     !!
         labels = new JLabel[names.size()];
         textfields = new JTextField[names.size()];
         for(int i=0; i<labels.length; i++) {
             labels[i] = new JLabel(names.get(i));
-            labels[i].setBounds(20, 20+i*40, 480, 17);
+            labels[i].setBounds(PODESAVANJA_LABEL_X, PODESAVANJA_LABEL_FIXED_Y+i*PODESAVANJA_HEIGHT_PER_LABEL,
+                    PODESAVANJA_LABEL_WIDTH, PODESAVANJA_LABEL_HEIGHT);
             labels[i].setFont(Grafika.getLabelFont());
             labels[i].setForeground(Grafika.getFgColor());
             pan.add(labels[i]);
             
             textfields[i] = new JTextField(Config.get(names.get(i)));
-            textfields[i].setBounds(460, 15+i*40, 130, 25);
+            textfields[i].setBounds(PODESAVANJA_TEXTFIELD_X, PODESAVANJA_TEXTFIELD_FIXED_Y +
+                 i * PODESAVANJA_HEIGHT_PER_LABEL, PODESAVANJA_TEXTFIELD_WIDTH, PODESAVANJA_TEXTFIELD_HEIGHT);
             textfields[i].setFont(Grafika.getLabelFont());
             textfields[i].setForeground(Grafika.getFgColor());
             textfields[i].setCaretColor(Grafika.getFgColor());
@@ -116,19 +119,22 @@ public class Podesavanja {
         promeniBojuBut.addActionListener((ActionEvent e3) -> {
             promeniBoju("bg");
         });
-        promeniBojuBut.setBounds(20, 25 + 40*names.size(), 190, 35);
+        promeniBojuBut.setBounds(PODESAVANJA_PROMENIBG_X, PODESAVANJA_BUTTONS_FIXED_Y + names.size() *
+                PODESAVANJA_HEIGHT_PER_LABEL, PODESAVANJA_PROMENIBG_WIDTH, PODESAVANJA_BUTTONS_HEIGHT);
         pan.add(promeniBojuBut);
         JButton promeniFgBojuBut = new JButton("Boja fonta");
         promeniFgBojuBut.addActionListener((ActionEvent e) -> {
             promeniBoju("fg");
         });
-        promeniFgBojuBut.setBounds(220, 25 + 40*names.size(), 180, 35);
+        promeniFgBojuBut.setBounds(PODESAVANJA_PROMENIFG_X, PODESAVANJA_BUTTONS_FIXED_Y + names.size() *
+                PODESAVANJA_HEIGHT_PER_LABEL, PODESAVANJA_PROMENIFG_WIDTH, PODESAVANJA_BUTTONS_HEIGHT);
         pan.add(promeniFgBojuBut);
         JButton promeniTFBojuBut = new JButton("Boja polja za unos");
         promeniTFBojuBut.addActionListener((ActionEvent e) -> {
             promeniBoju("tf");
         });
-        promeniTFBojuBut.setBounds(410, 25 + 40*names.size(), 180, 35);
+        promeniTFBojuBut.setBounds(PODESAVANJA_PROMENITF_X, PODESAVANJA_BUTTONS_FIXED_Y + names.size() *
+                PODESAVANJA_HEIGHT_PER_LABEL, PODESAVANJA_PROMENITF_WIDTH, PODESAVANJA_BUTTONS_HEIGHT);
         pan.add(promeniTFBojuBut);
         win.setVisible(true);
     }
@@ -142,7 +148,7 @@ public class Podesavanja {
     private void promeniBoju(String str) {
         //---------JFrameJColorChooser------------------------------------------
         JFrame win = new JFrame("Promeni pozadinsku boju");
-        win.setSize(600, 320);
+        win.setSize(PODESAVANJA_PROMENIBOJU_WIDTH, PODESAVANJA_PROMENIBOJU_HEIGHT);
         win.setResizable(false);
         win.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         win.setLocationRelativeTo(null);

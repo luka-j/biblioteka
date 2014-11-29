@@ -1,5 +1,8 @@
 package rs.luka.biblioteka.grafika;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -17,6 +20,7 @@ import javax.swing.JTextField;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  * Prozor za unos, prikazuje se samo pri prvom pokretanju.
@@ -32,6 +36,8 @@ public class Unos {
      * Glavni prozor za unos.
      */
     private JFrame win;
+    private final Dimension UNOS_SIZE = new Dimension(UNOS_WIDTH, UNOS_HEIGHT);
+    private final Dimension BUTTON_SIZE = new Dimension(UNOS_BUTTON_WIDTH, UNOS_BUTTON_HEIGHT);
 
     /**
      * Iscrtava glavni prozor za unos i 2 dugmeta za unos ucenika i knjiga.
@@ -39,10 +45,11 @@ public class Unos {
     public void UnosGrafika() {
         win = new JFrame("Unos");
         win.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        win.setSize(340, 120);
-        win.setLocation(250, 120);
+        win.setSize(UNOS_SIZE);
+        win.setLocationRelativeTo(null);
         win.setResizable(false);
-        JPanel pan = new JPanel(null);
+        win.setAlwaysOnTop(true);
+        JPanel pan = new JPanel(new FlowLayout(FlowLayout.LEADING, UNOS_HGAP, UNOS_VGAP));
         pan.setBackground(Grafika.getBgColor());
         win.setContentPane(pan);
 
@@ -50,14 +57,14 @@ public class Unos {
         knj.addActionListener((ActionEvent e1) -> {
             UnosKnjige();
         });
-        knj.setBounds(25, 20, 130, 40);
+        knj.setPreferredSize(BUTTON_SIZE);
         pan.add(knj);
 
         JButton uc = new JButton("Unos učenika");
         uc.addActionListener((ActionEvent e2) -> {
             UnosUcenici();
         });
-        uc.setBounds(180, 20, 130, 40);
+        uc.setPreferredSize(BUTTON_SIZE);
         pan.add(uc);
         win.setVisible(true);
     }
@@ -65,6 +72,22 @@ public class Unos {
     //
     //--------------------------------------------------------------------------
     //
+    
+    private final Dimension UNOSKNJ_SIZE = new Dimension(UNOSKNJ_WIDTH, UNOSKNJ_HEIGHT);
+    private final Rectangle NASLOV_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_NASLOV_Y, 
+            UNOSKNJ_LABEL_WIDTH, 2*UNOSKNJ_LABEL_HEIGHT);
+    private final Rectangle NASLOVTF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_NASLOVTF_Y,
+            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
+    private final Rectangle PISAC_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_PISAC_Y, 
+            UNOSKNJ_LABEL_WIDTH, UNOSKNJ_LABEL_HEIGHT);
+    private final Rectangle PISACTF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_PISACTF_Y,
+            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
+    private final Rectangle KOLICINA_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_KOLICINA_Y, 
+            UNOSKNJ_LABEL_WIDTH, UNOSKNJ_LABEL_HEIGHT);
+    private final Rectangle KOLICINATF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_KOLICINATF_Y,
+            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
+    private final Rectangle KNJ_UNESI_BOUNDS = new Rectangle(UNOSKNJ_UNESI_X, UNOSKNJ_UNESI_Y, 
+            UNOSKNJ_UNESI_WIDTH, UNOSKNJ_UNESI_HEIGHT);
     /**
      * Iscrtava prozor za unos knjiga.
      */
@@ -80,44 +103,45 @@ public class Unos {
                 winKnj.dispose();
             }
         });
-        winKnj.setSize(400, 350);
+        winKnj.setSize(UNOSKNJ_SIZE);
         winKnj.setLocationRelativeTo(null);
         winKnj.setResizable(false);
+        winKnj.setAlwaysOnTop(true);
         JPanel pan = new JPanel(null);
         pan.setBackground(Grafika.getBgColor());
         winKnj.setContentPane(pan);
         //----------JLabels&JTextBoxes------------------------------------------
         JLabel naslov = new JLabel("<html>Unesite naslov knjige<br /> "
                 + "Ostavite prazno ako nema više knjiga</html>");
-        naslov.setBounds(20, 20, 300, 41);
+        naslov.setBounds(NASLOV_BOUNDS);
         naslov.setFont(Grafika.getLabelFont());
         naslov.setForeground(Grafika.getFgColor());
         pan.add(naslov);
         final JTextField nasText = new JTextField();
-        nasText.setBounds(20, 65, 300, 25);
+        nasText.setBounds(NASLOVTF_BOUNDS);
         nasText.setFont(Grafika.getLabelFont());
         nasText.setForeground(Grafika.getFgColor());
         nasText.setCaretColor(Grafika.getFgColor());
             nasText.setBackground(Grafika.getTFColor());
         pan.add(nasText);
         JLabel pisac = new JLabel("Unesite pisca knjige:");
-        pisac.setBounds(20, 105, 300, 30);
+        pisac.setBounds(PISAC_BOUNDS);
         pisac.setFont(Grafika.getLabelFont());
         pisac.setForeground(Grafika.getFgColor());
         JTextField pisacText = new JTextField();
         pan.add(pisac);
-        pisacText.setBounds(20, 135, 300, 25);
+        pisacText.setBounds(PISACTF_BOUNDS);
         pisacText.setForeground(Grafika.getFgColor());
         pisacText.setCaretColor(Grafika.getFgColor());
             pisacText.setBackground(Grafika.getTFColor());
         pan.add(pisacText);
         JLabel kolicina = new JLabel("Unesite količinu:");
-        kolicina.setBounds(20, 175, 300, 30);
+        kolicina.setBounds(KOLICINA_BOUNDS);
         kolicina.setFont(Grafika.getLabelFont());
         kolicina.setForeground(Grafika.getFgColor());
         pan.add(kolicina);
         final JTextField kolText = new JTextField();
-        kolText.setBounds(20, 205, 300, 25);
+        kolText.setBounds(KOLICINATF_BOUNDS);
         kolText.setFont(Grafika.getLabelFont());
         kolText.setForeground(Grafika.getFgColor());
         kolText.setCaretColor(Grafika.getFgColor());
@@ -125,7 +149,7 @@ public class Unos {
         pan.add(kolText);
         //----------JButton&ActionListener--------------------------------------
         JButton but = new JButton("Unesi podatke");
-        but.setBounds(130, 255, 120, 40);
+        but.setBounds(KNJ_UNESI_BOUNDS);
         ActionListener ubaci = (ActionEvent ae) -> {
             if ("".equals(nasText.getText())) {
                 unos.finalizeUnos();
@@ -161,6 +185,22 @@ public class Unos {
         winKnj.setVisible(true);
     }
 
+    private final Dimension UNOSUC_SIZE = new Dimension(UNOSUC_WIDTH, UNOSUC_HEIGHT);
+    private final Rectangle IME_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_IME_Y, 
+            UNOSUC_LABEL_WIDTH, UNOSUC_LABEL_HEIGHT);
+    private final Rectangle IMETF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_IMETF_Y, 
+            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
+    private final Rectangle RAZRED_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_RAZRED_Y, 
+            UNOSUC_LABEL_WIDTH, UNOSUC_LABEL_HEIGHT);
+    private final Rectangle RAZREDTF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_RAZREDTF_Y, 
+            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
+    private final Rectangle KNJIGE_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_KNJIGE_Y, 
+            UNOSUC_LABEL_WIDTH, 2*UNOSUC_LABEL_HEIGHT);
+    private final Rectangle KNJIGETF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_KNJIGETF_Y, 
+            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
+    private final Rectangle UC_UNESI_BOUNDS = new Rectangle(UNOSUC_UNESI_X, UNOSUC_UNESI_Y, 
+            UNOSUC_UNESI_WIDTH, UNOSUC_UNESI_HEIGHT);
+    
     /**
      * Iscrtava prozor za unos ucenika.
      */
@@ -179,45 +219,46 @@ public class Unos {
                 winU.dispose();
             }
         });
-        winU.setSize(400, 360);
+        winU.setSize(UNOSUC_SIZE);
         winU.setLocationRelativeTo(null);
         winU.setResizable(false);
+        winU.setAlwaysOnTop(true);
         JPanel pan = new JPanel(null);
         pan.setBackground(Grafika.getBgColor());
         winU.setContentPane(pan);
         //----------JLabels&JTextBoxes------------------------------------------
         JLabel ime = new JLabel("Unesite ime učenika");
-        ime.setBounds(15, 10, 320, 40);
+        ime.setBounds(IME_BOUNDS);
         ime.setFont(Grafika.getLabelFont());
         ime.setForeground(Grafika.getFgColor());
         pan.add(ime);
         final JTextField imeText = new JTextField();
-        imeText.setBounds(15, 55, 320, 25);
+        imeText.setBounds(IMETF_BOUNDS);
         imeText.setFont(Grafika.getLabelFont());
         imeText.setForeground(Grafika.getFgColor());
         imeText.setCaretColor(Grafika.getFgColor());
             imeText.setBackground(Grafika.getTFColor());
         pan.add(imeText);
         JLabel raz = new JLabel("Unesite razred u koji učenik ide(brojevima):");
-        raz.setBounds(15, 90, 360, 40);
+        raz.setBounds(RAZRED_BOUNDS);
         raz.setFont(Grafika.getLabelFont());
         raz.setForeground(Grafika.getFgColor());
         pan.add(raz);
         final JTextField razText = new JTextField();
-        razText.setBounds(15, 130, 320, 25);
+        razText.setBounds(RAZREDTF_BOUNDS);
         razText.setFont(Grafika.getLabelFont());
         razText.setForeground(Grafika.getFgColor());
         razText.setCaretColor(Grafika.getFgColor());
             razText.setBackground(Grafika.getTFColor());
         pan.add(razText);
-        JLabel knj = new JLabel("<html>Unesite knjige koje se trenutno nalaze "
-                + "kod učenika, razdvojene zapetom:</html>");
-        knj.setBounds(15, 165, 360, 70);
+        JLabel knj = new JLabel("<html>Unesite knjige koje se trenutno nalaze"
+                + " kod učenika, razdvojene zapetom:</html>");
+        knj.setBounds(KNJIGE_BOUNDS);
         knj.setFont(Grafika.getLabelFont());
         knj.setForeground(Grafika.getFgColor());
         pan.add(knj);
         final JTextField knjText = new JTextField();
-        knjText.setBounds(15, 235, 320, 25);
+        knjText.setBounds(KNJIGETF_BOUNDS);
         //----------ActionListener----------------------------------------------
         ActionListener unesi = (ActionEvent ae) -> {
             if ("".equals(imeText.getText())) {
@@ -255,7 +296,7 @@ public class Unos {
         pan.add(knjText);
         //----------JButton-----------------------------------------------------
         JButton but = new JButton("Unesi podatke");
-        but.setBounds(130, 280, 120, 37);
+        but.setBounds(UC_UNESI_BOUNDS);
         but.addActionListener(unesi);
         pan.add(but);
         //----------setVisible--------------------------------------------------

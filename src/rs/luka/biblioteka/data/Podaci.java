@@ -1,7 +1,7 @@
 //919 linija, 24.8.'14
 //1145 linija, 24.9.'14.
 //1855 linija, 25.10.'14.
-//2078 linija, 18.11.'14. (trenutno)
+//2110 linija, 29.11.'14.
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -404,7 +404,7 @@ public class Podaci {
      * @since 28.9.'14.
      */
     public static void addUcenik(Ucenik ucenik) throws Duplikat {
-        if(ucenici.indexOf(ucenik)!=-1)
+        if(ucenici.contains(ucenik))
             throw new Duplikat(ucenik.toString() + "već postoji");
         ucenici.add(ucenik);
         

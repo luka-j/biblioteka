@@ -26,6 +26,9 @@
  */
 /**
  * @changelog
+ * Promenio resolveSynonyms da podesi vrednost konstante kada naidje (sada se zove resolveKeys)
+ * Uveo konstante u jednoj klasi (za grafiku)
+ * Napravio uzimanje da radi preko dijaloga
  * Popravio uzimanje knjiga
  * Popravio brisanje knjiga
  * Pomerio changelog u fajl.
@@ -38,12 +41,12 @@
 //3913 linija, 24.8.'14. (bez changeloga, koji ima 45)
 //4434 linija, 24.9.'14. (cleanup)
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
-//6237 linija, 18.11.'14. (trenutno)
+//6550 linija, 29.11.'14. (konstante, bugfixing, code organization)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
-//1436 linija, 18.11.'14. (trenutno)
+//1460 linija, 18.11.'14.
 package rs.luka.biblioteka.funkcije;
 
 import java.awt.Color;
@@ -66,7 +69,6 @@ import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.loadData;
 import rs.luka.biblioteka.grafika.Grafika;
 import static rs.luka.biblioteka.grafika.Grafika.initGrafika;
-import static rs.luka.biblioteka.grafika.Grafika.loadLnF;
 import rs.luka.biblioteka.debugging.Test;
 import static rs.luka.biblioteka.funkcije.Logger.finalizeLogger;
 import static rs.luka.biblioteka.funkcije.Logger.initLogger;
@@ -160,13 +162,12 @@ public class Init {
         loadConfig();
         setWorkingDir();
         initLogger();
-        loadLnF();
+        initGrafika();
         setValidRazred();
         loadData();
         //new Test().testUnos();
         proveriDatum();
         initUndo();
-        initGrafika(); //
         new rs.luka.biblioteka.grafika.Ucenici();
         
         LOGGER.log(Level.INFO, "Inicijalizacija programa gotova.");

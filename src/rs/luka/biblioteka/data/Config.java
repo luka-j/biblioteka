@@ -18,6 +18,7 @@ import static rs.luka.biblioteka.data.Podaci.getBrojKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
 import rs.luka.biblioteka.exceptions.ConfigException;
 import rs.luka.biblioteka.funkcije.Utils;
+import rs.luka.biblioteka.grafika.Konstante;
 
 /**
  * Klasa sa konfiguracijskim fajlom.
@@ -107,7 +108,7 @@ public class Config {
             path = configFile.getCanonicalPath();
             FileReader configFR = new FileReader(configFile);
             Config.config.load(configFR);
-            resolveSynonyms();
+            resolveKeys();
         } catch (FileNotFoundException FNFex) {
             showMessageDialog(null, "Konfiguracijski fajl nije pronadjen. Lokacija: " + path);
         } catch (IOException ex) {
@@ -146,14 +147,10 @@ public class Config {
                 "Broj dana koji učenik sme da zadrži knjigu kod sebe");
         vrednosti.put("lookAndFeel", "lookAndFeel", "LaF", "LnF", "izgled", 
                 "Izgled aplikacije (system, ocean, nimbus ili motif)");
-        vrednosti.put("knjigeS", "knjigeS", "knjigeW", "knjigeSirina", "knjSirina", "sirinaKnjProzora",
-                "Širina prozora za pregled knjiga");
-        vrednosti.put("knjigeV", "knjigeV", "knjigeH", "knjigeVisina", "knjVisina", "visinaKnjProzora",
-                "Visina prozora za pregled knjiga");
-        vrednosti.put("uceniciS", "uceniciS", "uceniciW", "uceniciSirina", "ucSirina", "sirinaUcProzora",
-                "Širina prozora za pregled učenika");
-        vrednosti.put("uceniciV", "uceniciV", "uceniciH", "uceniciVisina", "ucVisina", "visinaUcProzora",
-                "Visina prozora za pregled učenika");
+        vrednosti.put("knjigeS", "knjigeS", "knjigeW", "knjigeSirina", "knjSirina", "sirinaKnjProzora");
+        vrednosti.put("knjigeV", "knjigeV", "knjigeH", "knjigeVisina", "knjVisina", "visinaKnjProzora");
+        vrednosti.put("uceniciS", "uceniciS", "uceniciW", "uceniciSirina", "ucSirina", "sirinaUcProzora");
+        vrednosti.put("uceniciV", "uceniciV", "uceniciH", "uceniciVisina", "ucVisina", "visinaUcProzora");
         vrednosti.put("brKnjiga", "brKnjiga", "maxBrojKnjigaPoUceniku", "maxKnjiga", "maxUcenikKnjiga",
                 "Najveći broj knjiga koji učenik može da ima kod sebe");
         vrednosti.put("bgBoja", "bgBoja", "bojaPozadine", "pozadinskaBoja", "bgColor");
@@ -196,13 +193,16 @@ public class Config {
     
     /**
      * Radi iteraciju preko configa i zamenjuje ključeve ako su sinonimi sa glavnim (iz mape vrednosti).
+     * Postavlja grafičke konstante (o istom trošku).
      * @since 7.11.'14.
      */
-    private static void resolveSynonyms() {
+    private static void resolveKeys() {
         Entry e;
         for (Iterator<Entry<Object, Object>> it = config.entrySet().iterator(); it.hasNext();) {
             e = it.next();
-            if(!vrednosti.containsKey(e.getKey())) {
+            if(e.getKey().toString().startsWith("k_")) 
+                set(e.getKey().toString(), e.getValue().toString());
+            else if(!vrednosti.containsKey(e.getKey())) {
                 config.put(vrednosti.getKey((String) e.getKey()), e.getValue());
                 it.remove();
             }
@@ -306,8 +306,12 @@ public class Config {
         if (!isNameValid(key, val)) {
             throw new IllegalArgumentException("Vrednost " + val + " nije validna za kljuc " + key);
         }
-        String realKey = vrednosti.getKey(key);
+        if(key.startsWith("k_")) {
+            Konstante.set(key.substring(2), val);
+            return;
+        }
         
+        String realKey = vrednosti.getKey(key);
         check(realKey, val);
         
         if(limiti.containsKey(key)) {
@@ -334,6 +338,8 @@ public class Config {
      * @since 24.10.'14.
      */
     private static boolean isNameValid(String key, String val) {
+        if(key.startsWith("k_"))
+            return true;
         if (!vrednosti.contains(key)) {
             System.out.println(key + " ne postoji");
             return false;

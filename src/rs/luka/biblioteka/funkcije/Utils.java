@@ -63,8 +63,14 @@ public class Utils {
     }
 
     /**
+     * @return the workingDir
+     */
+    public static String getWorkingDir() {
+        return workingDir;
+    }
+
+    /**
      * parseuje boolean iz datog inta uporedjuci ga sa nulom
-     *
      * @param vrednost int vrednost
      * @return boolean vrednost
      */
@@ -73,7 +79,6 @@ public class Utils {
     }
 
     /**
-     *
      * @param length duzina stringa
      * @param space mesto na kome stoji razmak
      * @return
@@ -125,13 +130,6 @@ public class Utils {
             }
         }
         return false;
-    }
-
-    /**
-     * @return the workingDir
-     */
-    public static String getWorkingDir() {
-        return workingDir;
     }
 
     /**
@@ -207,5 +205,19 @@ public class Utils {
             ret.add(e.x);
         }
         return ret;
+    }
+    
+    /**
+     * Prebrojava koliko puta se u datom String-u pojavljuje dati karakter
+     * @param string string koji se proverava
+     * @param ch karakter koji se trazi
+     * @return broj pojavljivanja
+     */
+    public static int countCharsInString(String string, char ch) {
+        int count=0;
+        for(int i=0; i<string.length(); i++) 
+            if(string.charAt(i)==ch)
+                count++;
+        return count;
     }
 }

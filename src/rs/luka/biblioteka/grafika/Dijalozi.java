@@ -1,6 +1,7 @@
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import static java.lang.String.valueOf;
 import java.util.List;
@@ -12,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
+import rs.luka.biblioteka.funkcije.Utils;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  *
@@ -19,6 +22,7 @@ import static rs.luka.biblioteka.data.Podaci.getUcenik;
  * @since 17.05.'14.
  */
 public class Dijalozi {
+    
 
     /**
      * Prikazuje dijalog za odabir razreda ucenika.
@@ -64,11 +68,12 @@ public class Dijalozi {
      * @since 17.9.'14.
      */
     public static String showTextFieldDialog(String naslov, String labelText, String textFieldText) {
+        int lines = Utils.countCharsInString(labelText, '\n') + 1;
         //---------JFrame&JPanel------------------------------------------------
         final JDialog win = new JDialog();
         win.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         win.setTitle(naslov);
-        win.setSize(350, 135);
+        win.setSize(new Dimension(DIJALOZI_SIRINA, DIJALOZI_FIXED_VISINA + lines * DIJALOZI_LINE_HEIGHT));
         win.setLocationRelativeTo(null);
         win.setResizable(false);
         win.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -78,13 +83,14 @@ public class Dijalozi {
         //---------JLabel&JTextField--------------------------------------------
         labelText = labelText.replace("\n", "<br>");
         JLabel label = new JLabel("<html>" +labelText);
-        label.setBounds(10, 10, 330, 60);
+        label.setBounds(DIJALOZI_TEXT_X, DIJALOZI_LABEL_Y, DIJALOZI_LABEL_WIDTH, lines * DIJALOZI_LINE_HEIGHT);
         label.setBackground(Grafika.getBgColor());
         label.setForeground(Grafika.getFgColor());
         label.setFont(Grafika.getLabelFont());
         pan.add(label);
         final JTextField textField = new JTextField();
-        textField.setBounds(10, 70, 300, 25);
+        textField.setBounds(DIJALOZI_TEXT_X, lines * DIJALOZI_LINE_HEIGHT + DIJALOZI_TEXTFIELD_FIXED_Y, 
+                            DIJALOZI_TEXTFIELD_WIDTH, DIJALOZI_TEXTFIELD_HEIGHT);
         textField.setFont(Grafika.getLabelFont());
         textField.setForeground(Grafika.getFgColor());
         textField.setCaretColor(Grafika.getFgColor());
@@ -96,8 +102,8 @@ public class Dijalozi {
         });
         pan.add(textField);
         //----------setVisible&return-------------------------------------------
-        win.setVisible(true); //modalna operacija
-        return dialogReturnValue; //raspored naredbi jako bitan zbog modalnosti:
+        win.setVisible(true);
+        return dialogReturnValue; //raspored naredbi bitan zbog modalnosti:
         //http://stackoverflow.com/a/4089370/2363015
     }
 }

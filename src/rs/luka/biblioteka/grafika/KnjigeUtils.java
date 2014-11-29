@@ -2,6 +2,7 @@ package rs.luka.biblioteka.grafika;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import static java.lang.Integer.parseInt;
@@ -21,6 +22,7 @@ import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  *
@@ -29,6 +31,29 @@ import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 public class KnjigeUtils {
     private static final java.util.logging.Logger LOGGER
             = java.util.logging.Logger.getLogger(KnjigeUtils.class.getName());
+    
+    private final Dimension NOVI_SIZE = new Dimension(NOVINASLOV_WIDTH, NOVINASLOV_HEIGHT);
+    
+    private final Rectangle NOVI_NASLOV_BOUNDS = new Rectangle
+        (NOVINASLOV_LABELS_X, NOVINASLOV_NASLOV_Y, NOVINASLOV_LABELS_WIDTH, NOVINASLOV_LABELS_HEIGHT);
+    private final Rectangle NOVI_NASLOVTF_BOUNDS = new Rectangle
+        (NOVINASLOV_TEXTFIELDS_X, NOVINASLOV_NASLOVTF_Y, NOVINASLOV_TEXTFIELDS_WIDTH, NOVINASLOV_TEXTFIELDS_HEIGHT);
+    private final Rectangle NOVI_PISAC_BOUNDS = new Rectangle
+        (NOVINASLOV_LABELS_X, NOVINASLOV_PISAC_Y, NOVINASLOV_LABELS_WIDTH, NOVINASLOV_LABELS_HEIGHT);
+    private final Rectangle NOVI_PISACTF_BOUNDS = new Rectangle
+        (NOVINASLOV_TEXTFIELDS_X, NOVINASLOV_PISACTF_Y, NOVINASLOV_TEXTFIELDS_WIDTH, NOVINASLOV_TEXTFIELDS_HEIGHT);
+    private final Rectangle NOVI_KOLICINA_BOUNDS = new Rectangle
+        (NOVINASLOV_LABELS_X, NOVINASLOV_KOLICINA_Y, NOVINASLOV_LABELS_WIDTH, NOVINASLOV_LABELS_HEIGHT);
+    private final Rectangle NOVI_KOLICINATF_BOUNDS = new Rectangle
+        (NOVINASLOV_TEXTFIELDS_X, NOVINASLOV_KOLICINATF_Y, NOVINASLOV_TEXTFIELDS_WIDTH, NOVINASLOV_TEXTFIELDS_HEIGHT);
+    private final Rectangle NOVI_UNOS_BOUNDS = new Rectangle
+        (NOVINASLOV_UNOS_X, NOVINASLOV_UNOS_Y, NOVINASLOV_UNOS_WIDTH, NOVINASLOV_UNOS_HEIGHT);
+    
+    private final Dimension UCSEARCH_SIZE = new Dimension(UCSEARCH_WIDTH, UCSEARCH_HEIGHT);
+    private final Rectangle UCSEARCH_NASLOV_BOUNDS = new Rectangle
+        (UCSEARCH_NASLOV_X, UCSEARCH_NASLOV_Y, UCSEARCH_NASLOV_WIDTH, UCSEARCH_NASLOV_HEIGHT);
+    private final Rectangle UCSEARCH_NASLOVTF_BOUNDS = new Rectangle
+        (UCSEARCH_NASLOVTF_X, UCSEARCH_NASLOVTF_Y, UCSEARCH_NASLOVTF_WIDTH, UCSEARCH_NASLOVTF_HEIGHT);
     
     /**
      * Prozor za upisivanje novog naslova.
@@ -39,58 +64,58 @@ public class KnjigeUtils {
         //----------JFrame&JPanel-----------------------------------------------
         final JFrame nnF = new JFrame("Unos novog naslova");
         nnF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        nnF.setSize(330, 330);
+        nnF.setSize(NOVI_SIZE);
         nnF.setLocationRelativeTo(null);
         nnF.setResizable(false);
         JPanel nnPan = new JPanel(null);
         nnPan.setBackground(Grafika.getBgColor());
         nnF.setContentPane(nnPan);
         //----------JLabels&JTextFields-----------------------------------------
-        JLabel nas = new JLabel("Unesite naslov nove knjige:");
-        nas.setBounds(15, 15, 300, 30);
-        nas.setFont(Grafika.getLabelFont());
-        nas.setForeground(Grafika.getFgColor());
-        nnPan.add(nas);
-        final JTextField nasTF = new JTextField();
-        nasTF.setBounds(15, 50, 300, 25);
-        nasTF.setFont(Grafika.getLabelFont());
-        nasTF.setBackground(Grafika.getTFColor());
-        nasTF.setForeground(Grafika.getFgColor());
-        nasTF.setCaretColor(Grafika.getFgColor());
-        nnPan.add(nasTF);
+        JLabel naslov = new JLabel("Unesite naslov nove knjige:");
+        naslov.setBounds(NOVI_NASLOV_BOUNDS);
+        naslov.setFont(Grafika.getLabelFont());
+        naslov.setForeground(Grafika.getFgColor());
+        nnPan.add(naslov);
+        final JTextField naslovTF = new JTextField();
+        naslovTF.setBounds(NOVI_NASLOVTF_BOUNDS);
+        naslovTF.setFont(Grafika.getLabelFont());
+        naslovTF.setBackground(Grafika.getTFColor());
+        naslovTF.setForeground(Grafika.getFgColor());
+        naslovTF.setCaretColor(Grafika.getFgColor());
+        nnPan.add(naslovTF);
         JLabel pisac = new JLabel("Unesite pisca knjige:");
-        pisac.setBounds(15, 95, 300, 30);
+        pisac.setBounds(NOVI_PISAC_BOUNDS);
         pisac.setFont(Grafika.getLabelFont());
         pisac.setForeground(Grafika.getFgColor());
         JTextField pisacTF = new JTextField();
         nnPan.add(pisac);
-        pisacTF.setBounds(15, 130, 300, 25);
+        pisacTF.setBounds(NOVI_PISACTF_BOUNDS);
         pisacTF.setFont(Grafika.getLabelFont());
         pisacTF.setForeground(Grafika.getFgColor());
         pisacTF.setCaretColor(Grafika.getFgColor());
         pisacTF.setBackground(Grafika.getTFColor());
         nnPan.add(pisacTF);
         JLabel kolicina = new JLabel("Unesite količinu:");
-        kolicina.setBounds(15, 165, 300, 30);
+        kolicina.setBounds(NOVI_KOLICINA_BOUNDS);
         kolicina.setFont(Grafika.getLabelFont());
         kolicina.setForeground(Grafika.getFgColor());
         nnPan.add(kolicina);
-        final JTextField kolTF = new JTextField();
-        kolTF.setBounds(15, 200, 300, 25);
-        kolTF.setFont(Grafika.getLabelFont());
-        kolTF.setForeground(Grafika.getFgColor());
-        kolTF.setCaretColor(Grafika.getFgColor());
-        kolTF.setBackground(Grafika.getTFColor());
+        final JTextField kolicinaTF = new JTextField();
+        kolicinaTF.setBounds(NOVI_KOLICINATF_BOUNDS);
+        kolicinaTF.setFont(Grafika.getLabelFont());
+        kolicinaTF.setForeground(Grafika.getFgColor());
+        kolicinaTF.setCaretColor(Grafika.getFgColor());
+        kolicinaTF.setBackground(Grafika.getTFColor());
 
-        nnPan.add(kolTF);
+        nnPan.add(kolicinaTF);
         //----------JButton-----------------------------------------------------
         JButton unos = new JButton("Unesi podatke");
-        unos.setBounds(90, 240, 150, 40);
+        unos.setBounds(NOVI_UNOS_BOUNDS);
         ActionListener listener = (ActionEvent e) -> {
             rs.luka.biblioteka.funkcije.Knjige nn = new rs.luka.biblioteka.funkcije.Knjige();
             try {
                 try {
-                    nn.ubaciNoviNaslov(nasTF.getText(), parseInt(kolTF.getText()), pisacTF.getText());
+                    nn.ubaciNoviNaslov(naslovTF.getText(), parseInt(kolicinaTF.getText()), pisacTF.getText());
                     showMessageDialog(null, "Knjiga dodata!", "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
                     nnF.dispose();
                 } catch (VrednostNePostoji ex) {
@@ -98,18 +123,18 @@ public class KnjigeUtils {
                     showMessageDialog(null, "Polje za naslov je prazno.",
                             "Prazno polje", JOptionPane.ERROR_MESSAGE);
                 } catch (Duplikat ex) {
-                    LOGGER.log(Level.INFO, "Naslov {0} već postoji", nasTF.getText());
+                    LOGGER.log(Level.INFO, "Naslov {0} već postoji", naslovTF.getText());
                     showMessageDialog(null, "Knjiga tog naslova već postoji",
                             "Duplikat", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
-                LOGGER.log(Level.INFO, "{0} nije broj", nasTF.getText());
+                LOGGER.log(Level.INFO, "{0} nije broj", naslovTF.getText());
                 showMessageDialog(null, "Uneta količina nije broj.",
                         "Loš unos", JOptionPane.ERROR_MESSAGE);
             }
         };
         unos.addActionListener(listener);
-        kolTF.addActionListener(listener);
+        kolicinaTF.addActionListener(listener);
         nnPan.add(unos);
         //----------setVisible--------------------------------------------------
         nnF.setVisible(true);
@@ -124,13 +149,12 @@ public class KnjigeUtils {
      *
      * @since 25.6.'14.
      */
-    protected void ucSearch(String ime, int visina) {
+    protected void ucSearch(String ime, int visinaProzora) {
         rs.luka.biblioteka.funkcije.Knjige funk = new rs.luka.biblioteka.funkcije.Knjige();
         //-----------JFrame&JPanel------------------------------
         JFrame winS = new JFrame("Pretraga učenika po naslovu");
         winS.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        //winS.setLocation(270, 160);
-        winS.setSize(350, 130);
+        winS.setSize(UCSEARCH_SIZE);
         winS.setLocationRelativeTo(null);
         JPanel panS = new JPanel(null);
         panS.setBackground(Grafika.getBgColor());
@@ -139,7 +163,7 @@ public class KnjigeUtils {
         JLabel naslov = new JLabel("Unesite naslov i pritisnite enter:");
         naslov.setFont(Grafika.getLabelFont());
         naslov.setForeground(Grafika.getFgColor());
-        naslov.setBounds(20, 20, 350, 25);
+        naslov.setBounds(UCSEARCH_NASLOV_BOUNDS);
         panS.add(naslov);
         //------------JTextField&ActionListener---------------------------------
         JTextField naslovTF = new JTextField();
@@ -149,11 +173,12 @@ public class KnjigeUtils {
                 if (inx.isEmpty()) {
                     throw new Prazno("Učenici nemaju tu knjigu");
                 }
-                int ucVisina = min(visina, 80 + inx.size() * 21 + 58);
-                //scrollPan.setBounds(0, 0, 560, ucVisina);
+                int ucVisina = min(visinaProzora, UCSEARCH_UCVISINA_FIXED_HEIGHT 
+                        + inx.size() * UCSEARCH_UCENIK_HEIGHT);
                 panS.setLocation(0, 0);
-                panS.setPreferredSize(new Dimension(560, 95 + inx.size() * 21));
-                winS.setSize(580, ucVisina);
+                panS.setPreferredSize(new Dimension(UCSEARCH_PANEL_WIDTH2, 
+                        UCSEARCH_PANEL_FIXED_HEIGHT + inx.size() * UCSEARCH_UCENIK_HEIGHT));
+                winS.setSize(UCSEARCH_WIDTH2, ucVisina);
                 winS.setLocationRelativeTo(null);
                 StringBuilder ucBuild = new StringBuilder();
                 StringBuilder dateBuild = new StringBuilder();
@@ -166,21 +191,21 @@ public class KnjigeUtils {
                             getDatumKnjige(inx1.x))).append("<br>");
                 });
                 JLabel ucenici = new JLabel();
-                ucenici.setSize(new Dimension(300, (inx.size() + 1) * 21));
-                ucenici.setLocation(10, 10);
+                ucenici.setSize(new Dimension(UCSEARCH_UCENICI_WIDTH, (inx.size() + 1) * UCSEARCH_UCENIK_HEIGHT));
+                ucenici.setLocation(UCSEARCH_UCENICI_X, UCSEARCH_LABELS_Y2);
                 ucenici.setFont(Grafika.getLabelFont());
                 ucenici.setText("<html>Učenici kod kojih je trenutno knjiga:<br>"
                         + ucBuild.toString() + "</html>");
                 JLabel datumi = new JLabel();
-                datumi.setLocation(310, 10);
-                datumi.setSize(new Dimension(225, (inx.size() + 1) * 21));
+                datumi.setLocation(UCSEARCH_DATUMI_X, UCSEARCH_LABELS_Y2);
+                datumi.setSize(new Dimension(UCSEARCH_DATUMI_WIDTH, (inx.size() + 1) * UCSEARCH_UCENIK_HEIGHT));
                 datumi.setFont(Grafika.getLabelFont());
                 datumi.setText("<html>Datum kada je knjiga iznajmljena:<br>"
                         + dateBuild.toString() + "</html>");
 
                 JButton ok = new JButton("OK");
-                ok.setLocation(250, inx.size() * 21 + 50);
-                ok.setSize(55, 33);
+                ok.setLocation(UCSEARCH_OK_X, UCSEARCH_OK_FIXED_Y + inx.size() * UCSEARCH_UCENIK_HEIGHT);
+                ok.setSize(UCSEARCH_OK_WIDTH, UCSEARCH_OK_HEIGHT);
                 ok.addActionListener((ActionEvent ae) -> {
                     winS.dispose();
                 });
@@ -211,7 +236,7 @@ public class KnjigeUtils {
 
         };
         naslovTF.addActionListener(listener);
-        naslovTF.setBounds(20, 50, 200, 25);
+        naslovTF.setBounds(UCSEARCH_NASLOVTF_BOUNDS);
         naslovTF.setFont(Grafika.getLabelFont());
         naslovTF.setBackground(Grafika.getTFColor());
         naslovTF.setForeground(Grafika.getFgColor());
