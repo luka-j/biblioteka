@@ -126,7 +126,7 @@ public class Grafika {
         }
     }
     
-    protected static Action generateEmptyAction(Method invoke, Object obj) {
+    protected static Action generateEmptyResetAction(Method invoke, Object obj) {
         return new Action() {
             @Override public Object getValue(String key) {return null;}
             @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
@@ -141,6 +141,7 @@ public class Grafika {
             public void actionPerformed(ActionEvent e) {
                 try {
                     invoke.invoke(obj);
+                    new Ucenici();
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     Logger.getLogger(Grafika.class.getName()).log(Level.SEVERE, null, ex);
                 }

@@ -40,7 +40,7 @@ public class Knjige implements FocusListener {
     private static final java.util.logging.Logger LOGGER
             = java.util.logging.Logger.getLogger(Knjige.class.getName());
 
-    private static final Insets INSET = new Insets
+    private final Insets INSET = new Insets
         (KNJIGE_TOP_INSET, KNJIGE_LEFT_INSET, KNJIGE_BOTTOM_INSET, KNJIGE_RIGHT_INSET);
     
     /**
@@ -65,7 +65,7 @@ public class Knjige implements FocusListener {
     private final JPanel pisacPan;
     private final JPanel knjPan;
     private final JPanel mainPan;
-    private final JFrame win;
+    private static final JFrame win = new JFrame("Pregled knjiga");
 
     public Knjige() {
         uzmiBut = new JButton[Podaci.getBrojKnjiga()];
@@ -75,7 +75,6 @@ public class Knjige implements FocusListener {
         kolicinaTitle = new JLabel("Količina:");
         pisacTitle = new JLabel("Pisac:");
         selectAll = new JCheckBox("Naslovi:");
-        win = new JFrame("Pregled knjiga");
         butPan = new JPanel();
         sidePan = new JPanel(null);
         kolPan = new JPanel(null);

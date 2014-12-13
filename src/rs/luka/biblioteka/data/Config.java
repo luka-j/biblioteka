@@ -82,15 +82,15 @@ public class Config {
     private static final StringMultiMap limiti =  new StringMultiMap();
 
     //MINIMALNE I MAKSIMALNE VREDNOSTI ZA CONFIG
-    private static final Limit SIRINA = new Limit(100, 3000);
-    private static final Limit VISINA = new Limit(50, 2000);
+    private static final Limit SIRINA = new Limit(100, 3_000);
+    private static final Limit VISINA = new Limit(50, 2_000);
     private static final Limit BR_KNJIGA = new Limit(1, 15);
     private static final Limit UC_KNJ_SIZE = new Limit(50, Integer.MAX_VALUE);
     private static final Limit DATE_LIMIT = new Limit(1, 365);
     private static final Limit SAVE_PERIOD = new Limit(0, Integer.MAX_VALUE);
     private static final Limit UNDO = new Limit(0, Integer.MAX_VALUE);
     private static final Limit LOG_SIZE = new Limit(0, 100_000_000);
-    private static final Limit LOG_COUNT = new Limit(0, 100);
+    private static final Limit LOG_COUNT = new Limit(0, 1_000);
     
 
     /**
@@ -131,8 +131,8 @@ public class Config {
         defaults.setProperty("logLevel", "INFO");
         defaults.setProperty("savePeriod", "5");
         defaults.setProperty("maxUndo", "50");
-        defaults.setProperty("logSizeLimit", "2000000");
-        defaults.setProperty("logFileCount", "2");
+        defaults.setProperty("logSizeLimit", "1000000");
+        defaults.setProperty("logFileCount", "10");
     }
 
     /**

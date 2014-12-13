@@ -23,7 +23,7 @@ public class Uzimanje {
      *
      * @param indexUcenika index ucenika koji uzima knjigu
      */
-    public void Uzimanje(int indexUcenika) {
+    public void uzmi(int indexUcenika) {
         String knjiga = Dijalozi.showTextFieldDialog
                         ("Uzimanje knjige", "Unesite naslov knjige koju učenik uzima:", "");
             try {

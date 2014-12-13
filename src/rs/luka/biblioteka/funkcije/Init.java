@@ -1,6 +1,6 @@
 /**
- * @lastmod 19.11.'14. 
- * popravio brisanje knjiga i uzimanje knjiga (moram rucno da vratim ako dodje do exceptiona)
+ * @lastmod 13.12.'14. 
+ * popravio UzmiVratiButton kod ucenika, razdvojio da moze da se koristi i za knjige
  */
 /**
  * @curr 
@@ -15,10 +15,12 @@
  */
 /**
  * @todo 
- * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING)
+ * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING), posebno UzmiVratiButton
+ * Koristiti UzmiVratiButton za knjige
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception
- * auto-restore podataka iz backupa (ako je sve unisteno)
- * Bugfixing, optimizacija koda, ciscenje koda (izbaciti konstante, organizovati sve, UK -> Uc)
+ * Pocistiti +1/-1 haos
+ * Bugfixing, optimizacija koda, ciscenje koda (UK -> Uc, smanjiti memoriju za button-e)
+ * Grupisati konstante za grafiku
  * BeanShell (bsh) konzola
  * Ubaciti kvačice (šđžčć)
  * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e)
@@ -26,6 +28,7 @@
  */
 /**
  * @changelog
+ * Dodao UzmiVratiButton kao podklasu Ucenici, trebalo bi da smanji upotrebu memorije
  * Promenio resolveSynonyms da podesi vrednost konstante kada naidje (sada se zove resolveKeys)
  * Uveo konstante u jednoj klasi (za grafiku)
  * Napravio uzimanje da radi preko dijaloga
@@ -41,7 +44,7 @@
 //3913 linija, 24.8.'14. (bez changeloga, koji ima 45)
 //4434 linija, 24.9.'14. (cleanup)
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
-//6550 linija, 29.11.'14. (konstante, bugfixing, code organization)
+//6550 linija, 29.11.'14. (konstante, code (re-)organization)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
@@ -86,6 +89,10 @@ class Handler implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
+        if(e instanceof sun.awt.X11.XException) { //desava se povremeno na Linuxu
+            handleX11Ex();
+            return;
+        }
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
@@ -96,6 +103,9 @@ class Handler implements Thread.UncaughtExceptionHandler {
                 + "\novi podaci su sačuvani u log.", "Nepoznata greška", JOptionPane.ERROR_MESSAGE);
     }
 
+    private void handleX11Ex() {
+        new Ucenici();
+    }
 }
 
 /**

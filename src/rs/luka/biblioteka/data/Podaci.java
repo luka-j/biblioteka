@@ -137,6 +137,8 @@ public class Podaci {
         File knjigeBackup = new File(Utils.getWorkingDir() + "Data" + File.separator + "Knjige.dat~");
         File uceniciBackup = new File(Utils.getWorkingDir() + "Data" + File.separator + "Ucenici.dat~");
         try {
+            knjigeBackup.createNewFile();
+            uceniciBackup.createNewFile();
             if (!knjigeF.exists() || !uceniciF.exists()) {
                 LOGGER.log(Level.FINE, "Neki od fajlova ne postoji, obustavljam backup");
                 return;

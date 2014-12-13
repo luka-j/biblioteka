@@ -54,7 +54,7 @@ public class Knjige {
      * @see Podaci#vratiKnjigu(int, int)
      * @since 9.'14.
      */
-    public void vracanje(int indexUcenika, List<Integer> indexKnjiga) {
+    public void vratiKnjigu(int indexUcenika, List<Integer> indexKnjiga) {
         for (Integer indexKnjige : indexKnjiga) {
             try {
                 Podaci.vratiKnjigu(indexUcenika, indexKnjige);

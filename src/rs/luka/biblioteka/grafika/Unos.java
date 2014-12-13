@@ -238,7 +238,6 @@ public class Unos {
         imeText.setForeground(Grafika.getFgColor());
         imeText.setCaretColor(Grafika.getFgColor());
             imeText.setBackground(Grafika.getTFColor());
-        pan.add(imeText);
         JLabel raz = new JLabel("Unesite razred u koji učenik ide(brojevima):");
         raz.setBounds(RAZRED_BOUNDS);
         raz.setFont(Grafika.getLabelFont());
@@ -259,6 +258,10 @@ public class Unos {
         pan.add(knj);
         final JTextField knjText = new JTextField();
         knjText.setBounds(KNJIGETF_BOUNDS);
+        knjText.setFont(Grafika.getLabelFont());
+        knjText.setForeground(Grafika.getFgColor());
+        knjText.setCaretColor(Grafika.getFgColor());
+            knjText.setBackground(Grafika.getTFColor());
         //----------ActionListener----------------------------------------------
         ActionListener unesi = (ActionEvent ae) -> {
             if ("".equals(imeText.getText())) {
@@ -289,11 +292,9 @@ public class Unos {
             }
         };
         knjText.addActionListener(unesi);
-        knjText.setFont(Grafika.getLabelFont());
-        knjText.setForeground(Grafika.getFgColor());
-        knjText.setCaretColor(Grafika.getFgColor());
-            knjText.setBackground(Grafika.getTFColor());
         pan.add(knjText);
+        imeText.addActionListener(unesi);
+        pan.add(imeText);
         //----------JButton-----------------------------------------------------
         JButton but = new JButton("Unesi podatke");
         but.setBounds(UC_UNESI_BOUNDS);
