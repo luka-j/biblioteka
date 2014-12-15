@@ -1,6 +1,6 @@
 /**
- * @lastmod 13.12.'14. 
- * popravio UzmiVratiButton kod ucenika, razdvojio da moze da se koristi i za knjige
+ * @lastmod 14.12.'14. 
+ * Uveo UzmiVratiButton za knjige
  */
 /**
  * @curr 
@@ -8,19 +8,17 @@
  */
 /**
  * @bugs 
+ * Ucenici sidePan.setPreferredSize ne radi, postoji workaround koji se resetuje pri scrollu
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije pri push(),
  * tako da setKnjiga throwuje Duplikat (da li smem ignorisati?)
- * generiše max. 1250 dugmadi za uzimanje (?)
  * undoVracanje postavlja datum na trenutni, umesto datum iznajmljivanja knjige
  */
 /**
  * @todo 
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING), posebno UzmiVratiButton
- * Koristiti UzmiVratiButton za knjige
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception
  * Pocistiti +1/-1 haos
- * Bugfixing, optimizacija koda, ciscenje koda (UK -> Uc, smanjiti memoriju za button-e)
- * Grupisati konstante za grafiku
+ * Bugfixing, optimizacija koda, ciscenje koda (UK -> Uc)
  * BeanShell (bsh) konzola
  * Ubaciti kvačice (šđžčć)
  * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e)
@@ -28,6 +26,7 @@
  */
 /**
  * @changelog
+ * UzmiVratiButton je sada klasa za sebe, koristi je i klasa grafika.Knjige
  * Dodao UzmiVratiButton kao podklasu Ucenici, trebalo bi da smanji upotrebu memorije
  * Promenio resolveSynonyms da podesi vrednost konstante kada naidje (sada se zove resolveKeys)
  * Uveo konstante u jednoj klasi (za grafiku)
@@ -70,15 +69,15 @@ import static rs.luka.biblioteka.data.Config.loadConfig;
 import static rs.luka.biblioteka.data.Datumi.proveriDatum;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.loadData;
-import rs.luka.biblioteka.grafika.Grafika;
-import static rs.luka.biblioteka.grafika.Grafika.initGrafika;
-import rs.luka.biblioteka.debugging.Test;
+import static rs.luka.biblioteka.data.Ucenik.setValidRazred;
 import static rs.luka.biblioteka.funkcije.Logger.finalizeLogger;
 import static rs.luka.biblioteka.funkcije.Logger.initLogger;
-import static rs.luka.biblioteka.data.Ucenik.setValidRazred;
+import static rs.luka.biblioteka.funkcije.Undo.initUndo;
 import static rs.luka.biblioteka.funkcije.Utils.initWorkingDir;
 import static rs.luka.biblioteka.funkcije.Utils.setWorkingDir;
-import static rs.luka.biblioteka.funkcije.Undo.initUndo;
+import rs.luka.biblioteka.grafika.Dijalozi;
+import rs.luka.biblioteka.grafika.Grafika;
+import static rs.luka.biblioteka.grafika.Grafika.initGrafika;
 
 /**
  *
@@ -89,10 +88,10 @@ class Handler implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        if(e instanceof sun.awt.X11.XException) { //desava se povremeno na Linuxu
+       /* if(e instanceof sun.awt.X11.XException) { //desava se povremeno na Linuxu
             handleX11Ex();
             return;
-        }
+        }*/
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
@@ -104,7 +103,7 @@ class Handler implements Thread.UncaughtExceptionHandler {
     }
 
     private void handleX11Ex() {
-        new Ucenici();
+        new rs.luka.biblioteka.grafika.Ucenici();
     }
 }
 
@@ -131,23 +130,9 @@ public class Init {
      */
     public static void main(String[] args) {
         setDefaultUncaughtExceptionHandler(new Handler());
-        
-        JFrame initWin = new JFrame("Učitavanje podataka...");
-        initWin.setSize(250, 80);
-        initWin.setLocationRelativeTo(null);
-        initWin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        initWin.setAlwaysOnTop(true);
-        JPanel initPan = new JPanel();
-        initPan.setBackground(Color.WHITE);
-        initWin.setContentPane(initPan);
-        JLabel initLab = new JLabel("Učitavanje podataka...");
-        initPan.add(initLab);
-        initWin.setVisible(true);
-
+        Dijalozi.drawInfoWindow("Učitavanje podataka...", "Učitavanje podataka...");
         init();
-
-        initWin.dispose();
-        
+        Dijalozi.disposeInfoWindow();
         autosave();
     }
 
@@ -233,8 +218,8 @@ public class Init {
     }
 
     /**
-     * Zaustavlja trenutni Thread na odredjeni period, cuva podatke i ponavlja
-     * isti proces. BLOKIRA TRENUTNI THREAD DO ZAUSTAVLJANJA PROGRAMA !!!
+     * Zaustavlja trenutni Thread , cuva podatke i ponavlja isti proces beskonacno. 
+     * BLOKIRA TRENUTNI THREAD DO ZAUSTAVLJANJA PROGRAMA !!!
      */
     private static void autosave() {
         if(Config.get("savePeriod").equals("0")) {

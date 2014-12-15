@@ -68,9 +68,9 @@ public class Konstante {
     static int KNJIGE_SEARCHBOX_Y = 0;
     static int KNJIGE_SEARCHBOX_WIDTH = 135;
     static int KNJIGE_SEARCHBOX_HEIGHT = 30;
-    static int KNJIGE_UZMI_WIDTH = 140;
+    /*static int KNJIGE_UZMI_WIDTH = 140; 
     static int KNJIGE_UZMI_HEIGHT = 23;
-    static int KNJIGE_UZMI_X = 0;
+    static int KNJIGE_UZMI_X = 0;*/
     /*----------KnjigeUtils.java----------------------------------------------*/
     static int NOVINASLOV_WIDTH = 330;
     static int NOVINASLOV_HEIGHT = 330;
@@ -114,7 +114,7 @@ public class Konstante {
     static int UCSEARCH_OK_FIXED_Y = 50;
     static int UCSEARCH_OK_WIDTH = 55;
     static int UCSEARCH_OK_HEIGHT = 33;
-    /*----------Podesavanja---------------------------------------------------*/
+    /*----------Podesavanja.java----------------------------------------------*/
     static int PODESAVANJA_WIDTH = 600;
     static int PODESAVANJA_FIXED_HEIGHT = 100;
     static int PODESAVANJA_HEIGHT_PER_LABEL = 40;
@@ -136,7 +136,7 @@ public class Konstante {
     static int PODESAVANJA_PROMENITF_WIDTH = 180;
     static int PODESAVANJA_PROMENIBOJU_WIDTH = 600;
     static int PODESAVANJA_PROMENIBOJU_HEIGHT = 320;
-    /*----------Ucenici-------------------------------------------------------*/
+    /*----------Ucenici.java--------------------------------------------------*/
     static  String UCENICI_SEARCH_TEXT = "Pretraži učenike...";
     static int UCENICI_TOP_INSET = 5;
     static int UCENICI_LEFT_INSET = 5;
@@ -158,10 +158,7 @@ public class Konstante {
     static int UCENICI_SEARCHBOX_Y = 0;
     static int UCENICI_SEARCHBOX_WIDTH = 150;
     static int UCENICI_SEARCHBOX_HEIGHT = 27;
-    static int UCENICI_BUTTON_WIDTH = 140;
-    static int UCENICI_BUTTON_HEIGHT = 23;
-    static int UCENICI_BUTTON_X = 5;
-    /*----------UceniciUtils--------------------------------------------------*/
+    /*----------UceniciUtils.java---------------------------------------------*/
     static int DODAJUCENIKA_WIDTH = 400;
     static int DODAJUCENIKA_HEIGHT = 250;
     static int DODAJUCENIKA_TEXT_X = 20;
@@ -190,7 +187,7 @@ public class Konstante {
     static int DODAJGENERACIJU_UNESI_Y = 470;
     static int DODAJGENERACIJU_UNESI_WIDTH = 170;
     static int DODAJGENERACIJU_UNESI_HEIGHT = 40;
-    /*----------Unos----------------------------------------------------------*/
+    /*----------Unos.java-----------------------------------------------------*/
     static int UNOS_WIDTH = 320;
     static int UNOS_HEIGHT = 110;
     static int UNOS_HGAP = 20;
@@ -231,4 +228,8 @@ public class Konstante {
     static int UNOSUC_UNESI_Y = 270;
     static int UNOSUC_UNESI_WIDTH = 130;
     static int UNOSUC_UNESI_HEIGHT = 40;
+    /*----------UzmiVratiButton.java------------------------------------------*/
+    static int UVBUTTON_WIDTH = 140;
+    static int UVBUTTON_HEIGHT = 23;
+    static int UVBUTTON_X = 5;
 }

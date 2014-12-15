@@ -31,7 +31,7 @@ class UzmiVratiButton extends JButton {
         this.setVisible(false);
         ucenikIndex = ucIndex;
         naslovi.add(naslov);
-        this.setBounds(Konstante.UCENICI_BUTTON_X, y, Konstante.UCENICI_BUTTON_WIDTH, Konstante.UCENICI_BUTTON_HEIGHT);
+        this.setBounds(Konstante.UVBUTTON_X, y, Konstante.UVBUTTON_WIDTH, Konstante.UVBUTTON_HEIGHT);
     }
 
     public void uzmi() {

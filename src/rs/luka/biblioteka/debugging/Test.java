@@ -15,7 +15,7 @@ public class Test {
 
     public void testUnos() {
         int i = 0, j = 0;
-        for (i = 500; i < 2500; i++) {
+        for (i = 0; i < 5000; i++) {
             try{Podaci.addUcenik("Pera Peric " + i, (i%8)+1, new String[]{});}
             catch(Duplikat ex) {}
         }

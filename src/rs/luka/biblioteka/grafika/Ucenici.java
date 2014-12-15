@@ -1,5 +1,6 @@
 package rs.luka.biblioteka.grafika;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -7,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
@@ -22,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -49,7 +52,6 @@ import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import rs.luka.biblioteka.funkcije.Save;
 import rs.luka.biblioteka.funkcije.Undo;
 import rs.luka.biblioteka.funkcije.Utils;
-import rs.luka.biblioteka.grafika.UzmiVratiButton;
 import static rs.luka.biblioteka.grafika.Grafika.generateEmptyResetAction;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
@@ -80,7 +82,7 @@ public class Ucenici implements FocusListener {
         pan = new JPanel();
         scroll = new JScrollPane(pan);
         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scroll, butPan);
-        buttons = new LinkedList<UzmiVratiButton>() /*{
+        buttons = new LinkedList<>() /*{
                  private static final long serialVersionUID = 1L;
                  @Override
                  public boolean contains(Object obj) {
@@ -112,8 +114,8 @@ public class Ucenici implements FocusListener {
         initButtons();
         initIcons();
         initMainListeners();
-        initSearchBox();
         win.setVisible(true);
+        initSearchBox();
         setInputMaps();
     }
 
@@ -169,9 +171,11 @@ public class Ucenici implements FocusListener {
             knjigePan[i].setBackground(Grafika.getBgColor());
             knjigePan[i].setAlignmentY(0);
         }
+        sidePan.setLayout(null);
         sidePan.setBackground(Grafika.getBgColor());
-        sidePan.setPreferredSize(new Dimension(UCENICI_SIDEPAN_WIDTH,
-                (Podaci.getBrojUcenika() + 1) * UCENICI_HEIGHT_PER_LABEL));
+//        sidePan.setPreferredSize(new Dimension(UCENICI_SIDEPAN_WIDTH,
+//                (Podaci.getBrojUcenika() + 1) * UCENICI_HEIGHT_PER_LABEL));
+        sidePan.setBorder(BorderFactory.createLineBorder(Color.RED));
         sidePan.setAlignmentY(0);
         win.setContentPane(split);
     }
@@ -397,7 +401,9 @@ public class Ucenici implements FocusListener {
         searchBox.setForeground(Grafika.getFgColor());
         searchBox.setCaretColor(Grafika.getFgColor());
         sidePan.add(searchBox);
-
+        sidePan.setPreferredSize(new Dimension(UCENICI_SIDEPAN_WIDTH,
+                ucenici[Podaci.getBrojUcenika() - 1].getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL));
+        //NE RADI
         pan.add(sidePan);
     }
 
@@ -423,7 +429,7 @@ public class Ucenici implements FocusListener {
      */
     private void selectAllUc() {
         for (JCheckBox ucenik : ucenici) {
-            ucenik.setSelected(ucenik.isVisible() && selectAllUc.isSelected());
+            ucenik.setSelected(ucenik.isVisible() && selectAllUc.isSelected() && ucenik.isEnabled());
         }
     }
 
@@ -483,7 +489,7 @@ public class Ucenici implements FocusListener {
         if (buttons.contains(new UzmiVratiButton(red, -1, -1))) { //contains radi argument.equals(element)
             if (!selected) { //ako nema selektovanih boxova, a dugme postoji
                 int index = buttons.indexOf(new UzmiVratiButton(red, -1, -1));
-                sidePan.remove(index+1); //ukloni dugme, +1 zato sto se na prvom mestu nalazi searchBox
+                sidePan.remove(index + 1); //ukloni dugme, +1 zato sto se na prvom mestu nalazi searchBox
                 buttons.remove(index); //ukloni dugme iz liste
                 for (int k = 0; k < maxKnjiga; k++) {
                     if (!knjige[k][red + 1].getText().equals(" ")) {
@@ -498,6 +504,7 @@ public class Ucenici implements FocusListener {
         }
         UzmiVratiButton button = new UzmiVratiButton(red, -1,
                 ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
+        setSidePanSize(red);
         button.uzmi();
         buttons.add(button);
         sidePan.add(button);
@@ -524,9 +531,9 @@ public class Ucenici implements FocusListener {
             }
         }
         if (!selected) { //ako nema selektovanih boxova
-            int index = buttons.indexOf(new UzmiVratiButton(red, -1, -1)); 
+            int index = buttons.indexOf(new UzmiVratiButton(red, -1, -1));
             //contains radi argument.equals(element), pa argument mora da bude UzmiVratiButton
-            sidePan.remove(index+1); //ukloni dugme
+            sidePan.remove(index + 1); //ukloni dugme
             buttons.remove(index);
             ucenici[red].setEnabled(true); //ponovo omogucuje checkboxove za uzimanje
             for (int k = 0; k < maxKnjiga; k++) {
@@ -554,6 +561,7 @@ public class Ucenici implements FocusListener {
         UzmiVratiButton button = new UzmiVratiButton(red, knjIndex,
                 ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
         button.vrati();
+        setSidePanSize(red);
         buttons.add(button);
         sidePan.add(button);
         ucenici[red].setEnabled(false); //ne mogu i uzimanje i vracanje biti vidljivi u istom trenutku
@@ -561,6 +569,15 @@ public class Ucenici implements FocusListener {
             if (knjige[k][red + 1].getText().equals(" ")) {
                 knjige[k][red + 1].setEnabled(false);
             }
+        }
+    }
+
+    private void setSidePanSize(int red) { //WORKAROUND, pri scrollu se vraca na staro
+        if(red==-1 || sidePan.getHeight() < 
+            ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL) {
+            System.out.println("red: " + red);
+            sidePan.setSize(UCENICI_SIDEPAN_WIDTH,
+                ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL);
         }
     }
 

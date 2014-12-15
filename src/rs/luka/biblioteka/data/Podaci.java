@@ -22,6 +22,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
+import rs.luka.biblioteka.debugging.Test;
 import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
@@ -66,6 +67,8 @@ public class Podaci {
      * @see #backup()
      */
     public static void loadData() {
+        /*new Test().testUnos();
+        if(true) return;*/
         backup();
         
         LOGGER.log(Level.FINER, "Počeo sa učitavanjem podataka");

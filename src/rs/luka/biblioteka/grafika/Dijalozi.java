@@ -1,11 +1,15 @@
 package rs.luka.biblioteka.grafika;
 
+import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import static java.lang.String.valueOf;
 import java.util.List;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showOptionDialog;
@@ -13,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
+import rs.luka.biblioteka.funkcije.Init;
 import rs.luka.biblioteka.funkcije.Utils;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
@@ -105,5 +110,25 @@ public class Dijalozi {
         win.setVisible(true);
         return dialogReturnValue; //raspored naredbi bitan zbog modalnosti:
         //http://stackoverflow.com/a/4089370/2363015
+    }
+    
+    private static JDialog infoWindow;
+    public static void drawInfoWindow(String naslov, String poruka) {
+        infoWindow = new JDialog();
+        infoWindow.setTitle(naslov);
+        infoWindow.setSize(250, 80);
+        infoWindow.setLocationRelativeTo(null);
+        infoWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        infoWindow.setAlwaysOnTop(true);
+        JPanel initPan = new JPanel();
+        initPan.setBackground(Color.WHITE);
+        infoWindow.setContentPane(initPan);
+        JLabel initLab = new JLabel(poruka);
+        initPan.add(initLab);
+        infoWindow.setVisible(true);
+    }
+    public static void disposeInfoWindow() {
+        if(infoWindow != null)
+            infoWindow.dispose();
     }
 }

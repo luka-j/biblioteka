@@ -10,6 +10,7 @@ import java.awt.event.ItemEvent;
 import static java.lang.Integer.parseInt;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -50,7 +51,7 @@ public class Knjige implements FocusListener {
 
     private int sirina, visina;
     
-    private final JButton[] uzmiBut;
+    private final LinkedList<UzmiVratiButton> buttons;
     private final JLabel[] pisac;
     private final JLabel[] kolicina;
     private final JCheckBox[] knjige;
@@ -68,7 +69,7 @@ public class Knjige implements FocusListener {
     private static final JFrame win = new JFrame("Pregled knjiga");
 
     public Knjige() {
-        uzmiBut = new JButton[Podaci.getBrojKnjiga()];
+        buttons = new LinkedList<>();
         pisac = new JLabel[Podaci.getBrojKnjiga()];
         kolicina = new JLabel[Podaci.getBrojKnjiga()];
         knjige = new JCheckBox[Podaci.getBrojKnjiga()];
@@ -204,9 +205,9 @@ public class Knjige implements FocusListener {
             selectAll();
         });
         for (int i = 0; i < Podaci.getBrojKnjiga(); i++) {
-            final int kol = i;
+            final int red = i;
             knjige[i].addItemListener((ItemEvent ie) -> {
-                uzmiKnjigu(kol);
+                uzmiKnjigu(red);
             });
         }
     }
@@ -264,22 +265,20 @@ public class Knjige implements FocusListener {
 
     private void selectAll() {
         for (JCheckBox knjiga : knjige) {
-            knjiga.setSelected(knjiga.isVisible() && selectAll.isSelected());
+            knjiga.setSelected(knjiga.isVisible() && selectAll.isSelected() && knjiga.isEnabled());
         }
     }
 
-    private void uzmiKnjigu(int kol) {
-        if (knjige[kol].isSelected()) {
-            LOGGER.log(Level.FINER, "Prikazujem dugme za uzimanje br {0}", kol);
-            uzmiBut[kol] = new JButton("Iznajmi knjigu");
-            uzmiBut[kol].setSize(KNJIGE_UZMI_WIDTH, KNJIGE_UZMI_HEIGHT);
-            uzmiBut[kol].setLocation(KNJIGE_UZMI_X,
-                    knjige[kol].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
-            uzmiBut[kol].addActionListener((ActionEvent ae) -> {
+    private void uzmiKnjigu(int red) {
+        if (knjige[red].isSelected()) {
+            LOGGER.log(Level.FINER, "Prikazujem dugme za uzimanje br {0}", red);
+            UzmiVratiButton button = new UzmiVratiButton(red, -1, 
+                    knjige[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
+            button.addActionListener((ActionEvent ae) -> {
                 String ucenik = Dijalozi.showTextFieldDialog("Iznajmljivanje knjige",
                         "Unesite ime učenika koji iznajmljuje knjigu i pritisnite enter:", "");
                 try {
-                    Podaci.uzmiKnjigu(kol, ucenik);
+                    Podaci.uzmiKnjigu(red, ucenik);
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Kod učenika {0} se "
                             + "trenutno nalazi previše knjiga", ucenik);
@@ -288,13 +287,13 @@ public class Knjige implements FocusListener {
                             "Greška pri iznajmljivanju", JOptionPane.ERROR_MESSAGE);
                 } catch (Duplikat ex) {
                     LOGGER.log(Level.INFO, "Kod učenika {0} se već nalazi "
-                            + "knjiga naslova {1}", new Object[]{ucenik, Podaci.getKnjiga(kol).getNaslov()});
+                            + "knjiga naslova {1}", new Object[]{ucenik, Podaci.getKnjiga(red).getNaslov()});
                     JOptionPane.showMessageDialog(null, "Kod učenika se "
                             + "već nalazi knjiga tog naslova",
                             "Greška pri iznajmljivanju", JOptionPane.ERROR_MESSAGE);
                 } catch (NemaViseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Nema više knjiga naslova {0} "
-                            + "u biblioteci", Podaci.getKnjiga(kol).getNaslov());
+                            + "u biblioteci", Podaci.getKnjiga(red).getNaslov());
                     JOptionPane.showMessageDialog(null, "Nema više knjiga"
                             + " tog naslova", "Greška pri iznajmljivanju",
                             JOptionPane.ERROR_MESSAGE);
@@ -305,14 +304,17 @@ public class Knjige implements FocusListener {
                             "Greška pri iznajmljivanju", JOptionPane.ERROR_MESSAGE);
                 }
             });
-            uzmiBut[kol].setVisible(true);
-            sidePan.add(uzmiBut[kol]);
+            button.uzmi();
+            sidePan.add(button);
+            buttons.add(button);
             sidePan.repaint();
-            LOGGER.log(Level.FINE, "Dugme za uzimanje br. {0} prikazano.", kol);
+            LOGGER.log(Level.FINE, "Dugme za uzimanje br. {0} prikazano.", red);
         } else {
-            uzmiBut[kol].setVisible(false);
-            uzmiBut[kol] = null;
-            LOGGER.log(Level.FINE, "Dugme za uzimanje br. {0} obrisano", kol);
+            int delIndex = buttons.indexOf(new UzmiVratiButton(red, -1, -1));
+            sidePan.remove(delIndex + 1);
+            buttons.remove(delIndex);
+            sidePan.repaint();
+            LOGGER.log(Level.FINE, "Dugme za uzimanje br. {0} obrisano", red);
         }
     }
 
