@@ -242,7 +242,7 @@ class UndoAkcija {
      * @throws Duplikat 
      * @since 15.10.'14.
      */
-    private void knjige() throws Duplikat {
+    private void knjige() throws Duplikat, PreviseKnjiga {
         if (doWhat == DODAVANJE) {
             Podaci.addKnjiga(knjiga);
         } else if (doWhat == BRISANJE) {

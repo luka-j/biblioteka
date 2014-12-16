@@ -88,7 +88,7 @@ public class Unos {
      * @return 0 ako je sve OK
      * @since 10.11.'13.
      */
-    public int KnjToDisk(String knj, int kol, String pisac) {
+    public int KnjToDisk(String knj, int kol, String pisac) throws Prazno {
         LOGGER.log(Level.FINER, "Počinjem pisanje knjige {0} ({1} komada)na disk...", 
                 new Object[]{knj, kol});
         File dataFolder = new File(Utils.getWorkingDir() + "Data");

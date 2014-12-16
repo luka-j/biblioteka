@@ -227,12 +227,11 @@ public class Knjige implements FocusListener {
 
     private void obrisiNaslov() {
         boolean selected = false;
-        rs.luka.biblioteka.funkcije.Knjige inst = new rs.luka.biblioteka.funkcije.Knjige(); //ostao sam bez inspiracije
         for (int i = 0, realI = 0; i < knjige.length; i++, realI++) {
             if (knjige[i].isSelected()) {
                 selected = true;
                 try {
-                    inst.obrisiNaslov(realI);
+                    Podaci.obrisiKnjigu(realI);
                     realI--;
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Knjiga zauzeta. Brisanja naslova nije obavljeno");
@@ -246,7 +245,7 @@ public class Knjige implements FocusListener {
             String naslov = Dijalozi.showTextFieldDialog("Brisanje naslova",
                     "Unesite naslov koji želite da obrišete i pritisnite enter:", "");
             try {
-                inst.obrisiNaslov(Podaci.indexOfNaslov(naslov));
+                Podaci.obrisiKnjigu(Podaci.indexOfNaslov(naslov));
             } catch (VrednostNePostoji ex) {
                 LOGGER.log(Level.INFO, "Unet naslov {0} ne postoji", naslov);
                 JOptionPane.showMessageDialog(null, "Naslov koji ste uneli ne postoji.\n"
@@ -319,7 +318,7 @@ public class Knjige implements FocusListener {
     }
 
     private void search() {
-        rs.luka.biblioteka.funkcije.Knjige funkcije = new rs.luka.biblioteka.funkcije.Knjige();
+        rs.luka.legacy.biblioteka.Knjige funkcije = new rs.luka.legacy.biblioteka.Knjige();
         ArrayList<Integer> nasIndexes = funkcije.pretraziKnjige(searchBox.getText());
         for (int i = 0; i < Podaci.getBrojKnjiga(); i++) {
             if (nasIndexes.contains(i)) {

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import rs.luka.biblioteka.data.Podaci;
 
 /**
  * Opisuje dugme na sidePan-u. Može biti za uzimanje ili za vracanje.
@@ -46,7 +47,7 @@ class UzmiVratiButton extends JButton {
     public void vrati() {
         this.setText("Vrati knjigu");
         this.addActionListener((ActionEvent e) -> {
-            new rs.luka.biblioteka.funkcije.Knjige().vratiKnjigu(ucenikIndex, naslovi);
+            Podaci.vratiViseKnjigaSafe(ucenikIndex, naslovi);
             new Ucenici();
         });
         this.setVisible(true);

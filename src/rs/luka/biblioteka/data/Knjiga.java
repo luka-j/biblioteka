@@ -2,6 +2,7 @@ package rs.luka.biblioteka.data;
 
 import java.util.Objects;
 import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
+import rs.luka.biblioteka.exceptions.Prazno;
 
 /**
  * @author Luka
@@ -51,7 +52,9 @@ public class Knjiga implements Comparable<Knjiga> {
      * @param kolicina broj knjiga koje su trenutno u biblioteci
      * @param pisac opciono, pisac knjige
      */
-    public Knjiga(String naslov, int kolicina, String pisac) {
+    public Knjiga(String naslov, int kolicina, String pisac) throws Prazno {
+        if(naslov == null || naslov.isEmpty())
+            throw new Prazno("Prazan argument prosledjen konstruktoru");
         this.naslov = naslov;
         this.kolicina = kolicina;
         this.pisac = pisac;

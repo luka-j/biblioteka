@@ -1,4 +1,4 @@
-package rs.luka.biblioteka.funkcije;
+package rs.luka.legacy.biblioteka;
 
 import java.util.ArrayList;
 import static java.util.Arrays.asList;

@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.WindowConstants;
+import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.indexOfUcenik;
 import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
@@ -50,7 +51,7 @@ public class UceniciUtils {
      * @since 1.7.'13.
      */
     public void dodajNovogUcenika() {
-        final rs.luka.biblioteka.funkcije.Ucenici ucenici = new rs.luka.biblioteka.funkcije.Ucenici();
+        final rs.luka.legacy.biblioteka.Ucenici ucenici = new rs.luka.legacy.biblioteka.Ucenici();
         //---------JFrame&JPanel------------------------------------------------
         JDialog win = new JDialog();
         win.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
@@ -94,7 +95,7 @@ public class UceniciUtils {
         unesi.setBounds(UNESI_BOUNDS);
         unesi.addActionListener((ActionEvent e) -> {
             try {
-                ucenici.dodajUcenika(ucTF.getText(), parseUnsignedInt(razTF.getText()));
+                Podaci.dodajUcenika(ucTF.getText(), parseUnsignedInt(razTF.getText()));
                 showMessageDialog(null, "Ucenik dodat!", "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
                 win.dispose();
             } catch (NumberFormatException ex) {
@@ -119,7 +120,7 @@ public class UceniciUtils {
      * @since 2.7.'13.
      */
     public void obrisiUcenika() {
-        final rs.luka.biblioteka.funkcije.Ucenici ucenici = new rs.luka.biblioteka.funkcije.Ucenici();
+        final rs.luka.legacy.biblioteka.Ucenici ucenici = new rs.luka.legacy.biblioteka.Ucenici();
         //---------JFrame&JPanel------------------------------------------------
         String ucenik = Dijalozi.showTextFieldDialog("Brisanje ucenika", "Unesite ime ucenika "
                 + "i pritisnite enter:", "");
@@ -195,7 +196,7 @@ public class UceniciUtils {
         JButton but = new JButton("Unesi novu generaciju");
         but.setBounds(UNESIGEN_BOUNDS);
         but.addActionListener((ActionEvent e) -> {
-            new rs.luka.biblioteka.funkcije.Ucenici().dodajNovuGen(genTF.getText());
+            Podaci.dodajNovuGen(genTF.getText());
             showMessageDialog(null, "Nova generacija dodata.",
                     "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
         });

@@ -5,6 +5,7 @@ package rs.luka.biblioteka.debugging;
 
 import rs.luka.biblioteka.data.Podaci;
 import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 
 /**
  * Test klasa
@@ -21,7 +22,7 @@ public class Test {
         }
         for (j = 0; j < 0; j++) {
             try {Podaci.addKnjiga("Knjiga o dzungli " + j, j%100, "Imaginaran " + j%3);} 
-            catch (Duplikat ex) {}
+            catch (Duplikat | VrednostNePostoji ex) {}
         }
     }
 }

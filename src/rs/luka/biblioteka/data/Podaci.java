@@ -15,6 +15,7 @@ import static java.nio.file.Files.copy;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.util.ArrayList;
+import static java.util.Arrays.asList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -25,6 +26,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import rs.luka.biblioteka.debugging.Test;
 import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
+import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji.vrednost;
@@ -363,8 +365,13 @@ public class Podaci {
      * @throws rs.luka.biblioteka.exceptions.Duplikat ako naslov vec postoji
      * @since kraj jula '13.
      */
-    public static void addKnjiga(String nas, int kol, String pisac) throws Duplikat {
-        Knjiga knj = new Knjiga(nas, kol, pisac);
+    public static void addKnjiga(String nas, int kol, String pisac) throws Duplikat, VrednostNePostoji {
+        Knjiga knj = null;
+        try {
+        knj = new Knjiga(nas, kol, pisac); 
+        } catch(Prazno ex) {
+            throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga);
+        }
         addKnjiga(knj);
     }
     
@@ -386,6 +393,30 @@ public class Podaci {
         knjSizeInt++;
         try {Config.set("knjSize", valueOf(knjSizeInt));}
         catch(Exception e) { throw new RuntimeException(e);} //workaround za uncompilable source code
+    }
+    
+    /**
+     * Dodaje novog ucenika sa datim imenom i prvim razredom (uzima iz klase Ucenik)
+     * @param ime ime ucenika 
+     * @throws Duplikat ako {@link #dodajUcenika(java.lang.String, int)} throwuje Duplikat.
+     */
+    public static void dodajUcenika(String ime) throws Duplikat {
+        dodajUcenika(ime, Ucenik.getPrviRazred());
+    }
+    
+    /**
+     * Dodaje ucenika sa datim razredom i praznim knjigama
+     * @param ime ime ucenika
+     * @param raz razred koji trenutno pohadja
+     * @throws Duplikat ako {@link #addUcenik(java.lang.String, int, java.lang.String[])} throwuje Duplikat
+     * @see #addUcenik(java.lang.String, int, java.lang.String[]) 
+     */
+    public static void dodajUcenika(String ime, int raz) throws Duplikat {
+        String knjige[] = new String[Podaci.getMaxBrojUcenikKnjiga()];
+        for (int i = 0; i < knjige.length; i++) {
+            knjige[i] = "";
+        }
+        addUcenik(ime, raz, knjige);
     }
 
     /**
@@ -419,6 +450,26 @@ public class Podaci {
         int ucSizeInt = parseInt(ucSize);
         ucSizeInt++;
         Config.set("ucSize", valueOf(ucSizeInt));
+    }
+    
+    /**
+     * @param novaGen ucenici
+     * @since 1.8.'13.
+     * @since 25.8.'13.
+     */
+    public static void dodajNovuGen(String novaGen) {
+        LOGGER.log(Level.INFO, "Iniciram dodavanje nove generacije...");
+        List<String> ucenici = asList(novaGen.split("\\s*,\\s*"));
+        ucenici.stream().forEach((ucenik) -> {
+            try {
+                dodajUcenika(ucenik, Ucenik.getPrviRazred());
+            } catch (Duplikat ex) {
+                JOptionPane.showMessageDialog(null, "Uneli ste dva učenika sa istim imenom i prezimenom. "
+                        + "Jedan od njih neće biti unet.", "Duplikat", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        povecajRazred();
+        LOGGER.log(Level.INFO, "Nova generacija uspešno dodata i stara je obrisana.");
     }
 
     /**
@@ -457,7 +508,10 @@ public class Podaci {
      * @param inx index ucenika
      * @since 1.7.'13.
      */
-    public static void obrisiUcenika(int inx) {
+    public static void obrisiUcenika(int inx) throws PreviseKnjiga {
+        if (ucenici.get(inx).getBrojKnjiga() > 0) {
+            throw new PreviseKnjiga(inx);
+        }
         Ucenik ucenik = ucenici.get(inx);
         ucenici.remove(inx);
         LOGGER.log(Level.INFO, "Učenik obrisan: {0}", new Object[]{ucenik});
@@ -475,7 +529,7 @@ public class Podaci {
      * @param ucenik Ucenik za brisanje
      * @return true ako je ucenik pronadjen i obrisan, false u suprotnom
      */
-    public static boolean obrisiUcenika(Ucenik ucenik) {
+    public static boolean obrisiUcenika(Ucenik ucenik) throws PreviseKnjiga {
         int inx = ucenici.indexOf(ucenik);
         if(inx>-1) {
             obrisiUcenika(inx);
@@ -489,7 +543,7 @@ public class Podaci {
      * @param inx index naslova
      * @since 17.9.'14.
      */
-    public static void obrisiKnjigu(int inx) {
+    public static void obrisiKnjigu(int inx) throws PreviseKnjiga {
         obrisiKnjigu(knjige.get(inx));
     }
     
@@ -499,7 +553,13 @@ public class Podaci {
      * @return true ako knjiga postoji i obrisana je, false u suprotnom
      * @since 3.10.'14.
      */
-    public static boolean obrisiKnjigu(Knjiga knj) {
+    public static boolean obrisiKnjigu(Knjiga knj) throws PreviseKnjiga {
+        Iterator<Ucenik> it = Podaci.iteratorUcenika();
+        while(it.hasNext()) {
+            if(it.next().hasKnjiga(knj.getNaslov())) 
+                throw new PreviseKnjiga(knj.getNaslov());
+        }
+        
         if(knjige.remove(knj)) {
             LOGGER.log(Level.INFO, "Naslov {0} obrisan.", knj);
             Undo.push(Akcija.BRISANJE_KNJIGE, new Object[]{knj});
@@ -524,6 +584,26 @@ public class Podaci {
         LOGGER.log(Level.INFO, "Knjiga {0} vraćena od učenika {1}", 
                 new Object[]{knjige.get(knjIndex).getNaslov(), ucenici.get(ucIndex).getIme()});
         Undo.push(Akcija.VRACANJE, new Object[]{uc, knj});
+    }
+    
+    /**
+     * Za svaku knjigu u listi, trazi index knjige i zove
+     * {@link Podaci#vratiKnjigu(int, int)}
+     *
+     * @param indexUcenika index ucenika
+     * @param indexKnjiga lista sa indexima knjiga za vracanje
+     * @see Podaci#indexOfNaslov(java.lang.String)
+     * @see Podaci#vratiKnjigu(int, int)
+     * @since 9.'14.
+     */
+    public static void vratiViseKnjigaSafe(int indexUcenika, List<Integer> indexKnjiga) {
+        for (Integer indexKnjige : indexKnjiga) {
+            try {
+                Podaci.vratiKnjigu(indexUcenika, indexKnjige);
+            } catch (VrednostNePostoji ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     /**

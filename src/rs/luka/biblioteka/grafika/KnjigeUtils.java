@@ -18,10 +18,12 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
+import rs.luka.biblioteka.funkcije.Pretraga;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
@@ -112,10 +114,9 @@ public class KnjigeUtils {
         JButton unos = new JButton("Unesi podatke");
         unos.setBounds(NOVI_UNOS_BOUNDS);
         ActionListener listener = (ActionEvent e) -> {
-            rs.luka.biblioteka.funkcije.Knjige nn = new rs.luka.biblioteka.funkcije.Knjige();
             try {
                 try {
-                    nn.ubaciNoviNaslov(naslovTF.getText(), parseInt(kolicinaTF.getText()), pisacTF.getText());
+                    Podaci.addKnjiga(naslovTF.getText(), parseInt(kolicinaTF.getText()), pisacTF.getText());
                     showMessageDialog(null, "Knjiga dodata!", "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
                     nnF.dispose();
                 } catch (VrednostNePostoji ex) {
@@ -150,7 +151,7 @@ public class KnjigeUtils {
      * @since 25.6.'14.
      */
     protected void ucSearch(String ime, int visinaProzora) {
-        rs.luka.biblioteka.funkcije.Knjige funk = new rs.luka.biblioteka.funkcije.Knjige();
+        rs.luka.legacy.biblioteka.Knjige funk = new rs.luka.legacy.biblioteka.Knjige();
         //-----------JFrame&JPanel------------------------------
         JFrame winS = new JFrame("Pretraga učenika po naslovu");
         winS.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -169,7 +170,7 @@ public class KnjigeUtils {
         JTextField naslovTF = new JTextField();
         ActionListener listener = (ActionEvent e) -> {
             try {
-                ArrayList<Point> inx = funk.pretraziUcenike(naslovTF.getText());
+                ArrayList<Point> inx = Pretraga.pretraziUcenikePoNaslovu(naslovTF.getText());
                 if (inx.isEmpty()) {
                     throw new Prazno("Učenici nemaju tu knjigu");
                 }

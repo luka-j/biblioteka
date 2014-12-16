@@ -1,5 +1,7 @@
 package rs.luka.biblioteka.debugging;
 
+import rs.luka.legacy.biblioteka.Knjige;
+import rs.luka.legacy.biblioteka.Ucenici;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

@@ -49,6 +49,7 @@ import rs.luka.biblioteka.data.Ucenik;
 import rs.luka.biblioteka.debugging.Console;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
+import rs.luka.biblioteka.funkcije.Pretraga;
 import rs.luka.biblioteka.funkcije.Save;
 import rs.luka.biblioteka.funkcije.Undo;
 import rs.luka.biblioteka.funkcije.Utils;
@@ -459,10 +460,8 @@ public class Ucenici implements FocusListener {
             for (Integer ime : imena) {
                 try {
                     ime -= delCount;
-                    new rs.luka.biblioteka.funkcije.Ucenici().obrisiUcenika(ime);
+                    Podaci.obrisiUcenika(ime);
                     delCount++;
-                } catch (VrednostNePostoji ex) {
-                    throw new RuntimeException(ex);
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Kod učenika {0} se nalaze neke knjige. "
                             + "Brisanje neuspešno", ime);
@@ -591,13 +590,10 @@ public class Ucenici implements FocusListener {
                 knjigePan[i].remove(knjSeparatori[i][j]);
             }
         }
-
-        rs.luka.biblioteka.funkcije.Ucenici funkcije = new rs.luka.biblioteka.funkcije.Ucenici();
-        ArrayList<Integer> ucIndexes = funkcije.pretraziUcenike(searchBox.getText());
-
+        ArrayList<Integer> ucIndexes = Pretraga.pretraziUcenike(searchBox.getText());
         if (ucIndexes.isEmpty() && Podaci.naslovExists(searchBox.getText())) {
             try {
-                ucIndexes = Utils.extractXFromPointList(new rs.luka.biblioteka.funkcije.Knjige().pretraziUcenike(searchBox.getText()));
+                ucIndexes = Utils.extractXFromPointList(Pretraga.pretraziUcenikePoNaslovu(searchBox.getText()));
             } catch (VrednostNePostoji ex) {/*nikad, zbog provere u if-u*/
 
             }

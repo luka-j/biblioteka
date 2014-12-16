@@ -120,7 +120,7 @@ public class Vracanje {
         JButton in = new JButton("Vrati knjige");
         in.setBounds(150, 155, 160, 37);
         in.addActionListener((ActionEvent e) -> {
-            rs.luka.biblioteka.funkcije.Knjige vr = new rs.luka.biblioteka.funkcije.Knjige();
+            rs.luka.legacy.biblioteka.Knjige vr = new rs.luka.legacy.biblioteka.Knjige();
             List<String> knjList = new ArrayList<>();
             for (int i = 0; i < knjNum; i++) {
                 if (knjJCB[i].isSelected()) {

@@ -1,4 +1,4 @@
-package rs.luka.biblioteka.funkcije;
+package rs.luka.legacy.biblioteka;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -24,7 +24,8 @@ import rs.luka.biblioteka.exceptions.VrednostNePostoji;
  */
 public class Knjige {
 
-    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(Knjige.class.getName());
+    private static final java.util.logging.Logger LOGGER = 
+            java.util.logging.Logger.getLogger(Knjige.class.getName());
 
     /**
      * Upisuje novi naslov u memoriju.
