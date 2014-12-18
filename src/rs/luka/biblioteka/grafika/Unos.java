@@ -131,6 +131,7 @@ public class Unos {
         JTextField pisacText = new JTextField();
         pan.add(pisac);
         pisacText.setBounds(PISACTF_BOUNDS);
+        pisac.setFont(Grafika.getLabelFont());
         pisacText.setForeground(Grafika.getFgColor());
         pisacText.setCaretColor(Grafika.getFgColor());
             pisacText.setBackground(Grafika.getTFColor());

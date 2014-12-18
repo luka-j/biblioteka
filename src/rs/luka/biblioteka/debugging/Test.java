@@ -17,11 +17,11 @@ public class Test {
     public void testUnos() {
         int i = 0, j = 0;
         for (i = 0; i < 5000; i++) {
-            try{Podaci.addUcenik("Pera Peric " + i, (i%8)+1, new String[]{});}
+            try{Podaci.dodajUcenika("Pera Peric " + i, (i%8)+1, new String[]{});}
             catch(Duplikat ex) {}
         }
         for (j = 0; j < 0; j++) {
-            try {Podaci.addKnjiga("Knjiga o dzungli " + j, j%100, "Imaginaran " + j%3);} 
+            try {Podaci.dodajKnjigu("Knjiga o dzungli " + j, j%100, "Imaginaran " + j%3);} 
             catch (Duplikat | VrednostNePostoji ex) {}
         }
     }

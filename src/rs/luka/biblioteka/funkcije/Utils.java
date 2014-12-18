@@ -176,25 +176,6 @@ public class Utils {
     }
     
     /**
-     * Ako se integer val nalazi u izmedju min i max, vraca ga. Ako je veci, vraca max, u suprotnom, vraca min.
-     * @param val vrednost koja je ogranicena intervalom (min, max)
-     * @param min minimalna vrednost val
-     * @param max maximalna vrednost val
-     * @return jedna od val, min i max
-     */
-    public static int limitedInteger(int val, int min, int max) {
-        return Integer.max(Integer.min(val, max), min);
-    }
-    
-    /**
-     * String wrapper za {@link #limitedInteger(int, int, int) }. Pretpostavlja da je dati String integer.
-     * @throws NumberFormatException ako String val nije integer.
-     */
-    public static String limitedInteger(String val, int min, int max) {
-        return String.valueOf(limitedInteger(Integer.valueOf(val), min, max));
-    }
-    
-    /**
      * Pretvara listu Point-ova u listu Integer-a tako što uzima x koordinatu, a ignoriše y.
      * @param list lista koja se treba pretvoriti
      * @return x koordinate u listi

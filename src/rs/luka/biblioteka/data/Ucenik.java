@@ -1,7 +1,10 @@
 package rs.luka.biblioteka.data;
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Objects;
 import javax.swing.JOptionPane;
 import rs.luka.biblioteka.exceptions.Duplikat;
@@ -106,8 +109,8 @@ public class Ucenik implements Comparable<Ucenik> {
     public Ucenik(String ime, int razred, String[] knjige) {
         this.ime = ime;
         /*if(razred < 1) {
-            this.razred = validRazred[0];
-        } else*/ if (Utils.arrayContains(validRazred, razred)) {
+         this.razred = validRazred[0];
+         } else*/ if (Utils.arrayContains(validRazred, razred)) {
             this.razred = razred;
         } else {
             throw new NumberFormatException("Loš razred: " + razred);
@@ -163,27 +166,29 @@ public class Ucenik implements Comparable<Ucenik> {
     public int getRazred() {
         return razred;
     }
-    
+
     public String getNaslovKnjige(int i) {
         return getKnjiga(i).getNaslov();
     }
-    
+
     public String getDatumKnjige(int i) {
         return getKnjiga(i).getDatumAsString();
     }
-    
+
     public long getTimeKnjige(int i) {
         return getKnjiga(i).getDatum().getTime();
     }
-    
+
     private UcenikKnjiga[] getKnjige() {
         return knjige;
     }
 
     private UcenikKnjiga getKnjiga(int i) {
-        if(knjige.length>i)
+        if (knjige.length > i) {
             return knjige[i];
-        else return new UcenikKnjiga();
+        } else {
+            return new UcenikKnjiga();
+        }
     }
 
     /**
@@ -198,10 +203,10 @@ public class Ucenik implements Comparable<Ucenik> {
     public String getAsIOString() {
         StringBuilder string = new StringBuilder(ime);
         string.append(splitChar).append(razred);
-        for(UcenikKnjiga knjiga :knjige) {
+        for (UcenikKnjiga knjiga : knjige) {
             string.append(splitChar).append(knjiga.getAsIOString());
         }
-        for(int i=knjige.length; i<Podaci.getMaxBrojUcenikKnjiga(); i++) {
+        for (int i = knjige.length; i < Podaci.getMaxBrojUcenikKnjiga(); i++) {
             string.append(splitChar);
         }
         return string.toString();
@@ -251,13 +256,20 @@ public class Ucenik implements Comparable<Ucenik> {
         }
         return false;
     }
-    
+
+    /**
+     * Proverava da li je dato mesto za Knjigu kod ucenika prazno
+     * @param i mesto
+     * @return 
+     */
     public boolean isKnjigaEmpty(int i) {
-        if(i<knjige.length)
+        if (i < knjige.length) {
             return knjige[i].isEmpty();
-        else return false;
+        } else {
+            return false;
+        }
     }
-    
+
     //SETTERI
     /**
      * Ubacuje novu knjigu kod ucenika na sledece prazno mesto.
@@ -285,8 +297,8 @@ public class Ucenik implements Comparable<Ucenik> {
     /**
      * Brise knjigu na datom mestu, nakon cega pomera ostale knjige za jedno
      * mesto unazad, tako da ne ostane nijedno prazno mesto. Prazna mesta
-     * izazivaju greske sa grafikom za vracanje (poznati bug). 
-     * Note (9.'14.): grafika je promenjena, vise bug ne postoji. Metoda je ostala ovakva radi
+     * izazivaju greske sa grafikom za vracanje (poznati bug). Note (9.'14.):
+     * grafika je promenjena, vise bug ne postoji. Metoda je ostala ovakva radi
      * preglednosti grafike.
      *
      * @param mesto mesto na kojem se knjiga nalazi
@@ -317,6 +329,7 @@ public class Ucenik implements Comparable<Ucenik> {
             {
                 throw new VrednostNePostoji(vrednost.drugo); /*ako se nalazi van for
                  petlje, throw se izvrsava svaki put, umesto samo ako knjiga nije pronadjena*/
+
             }
         }
     }
@@ -325,10 +338,13 @@ public class Ucenik implements Comparable<Ucenik> {
      * Povecava razred ucenika na sledeci (po redosledu u validRazred).
      */
     protected void povecajRazred() {
-        for(int i=0; i<validRazred.length; i++) {
-            if(razred == validRazred[i]) {
-                razred = validRazred[i+1];
+        for (int i = 0; i < validRazred.length; i++) {
+            if (razred == validRazred[i] && i+1 < validRazred.length) {
+                razred = validRazred[i + 1];
                 break;
+            }
+            else {
+                razred=-1;
             }
         }
     }
@@ -386,4 +402,189 @@ public class Ucenik implements Comparable<Ucenik> {
         hash = 97 * hash + Arrays.deepHashCode(this.knjige);
         return hash;
     }
+
+    
+    
+    /**
+     * Klasa za knjige koje se nalaze kod ucenika. Sadrzi naslov knjige i datum
+     * kada je izdata.
+     *
+     * @author Luka
+     * @since 7. 17. 2014.
+     */
+    static class UcenikKnjiga {
+
+        /**
+         * Naslov knjige koja je izdata uceniku.
+         */
+        private String naslov;
+        /**
+         * Datum kada je data knjiga izdata.
+         */
+        private Date datum;
+        /**
+         * Karakter koji se u fajlovima koristi za razdvajanje polja. Ne sme
+         * biti isti kao splitChar klase Ucenik ili Knjiga
+         *
+         * @since 23.9.'14.
+         */
+        private final char splitChar = '@';
+        /**
+         * String wrapper za {@link #splitChar}.
+         *
+         * @since 23.9.'14.
+         */
+        private final String splitString = new String(new char[]{splitChar});
+
+        public UcenikKnjiga(String naslov, Date datum) {
+            this.naslov = naslov;
+            this.datum = datum;
+        }
+
+        /**
+         * Konstruktuje objekat na osnovu datog stringa, koji bi trebalo da
+         * dolazi iz fajla sa podacima.
+         *
+         * @param IOString String sa podacima
+         * @throws ParseException ako dodje do greske pri parsiranju datuma
+         * @since 23.9.'14.
+         */
+        UcenikKnjiga(String IOString) throws ParseException {
+            String[] fields = IOString.split(splitString);
+            if (fields.length == 0) {
+                naslov = "";
+                datum = null;
+            } else {
+                naslov = fields[0];
+                datum = Datumi.df.parse(fields[1]);
+            }
+        }
+
+        /**
+         * Pravi istovetnu kopiju datog objekta.
+         *
+         * @param uk UcenikKnjiga za kopiranje
+         * @since 3.10.'14.
+         */
+        UcenikKnjiga(UcenikKnjiga uk) {
+            naslov = uk.getNaslov();
+            if (uk.isEmpty()) {
+                datum = null;
+            } else {
+                datum = new Date(uk.getDatum().getTime());
+            }
+        }
+        
+        /**
+         * Konstruise praznu UcenikKnjiga (sa "" naslovom i null datumom)
+         */
+        UcenikKnjiga() {
+            naslov = "";
+            datum = null;
+        }
+
+        //GETTERI
+        public String getNaslov() {
+            return naslov;
+        }
+
+        /**
+         * Vraca datum objekta.
+         */
+        private Date getDatum() {
+            return datum;
+        }
+
+        /**
+         * @return Datum kao I/O String
+         * @see Datumi#df
+         */
+        protected String getDatumAsString() {
+            if (datum == null) {
+                return "";
+            }
+            return Datumi.df.format(datum);
+        }
+
+        /**
+         * Vraca objekat kao string, namenjen za upis u fajl.
+         *
+         * @return Reprezentaciju objekta u jednom stringu
+         * @since 23.9.'14.
+         */
+        protected String getAsIOString() {
+            return naslov + splitString + getDatumAsString();
+        }
+
+        //SETTERI
+        /**
+         * Brise UcenikKnjiga, tj postavlja naslov na "" i datum na null.
+         */
+        protected void clear() {
+            naslov = "";
+            datum = null;
+        }
+
+        /**
+         * Postavlja naslov na dati String, datum na trenutni.
+         * @param naslov 
+         */
+        protected void setNaslov(String naslov) {
+            this.naslov = naslov;
+            datum = new Date();
+        }
+
+        private void setDatum(Date datum) {
+            this.datum = datum;
+        }
+
+        //is... METODE
+        /**
+         * Vraca true ako je "" prazan, false u suprotnom
+         * @return 
+         */
+        public boolean isEmpty() {
+            return naslov.isEmpty();
+        }
+
+        //OVERRIDES
+        @Override
+        public String toString() {
+            DateFormat df = new SimpleDateFormat("dd. MM. yyyy");
+            if (datum != null && naslov != null) {
+                return naslov + ", iznajmljena " + df.format(datum);
+            } else if (datum == null && naslov.isEmpty()) {
+                return "Prazno";
+            } else {
+                throw new ClassFormatError("Ucenik knjiga nije u redu :s");
+            }
+        }
+
+        /**
+         * Vraca true ako je Object vrste UcenikKnjiga, trenutna i UcenikKnjiga
+         * sa kojom se uporedjuje prazna ili ako sadrze isti naslov i datum.
+         *
+         * @param uk UcenikKnjiga sa kojom se uporedjuje
+         * @return true ako se vrednosti poklapaju, false u suprotnom
+         * @since 28.9.'14.
+         */
+        @Override
+        public boolean equals(Object uk) {
+            if (!(uk instanceof UcenikKnjiga)) {
+                return false;
+            }
+            UcenikKnjiga knjiga = (UcenikKnjiga) uk;
+            return knjiga.isEmpty() && this.isEmpty()
+                    || (knjiga.getNaslov().equals(naslov) && knjiga.getDatum().equals(datum));
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 53 * hash + Objects.hashCode(this.naslov);
+            hash = 53 * hash + Objects.hashCode(this.datum);
+            return hash;
+        }
+    }
+
 }

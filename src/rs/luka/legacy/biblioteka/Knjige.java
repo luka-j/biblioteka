@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 import rs.luka.biblioteka.data.Knjiga;
 import rs.luka.biblioteka.data.Podaci;
-import static rs.luka.biblioteka.data.Podaci.addKnjiga;
+import static rs.luka.biblioteka.data.Podaci.dodajKnjigu;
 import static rs.luka.biblioteka.data.Podaci.getBrojKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getMaxBrojUcenikKnjiga;
@@ -42,7 +42,7 @@ public class Knjige {
         if ("".equals(nas)) {
             throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga);
         }
-        addKnjiga(nas, kol, pisac);
+        dodajKnjigu(nas, kol, pisac);
     }
 
     /**

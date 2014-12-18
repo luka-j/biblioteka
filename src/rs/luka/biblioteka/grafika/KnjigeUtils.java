@@ -27,7 +27,8 @@ import rs.luka.biblioteka.funkcije.Pretraga;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
- *
+ * Pomocne metode za klasu Knjige
+ * 
  * @author luka
  */
 public class KnjigeUtils {
@@ -116,7 +117,7 @@ public class KnjigeUtils {
         ActionListener listener = (ActionEvent e) -> {
             try {
                 try {
-                    Podaci.addKnjiga(naslovTF.getText(), parseInt(kolicinaTF.getText()), pisacTF.getText());
+                    Podaci.dodajKnjigu(naslovTF.getText(), parseInt(kolicinaTF.getText()), pisacTF.getText());
                     showMessageDialog(null, "Knjiga dodata!", "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
                     nnF.dispose();
                 } catch (VrednostNePostoji ex) {

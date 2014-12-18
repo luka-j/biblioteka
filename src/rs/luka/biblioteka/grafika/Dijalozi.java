@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import static java.lang.String.valueOf;
 import java.util.List;
 import javax.swing.JDialog;
@@ -17,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
-import rs.luka.biblioteka.funkcije.Init;
 import rs.luka.biblioteka.funkcije.Utils;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
@@ -48,6 +45,12 @@ public class Dijalozi {
         return num;
     }
 
+    /**
+     * Prikazuje Dijaloog za unosenje maksimalnog broja knjiga koje Ucenik sme da ima kod sebe.
+     * Radi rekurziju dok god uneta vrednost nije int. Koristi #showTextFieldDialog
+     * @see #showTextFieldDialog(java.lang.String, java.lang.String, java.lang.String) 
+     * @return int vrednost unete vrednosti.
+     */
     public static int brojKnjiga() {
         /*String brKnjigaStr = JOptionPane.showInputDialog("Unesite maksimalan broj "
                 + "knjiga koje ucenik\nmoze da ima kod sebe:");*/
@@ -112,7 +115,18 @@ public class Dijalozi {
         //http://stackoverflow.com/a/4089370/2363015
     }
     
+    /**
+     * JDialog koriscen za prikazivanje info poruka
+     * @see #drawInfoWindow(java.lang.String, java.lang.String) 
+     * @see #disposeInfoWindow() 
+     */
     private static JDialog infoWindow;
+    /**
+     * Iscrtava info poruku sa datim naslovom i porukom koja se koristi kao test u JLabel-u.
+     * Koristi default vrednosti umesto onih u klasi Grafika za boje.
+     * @param naslov naslov prozora
+     * @param poruka text JLabel-a
+     */
     public static void drawInfoWindow(String naslov, String poruka) {
         infoWindow = new JDialog();
         infoWindow.setTitle(naslov);
@@ -120,13 +134,17 @@ public class Dijalozi {
         infoWindow.setLocationRelativeTo(null);
         infoWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         infoWindow.setAlwaysOnTop(true);
-        JPanel initPan = new JPanel();
-        initPan.setBackground(Color.WHITE);
-        infoWindow.setContentPane(initPan);
-        JLabel initLab = new JLabel(poruka);
-        initPan.add(initLab);
+        JPanel infoPan = new JPanel();
+        infoPan.setBackground(Color.WHITE);
+        infoWindow.setContentPane(infoPan);
+        JLabel infoLab = new JLabel(poruka);
+        infoPan.add(infoLab);
         infoWindow.setVisible(true);
     }
+    /**
+     * Zatvara infoWindow dobijen pozivanjem {@link #drawInfoWindow(java.lang.String, java.lang.String)}
+     * Ako prozor ne postoji, ignorise poziv.
+     */
     public static void disposeInfoWindow() {
         if(infoWindow != null)
             infoWindow.dispose();

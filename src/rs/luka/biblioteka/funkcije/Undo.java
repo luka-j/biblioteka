@@ -16,6 +16,9 @@ import rs.luka.biblioteka.exceptions.*;
  * @since 27.9.'14.
  */
 public class Undo {
+    /**
+     * Ne moze se inicijalizovati.
+     */
     private Undo() {throw new IllegalAccessError();}
 
     private static final java.util.logging.Logger LOGGER
@@ -244,7 +247,7 @@ class UndoAkcija {
      */
     private void knjige() throws Duplikat, PreviseKnjiga {
         if (doWhat == DODAVANJE) {
-            Podaci.addKnjiga(knjiga);
+            Podaci.dodajKnjigu(knjiga);
         } else if (doWhat == BRISANJE) {
             Podaci.obrisiKnjigu(knjiga);
         }
@@ -255,9 +258,9 @@ class UndoAkcija {
      * (dodavanje ili brisanje) odredjena je doWhat kodom
      * @since 15.10.'14.
      */
-    private void ucenici() throws Duplikat {
+    private void ucenici() throws Duplikat, PreviseKnjiga {
         if (doWhat == DODAVANJE) {
-            Podaci.addUcenik(ucenik);
+            Podaci.dodajUcenika(ucenik);
         } else if (doWhat == BRISANJE) {
             Podaci.obrisiUcenika(ucenik);
         }

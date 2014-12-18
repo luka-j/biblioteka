@@ -68,6 +68,9 @@ public class Knjige implements FocusListener {
     private final JPanel mainPan;
     private static final JFrame win = new JFrame("Pregled knjiga");
 
+    /**
+     * Konstruktuje komponente prozora i zove {@link #pregledKnjiga()}
+     */
     public Knjige() {
         buttons = new LinkedList<>();
         pisac = new JLabel[Podaci.getBrojKnjiga()];
@@ -88,7 +91,7 @@ public class Knjige implements FocusListener {
     }
 
     /**
-     * Pregled knjiga koje su trenutno u biblioteci.
+     * Pregled knjiga koje su trenutno u biblioteci. Zove init* metoda i postavlja {@link #win} na visible.
      */
     private void pregledKnjiga() {
         initPanels();
@@ -99,7 +102,10 @@ public class Knjige implements FocusListener {
         
         win.setVisible(true);
     }
-
+    
+    /**
+     * Inicalizuje prozor i panele. Postavlja lokacije, velicine, layout-e, scrollDistance i sl.
+     */
     private void initPanels() {
         win.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         sirina = parseInt(Config.get("knjigeS", String.valueOf(KNJIGE_SIRINA)));
@@ -136,6 +142,9 @@ public class Knjige implements FocusListener {
         win.setContentPane(split);
     }
 
+    /**
+     * Postavlja JLabel-e i JCheckBox-ove. Postavlja odgovarajuci tekst i boju i stavlja ih na panele.
+     */
     private void initText() {
         selectAll.setFont(Grafika.getLabelFont());
         selectAll.setForeground(Grafika.getFgColor());
@@ -179,6 +188,9 @@ public class Knjige implements FocusListener {
         }
     }
 
+    /**
+     * Inicijalizuje dugmad koja se nalazi pri dnu i dodaje ih u {@link #butPan}.
+     */
     private void initButtons() {
         JButton novi = new JButton("Ubaci novi naslov");
         novi.setPreferredSize(new Dimension(KNJIGE_NOVI_WIDTH, KNJIGE_BUTTON_HEIGHT));
@@ -200,6 +212,9 @@ public class Knjige implements FocusListener {
         butPan.add(ucSearch);
     }
 
+    /**
+     * Inicalizuje listenere za selectAll i uzmiKnjigu.
+     */
     private void initOtherListeners() {
         selectAll.addItemListener((ItemEvent e) -> {
             selectAll();
@@ -212,6 +227,9 @@ public class Knjige implements FocusListener {
         }
     }
 
+    /**
+     * Inicijalizuje searchBox, postavlja tekst, boje i stavlja na vrh u sidePan-u.
+     */
     private void initSearchBox() {
         searchBox.addFocusListener(this);
         searchBox.addActionListener((ActionEvent e) -> {
@@ -225,6 +243,10 @@ public class Knjige implements FocusListener {
         sidePan.add(searchBox);
     }
 
+    /**
+     * Metoda za listener.
+     * Brise odabran naslov. Ako nijedan nije selektovan, prikazuje Dijalog za unos naslova koji treba obrisati.
+     */
     private void obrisiNaslov() {
         boolean selected = false;
         for (int i = 0, realI = 0; i < knjige.length; i++, realI++) {
@@ -262,12 +284,19 @@ public class Knjige implements FocusListener {
         new Knjige();
     }
 
+    /**
+     * Postavlja sve knjige koje su enabled i visible na checked (odabrane).
+     */
     private void selectAll() {
         for (JCheckBox knjiga : knjige) {
             knjiga.setSelected(knjiga.isVisible() && selectAll.isSelected() && knjiga.isEnabled());
         }
     }
 
+    /**
+     * Uzima datu knjigu od ucenika i vraca biblioteci. Ucenik se unosi preko dijaloga.
+     * @param red red u kome se nalazi knjiga za iznajmljivanje
+     */
     private void uzmiKnjigu(int red) {
         if (knjige[red].isSelected()) {
             LOGGER.log(Level.FINER, "Prikazujem dugme za uzimanje br {0}", red);
@@ -317,6 +346,9 @@ public class Knjige implements FocusListener {
         }
     }
 
+    /**
+     * Pretrazuje knjige i prikazuje nadjene.
+     */
     private void search() {
         rs.luka.legacy.biblioteka.Knjige funkcije = new rs.luka.legacy.biblioteka.Knjige();
         ArrayList<Integer> nasIndexes = funkcije.pretraziKnjige(searchBox.getText());
@@ -341,6 +373,10 @@ public class Knjige implements FocusListener {
         LOGGER.log(Level.FINE, "Pretraga obavljena (grafički)");
     }
     
+    /**
+     * Vraca prvi checkbox koji je selektovan.
+     * @return tekst prvog checkbox-a
+     */
     private String getFirstSelected() {
         for(JCheckBox knjiga : knjige) {
             if(knjiga.isSelected() && knjiga.isVisible())
@@ -349,6 +385,7 @@ public class Knjige implements FocusListener {
         return null;
     }
 
+    
     @Override
     public void focusGained(FocusEvent e) {
         if (searchBox.getText().equals(KNJIGE_SEARCH_TEXT)) {

@@ -2,6 +2,7 @@
 //1994 linije, 24.9.'14.
 //2141 linija, 25.10.'14.
 //2570 linija, 29.11.'14.
+//2743 linija, 12.17.'14. (trenutno, dodavanje UVButton)
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Color;
@@ -35,7 +36,8 @@ import static rs.luka.biblioteka.funkcije.Utils.parseBoolean;
  */
 public class Grafika {
 
-    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(Grafika.class.getName());
+    private static final java.util.logging.Logger LOGGER = 
+            java.util.logging.Logger.getLogger(Grafika.class.getName());
 
     /**
      * Font koji se koristi za JLabele. Menja se samo preko configa i zvanjem
@@ -173,12 +175,19 @@ public class Grafika {
     protected static Color getTFColor() {
         return TFColor;
     }
-
+    
+    /**
+     * Zatvara prozor sa ucenicima i ponovo poziva {@link Init#init() init}.
+     */
     public static void reset() {
         Ucenici.close();
         Init.init();
     }
     
+    /**
+     * Prikazuje dijalog za cuvanje podataka i zove {@link Init#exit(boolean) exit}
+     * sa odgovarajucim argumentom.
+     */
     protected static void exit() {
         LOGGER.log(Level.FINE, "Iniciram zatvaranje aplikacije i "
                         + "prikazujem dijalog za čuvanje podataka.");

@@ -109,7 +109,7 @@ public class StringMultiMap implements Map<String, ArrayList<String>> {
 
     @Override
     public Set<Entry<String, ArrayList<String>>> entrySet() {
-        throw new UnsupportedOperationException("entrySet za MultiMap ne postoji. "
+        throw new UnsupportedOperationException("entrySet za ovu implementaciju ne postoji. "
                 + "Nisam siguran kako bih uradio, a ne treba mi.");
     }
     

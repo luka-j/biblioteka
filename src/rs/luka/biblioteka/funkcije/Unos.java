@@ -25,7 +25,8 @@ import rs.luka.biblioteka.grafika.Grafika;
  */
 public class Unos {
     
-    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(Unos.class.getName());
+    private static final java.util.logging.Logger LOGGER = 
+            java.util.logging.Logger.getLogger(Unos.class.getName());
 
     /**
      * Proverava da li je unos u redu i zove
@@ -152,7 +153,8 @@ public class Unos {
     }
 
     /**
-     *
+     * Zavrsava unos i ponovo ucitava program.
+     * 
      * @since 10.11.'13.
      */
     public void finalizeUnos() {

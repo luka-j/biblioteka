@@ -1,15 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package rs.luka.biblioteka.grafika;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
-import javax.swing.JTextField;
 import rs.luka.biblioteka.data.Podaci;
 
 /**
@@ -35,6 +29,9 @@ class UzmiVratiButton extends JButton {
         this.setBounds(Konstante.UVBUTTON_X, y, Konstante.UVBUTTON_WIDTH, Konstante.UVBUTTON_HEIGHT);
     }
 
+    /**
+     * Postavlja akciju button-a na uzimanje i prikazuje ga.
+     */
     public void uzmi() {
         this.setText("Iznajmi knjigu");
         this.addActionListener((ActionEvent e) -> {
@@ -44,6 +41,9 @@ class UzmiVratiButton extends JButton {
         this.setVisible(true);
     }
 
+    /**
+     * Postavlja akciju button-a na vracanje i prikazuje ga.
+     */
     public void vrati() {
         this.setText("Vrati knjigu");
         this.addActionListener((ActionEvent e) -> {
@@ -53,10 +53,18 @@ class UzmiVratiButton extends JButton {
         this.setVisible(true);
     }
 
+    /**
+     * Vraca index ucenika na koga se odnosi dugme
+     * @return ucenikIndex
+     */
     public int getIndex() {
         return ucenikIndex;
     }
 
+    /**
+     * Dodaje naslov za vracanje
+     * @param naslov 
+     */
     public void addNaslovZaVracanje(int naslov) {
         naslovi.add(naslov);
     }
@@ -76,7 +84,6 @@ class UzmiVratiButton extends JButton {
                 System.out.println(el);
             }
         }*/
-        //System.out.println("contains false\t" + obj);
         return false;
     }
 

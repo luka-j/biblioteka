@@ -8,7 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.String.valueOf;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -27,21 +29,64 @@ import rs.luka.biblioteka.grafika.Konstante;
  * @since 22.8.'14.
  */
 public class Config {
-    
+    private static final java.util.logging.Logger LOGGER = 
+            java.util.logging.Logger.getLogger(Config.class.getName());
+
+
+    /**
+     * Sastoji se od minimalne i maksimalne vrednosti i funkcije koja uzima int i vraca validnu vrednost.
+     */
     private static class Limit {
+
         final int MIN;
         final int MAX;
+
+        /**
+         * Kreira Limit sa datim MIN- i MAX-om
+         * @param MIN minimalna vrednost za int
+         * @param MAX maksimala vrednost za int
+         */
         private Limit(int MIN, int MAX) {
             this.MAX = MAX;
             this.MIN = MIN;
         }
+
+        /**
+         * Kreira Limit kojem su MIN i MAX {@link Integer#MIN_VALUE} i {@link Integer#MAX_VALUE}
+         */
         private Limit() {
             this.MAX = Integer.MAX_VALUE;
             this.MIN = Integer.MIN_VALUE;
         }
-    }
+        
+        /**
+         * Kreira limit kojem je MIN data vrednost, a max {@link Integer#MAX_VALUE}.
+         * @param MIN 
+         */
+        private Limit(int MIN) {
+            this.MIN = MIN;
+            this.MAX = Integer.MAX_VALUE;
+        }
 
-    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(Config.class.getName());
+        /**
+         * Vraca dati int ako se nalazi izmedju min i max-a. U suprotom, vraca MIN ili MAX, u zavisnosti
+         * sta je blize
+         * @param val vrednost
+         * @return validna vrednost (val, MIN ili MAX)
+         */
+        public int limit(int val) {
+            return Integer.max(Integer.min(val, MAX), MIN);
+        }
+
+        /**
+         * String wrapper za {@link #limit(int)}
+         * @param val vrednost kao String
+         * @return validna vrednost kao String
+         */
+        public String limit(String val) {
+            return String.valueOf(limit(Integer.valueOf(val)));
+        }
+    }
 
     /**
      * Properties.
@@ -78,20 +123,25 @@ public class Config {
             + "workingDir - radni direktorijum aplikacije\n"
             + "logSizeLimit i logCount - broj i velicina log fajla (fajlova)";
 
+    /**
+     * Sve vrednosti koje kljuc moze da ima, sem onih koji pocinju sa k_ (koje se nalaze u Konstante.java).
+     */
     private static final StringMultiMap vrednosti = new StringMultiMap();
-    private static final StringMultiMap limiti =  new StringMultiMap();
+    /**
+     * Limiti za sve vrednosti.
+     */
+    private static final Map<String, Limit> limiti = new HashMap<>();
 
-    //MINIMALNE I MAKSIMALNE VREDNOSTI ZA CONFIG
+    //LIMITI ZA CONFIG
     private static final Limit SIRINA = new Limit(100, 3_000);
     private static final Limit VISINA = new Limit(50, 2_000);
     private static final Limit BR_KNJIGA = new Limit(1, 15);
-    private static final Limit UC_KNJ_SIZE = new Limit(50, Integer.MAX_VALUE);
+    private static final Limit UC_KNJ_SIZE = new Limit(50);
     private static final Limit DATE_LIMIT = new Limit(1, 365);
-    private static final Limit SAVE_PERIOD = new Limit(0, Integer.MAX_VALUE);
-    private static final Limit UNDO = new Limit(0, Integer.MAX_VALUE);
+    private static final Limit SAVE_PERIOD = new Limit(0);
+    private static final Limit UNDO = new Limit(0);
     private static final Limit LOG_SIZE = new Limit(0, 100_000_000);
     private static final Limit LOG_COUNT = new Limit(0, 1_000);
-    
 
     /**
      * Ucitava config iz fajla u Properties.
@@ -137,6 +187,7 @@ public class Config {
 
     /**
      * Podesava sinonime za kljuceve u configu.
+     *
      * @since 25.10.'14.
      */
     private static void defineSynonyms() {
@@ -145,7 +196,7 @@ public class Config {
         vrednosti.put("firstRun", "firstRun", "prvoPokretanje");
         vrednosti.put("dateLimit", "dateLimit", "maxDana", "zadrzavanje", "zadrzavanjeKnjige",
                 "Broj dana koji učenik sme da zadrži knjigu kod sebe");
-        vrednosti.put("lookAndFeel", "lookAndFeel", "LaF", "LnF", "izgled", 
+        vrednosti.put("lookAndFeel", "lookAndFeel", "LaF", "LnF", "izgled",
                 "Izgled aplikacije (system, ocean, nimbus ili motif)");
         vrednosti.put("knjigeS", "knjigeS", "knjigeW", "knjigeSirina", "knjSirina", "sirinaKnjProzora");
         vrednosti.put("knjigeV", "knjigeV", "knjigeH", "knjigeVisina", "knjVisina", "visinaKnjProzora");
@@ -166,43 +217,46 @@ public class Config {
                 "Mogući razredi učenika (razdvojeni zapetom)");
         vrednosti.put("workingDir", "workingDir", "workingDirectory", "Radni direktorijum", "dataDir",
                 "Folder u kojem se čuvaju podaci");
-        vrednosti.put("logSizeLimit", "logSizeLimit", "logSize", "logLimit", "logFileSizeLimit", "velicinaLogFajla", 
+        vrednosti.put("logSizeLimit", "logSizeLimit", "logSize", "logLimit", "logFileSizeLimit", "velicinaLogFajla",
                 "Maksimalna veličina log fajla u bajtovima");
-        vrednosti.put("logFileCount", "logFileCount", "logCount", "logFileNumber", "brojLogFajlova", 
+        vrednosti.put("logFileCount", "logFileCount", "logCount", "logFileNumber", "brojLogFajlova",
                 "Maksimalan broj log fajlova");
     }
-    
+
     /**
      * Postavlja limite u mapi koristeći vrednosti iz fieldova.
+     *
      * @since 11.'14
      */
     private static void setLimits() {
-        limiti.put("ucSize", UC_KNJ_SIZE.MIN, UC_KNJ_SIZE.MAX);
-        limiti.put("knjSize", UC_KNJ_SIZE.MIN, UC_KNJ_SIZE.MAX);
-        limiti.put("dateLimit", DATE_LIMIT.MIN, DATE_LIMIT.MAX);
-        limiti.put("knjigeS", SIRINA.MIN, SIRINA.MAX);
-        limiti.put("knjigeV", VISINA.MIN, VISINA.MAX);
-        limiti.put("uceniciS", SIRINA.MIN, SIRINA.MAX);
-        limiti.put("uceniciV", VISINA.MIN, VISINA.MAX);
-        limiti.put("brKnjiga", BR_KNJIGA.MIN, BR_KNJIGA.MAX);
-        limiti.put("savePeriod", SAVE_PERIOD.MIN, SAVE_PERIOD.MAX);
-        limiti.put("maxUndo", UNDO.MIN, UNDO.MAX);
-        limiti.put("logSizeLimit", LOG_SIZE.MIN, LOG_SIZE.MAX);
-        limiti.put("logFileCount", LOG_COUNT.MIN, LOG_COUNT.MAX);
+        limiti.put("ucSize", UC_KNJ_SIZE);
+        limiti.put("knjSize", UC_KNJ_SIZE);
+        limiti.put("dateLimit", DATE_LIMIT);
+        limiti.put("knjigeS", SIRINA);
+        limiti.put("knjigeV", VISINA);
+        limiti.put("uceniciS", SIRINA);
+        limiti.put("uceniciV", VISINA);
+        limiti.put("brKnjiga", BR_KNJIGA);
+        limiti.put("savePeriod", SAVE_PERIOD);
+        limiti.put("maxUndo", UNDO);
+        limiti.put("logSizeLimit", LOG_SIZE);
+        limiti.put("logFileCount", LOG_COUNT);
     }
-    
+
     /**
-     * Radi iteraciju preko configa i zamenjuje ključeve ako su sinonimi sa glavnim (iz mape vrednosti).
-     * Postavlja grafičke konstante (o istom trošku).
+     * Radi iteraciju preko configa i zamenjuje ključeve ako su sinonimi sa
+     * glavnim (iz mape vrednosti). Postavlja grafičke konstante (o istom
+     * trošku).
+     *
      * @since 7.11.'14.
      */
     private static void resolveKeys() {
         Entry e;
         for (Iterator<Entry<Object, Object>> it = config.entrySet().iterator(); it.hasNext();) {
             e = it.next();
-            if(e.getKey().toString().startsWith("k_")) 
+            if (e.getKey().toString().startsWith("k_")) {
                 set(e.getKey().toString(), e.getValue().toString());
-            else if(!vrednosti.containsKey(e.getKey())) {
+            } else if (!vrednosti.containsKey(e.getKey())) {
                 config.put(vrednosti.getKey((String) e.getKey()), e.getValue());
                 it.remove();
             }
@@ -243,7 +297,9 @@ public class Config {
      * @return String vrednost
      */
     public static String get(String key) {
-        if(key==null) return null;
+        if (key == null) {
+            return null;
+        }
         return config.getProperty(vrednosti.getKey(key));
     }
 
@@ -270,14 +326,14 @@ public class Config {
     public static int getAsInt(String key) {
         return Integer.parseInt(get(key));
     }
-    
+
     public static int getAsInt(String key, String def) {
         return Integer.parseInt(get(key, def));
     }
 
     /**
      * Vraca boolean reprezentaciju trazenog kljuca ili njegovog sinonima. Ako
-     * je vrednost kljuca int, koristi {@link Utils#parseBoolean(int)} da dobije 
+     * je vrednost kljuca int, koristi {@link Utils#parseBoolean(int)} da dobije
      * boolean, u suprotnom uporedjuje String sa "true".
      *
      * @param key kljuc koji se trazi ili sinonim.
@@ -286,7 +342,9 @@ public class Config {
      */
     public static boolean getAsBool(String key) {
         String val = get(key);
-        if(val==null) return false;
+        if (val == null) {
+            return false;
+        }
         if (Utils.isInteger(val)) {
             return Utils.parseBoolean(Integer.parseInt(val));
         }
@@ -306,20 +364,18 @@ public class Config {
         if (!isNameValid(key, val)) {
             throw new IllegalArgumentException("Vrednost " + val + " nije validna za kljuc " + key);
         }
-        if(key.startsWith("k_")) {
+        if (key.startsWith("k_")) {
             Konstante.set(key.substring(2), val);
             return;
         }
-        
+
         String realKey = vrednosti.getKey(key);
         check(realKey, val);
-        
-        if(limiti.containsKey(key)) {
-            ArrayList<String> lims = limiti.get(key);
-            config.setProperty(realKey, 
-                    Utils.limitedInteger(val, Integer.parseInt(lims.get(0)), Integer.parseInt(lims.get(1))));
-        }
-        else {
+
+        if (limiti.containsKey(key)) {
+            config.setProperty(realKey,
+                limiti.get(key).limit(val));
+        } else {
             config.setProperty(realKey, val);
         }
         LOGGER.log(Level.CONFIG, "{0} podešen na {1}", new String[]{key, val});
@@ -327,10 +383,11 @@ public class Config {
     }
 
     /**
-     * Proverava da li je data vrednost dozvoljena za dati kljuc. Razredi moraju da
-     * budu validni integeri razdvojeni zapetama, logLevel integer ili validan
-     * string, lookAndFeel jedan on system, crossOcean ili crossMetal, firstRun
-     * i TFBoja 0 ili 1 ili true ili false, sve ostale vrednosti integeri.
+     * Proverava da li je data vrednost dozvoljena za dati kljuc. Razredi moraju
+     * da budu validni integeri razdvojeni zapetama, logLevel integer ili
+     * validan string, lookAndFeel jedan on system, crossOcean ili crossMetal,
+     * firstRun i TFBoja 0 ili 1 ili true ili false, sve ostale vrednosti
+     * integeri.
      *
      * @param key kljuc u configu
      * @param val vrednost u configu.
@@ -338,8 +395,9 @@ public class Config {
      * @since 24.10.'14.
      */
     private static boolean isNameValid(String key, String val) {
-        if(key.startsWith("k_"))
+        if (key.startsWith("k_")) {
             return true;
+        }
         if (!vrednosti.contains(key)) {
             System.out.println(key + " ne postoji");
             return false;
@@ -364,8 +422,8 @@ public class Config {
             return true;
         }
         if ("lookAndFeel".equalsIgnoreCase(vrednosti.getKey(key))) {
-            return val.equals("system") || val.equals("ocean") || val.equals("metal") || 
-                    val.equals("Nimbus") || val.equals("motif");
+            return val.equals("system") || val.equals("ocean") || val.equals("metal")
+                    || val.equals("Nimbus") || val.equals("motif");
         }
         if ("firstRun".equalsIgnoreCase(vrednosti.getKey(key)) || "TFBoja".equals(vrednosti.getKey(key))) {
             return val.equals("0") || val.equals("1") || val.equals("true") || val.equals("false");
@@ -382,30 +440,42 @@ public class Config {
             return Utils.isInteger(val);
         }
     }
-    
+
+    /**
+     * Proverava da li su vrednosti validne za brKnjiga, razrede i workingDir
+     * @param key ako je jedan od 3 koji se proverava, radi proveru, u suprotnom ignorise
+     * @param val vrednost kljuca
+     */
     private static void check(String key, String val) {
         Iterator<Ucenik> iterator;
-        switch(key) {
-            case "brKnjiga": int valInt = Integer.parseInt(val);
+        switch (key) {
+            case "brKnjiga":
+                int valInt = Integer.parseInt(val);
                 iterator = Podaci.iteratorUcenika();
                 iterator.forEachRemaining((Ucenik uc) -> {
-                    if(uc.getBrojKnjiga() > valInt)
+                    if (uc.getBrojKnjiga() > valInt) {
                         throw new ConfigException("brKnjiga");
+                    }
                 });
-            break;
-            case "razredi": String[] valsStr = val.split(","); int[] vals = new int[valsStr.length]; 
-                for(int i=0; i<vals.length; i++) {
+                break;
+            case "razredi":
+                String[] valsStr = val.split(",");
+                int[] vals = new int[valsStr.length];
+                for (int i = 0; i < vals.length; i++) {
                     vals[i] = Integer.parseInt(valsStr[i]);
                 }
                 iterator = Podaci.iteratorUcenika();
                 iterator.forEachRemaining((Ucenik uc) -> {
-                    if(!Utils.arrayContains(vals, uc.getRazred()))
+                    if (!Utils.arrayContains(vals, uc.getRazred())) {
                         throw new ConfigException("razredi");
+                    }
                 });
-            break;
-            case "workingDir": File folder = new File(val);
-                if(!folder.isDirectory() && !folder.mkdir())
+                break;
+            case "workingDir":
+                File folder = new File(val);
+                if (!folder.isDirectory() && !folder.mkdir()) {
                     throw new ConfigException("workingDir");
+                }
         }
     }
 
@@ -420,7 +490,9 @@ public class Config {
     }
 
     /**
-     * Vraca nazive svih kljuceva u listi, ako imaju puno ime (vise reci sa razmakom).
+     * Vraca nazive svih kljuceva u listi, ako imaju puno ime (vise reci sa
+     * razmakom).
+     *
      * @return ime kljuca koja je user-friendly
      * @since 26.10.'14.
      */

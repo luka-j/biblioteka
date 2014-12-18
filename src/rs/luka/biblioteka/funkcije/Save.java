@@ -54,6 +54,7 @@ public class Save {
             LOGGER.log(Level.FINE, "Lista sa učenicima je prazna. Preskačem čuvanje podataka.");
             return;
         }
+        ucenici.delete();
         ucenici.createNewFile();
         try (BufferedWriter fwU = new BufferedWriter(new FileWriter(ucenici))) {
             Iterator<Ucenik> it = Podaci.iteratorUcenika();
@@ -79,6 +80,7 @@ public class Save {
             LOGGER.log(Level.FINE, "Lista sa knjigama je prazna. Preskačem čuvanje knjiga.");
             return;
         }
+        knjige.delete();
         knjige.createNewFile();
         Iterator<Knjiga> it = Podaci.iteratorKnjiga();
         try (BufferedWriter fwN = new BufferedWriter(new FileWriter(knjige))) {

@@ -2,6 +2,7 @@
 //1145 linija, 24.9.'14.
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
+//2198 linija, 17.12.'14. (trenutno)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -44,6 +45,9 @@ import rs.luka.biblioteka.grafika.Dijalozi;
  */
 public class Podaci {
 
+    /**
+     * Ne moze da se konstruise objekat, jer ova klasa sadrzi samo static metode.
+     */
     private Podaci() {
         throw new IllegalAccessError();
     }
@@ -51,16 +55,26 @@ public class Podaci {
             java.util.logging.Logger.getLogger(Podaci.class.getName());
 
     /**
-     * Globalna promenljiva Lista sa ucenicima (ime, razred, knjige).
+     * Lista sa Ucenicima.
      */
     private static final ArrayList<Ucenik> ucenici = new ArrayList<>();
     /**
-     * Globalna promenljiva Lista sa knjigama i kolicinama.
+     * Lista sa Knjigama.
      */
     private static final ArrayList<Knjiga> knjige = new ArrayList<>();
 
+    /**
+     * default broj ucenika, ako ne postoji u config-u
+     */
     protected static final int defUcSize = 550;
+    /**
+     * default broj knjiga, ako ne postoji u config-u
+     */
     protected static final int defKnjSize = 200;
+    /**
+     * Oznacava da li se testira. Ako da, unosi test podatke
+     */
+    private static final boolean TEST=false;
 
     /**
      * Zove metodu za backup i potom ucitava sve podatke. 
@@ -69,8 +83,10 @@ public class Podaci {
      * @see #backup()
      */
     public static void loadData() {
-        /*new Test().testUnos();
-        if(true) return;*/
+        if(TEST) {
+            new Test().testUnos();
+            if(true) return;
+        }
         backup();
         
         LOGGER.log(Level.FINER, "Počeo sa učitavanjem podataka");
@@ -357,22 +373,24 @@ public class Podaci {
     //SETTERI, ADD-eri
     /**
      * addNas, refactored. Pravi objekat Knjiga sa datim podacima i zove
-     * {@link #addKnjiga(rs.luka.biblioteka.data.Knjiga) } da ubaci objekat u listu.
+     * {@link #dodajKnjigu(rs.luka.biblioteka.data.Knjiga) } da ubaci objekat u listu.
      *
      * @param nas naslov
      * @param kol kolicina
      * @param pisac pisac knjige
      * @throws rs.luka.biblioteka.exceptions.Duplikat ako naslov vec postoji
+     * @throws rs.luka.biblioteka.exceptions.VrednostNePostoji ako konstruktor throwuje VrednostNePosoji
+     * tj. ako je naslov "" ili null
      * @since kraj jula '13.
      */
-    public static void addKnjiga(String nas, int kol, String pisac) throws Duplikat, VrednostNePostoji {
+    public static void dodajKnjigu(String nas, int kol, String pisac) throws Duplikat, VrednostNePostoji {
         Knjiga knj = null;
         try {
-        knj = new Knjiga(nas, kol, pisac); 
+            knj = new Knjiga(nas, kol, pisac); 
         } catch(Prazno ex) {
             throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga);
         }
-        addKnjiga(knj);
+        dodajKnjigu(knj);
     }
     
     /**
@@ -382,7 +400,7 @@ public class Podaci {
      * @throws Duplikat ako knjiga istog naslova vec postoji
      * @since 28.9.'14.
      */
-    public static void addKnjiga(Knjiga knj) throws Duplikat {
+    public static void dodajKnjigu(Knjiga knj) throws Duplikat {
         if(naslovExists(knj.getNaslov()))
             throw new Duplikat(vrednost.Knjiga);
         knjige.add(knj);
@@ -401,45 +419,48 @@ public class Podaci {
      * @throws Duplikat ako {@link #dodajUcenika(java.lang.String, int)} throwuje Duplikat.
      */
     public static void dodajUcenika(String ime) throws Duplikat {
-        dodajUcenika(ime, Ucenik.getPrviRazred());
+        Podaci.dodajUcenika(ime, Ucenik.getPrviRazred());
     }
     
     /**
      * Dodaje ucenika sa datim razredom i praznim knjigama
      * @param ime ime ucenika
      * @param raz razred koji trenutno pohadja
-     * @throws Duplikat ako {@link #addUcenik(java.lang.String, int, java.lang.String[])} throwuje Duplikat
-     * @see #addUcenik(java.lang.String, int, java.lang.String[]) 
+     * @throws Duplikat ako {@link #dodajUcenika(java.lang.String, int, java.lang.String[])} throwuje Duplikat
+     * @see #dodajUcenika(java.lang.String, int, java.lang.String[]) 
      */
     public static void dodajUcenika(String ime, int raz) throws Duplikat {
         String knjige[] = new String[Podaci.getMaxBrojUcenikKnjiga()];
         for (int i = 0; i < knjige.length; i++) {
             knjige[i] = "";
         }
-        addUcenik(ime, raz, knjige);
+        Podaci.dodajUcenika(ime, raz, knjige);
     }
 
     /**
      * addUc, refactored. Konstruktuje objekat Ucenik i zove metodu 
-     * {@link #addUcenik(rs.luka.biblioteka.data.Ucenik)} sa tim argumentom
+     * {@link #dodajUcenika(rs.luka.biblioteka.data.Ucenik)} sa tim argumentom
      * @param ime ucenik
      * @param razred razred
      * @param knjige niz UcenikKnjiga sa naslovima koje ucenik ima kod sebe i
      * datumom kada su iznajmljene
+     * @throws rs.luka.biblioteka.exceptions.Duplikat ako {@link #dodajUcenika(rs.luka.biblioteka.data.Ucenik)}
+     * throwuje duplikat, tj. ako dati objekat vec postoji
      * @since kraj jula '13.
      */
-    public static void addUcenik(String ime, int razred, String[] knjige) throws Duplikat {
+    public static void dodajUcenika(String ime, int razred, String[] knjige) throws Duplikat {
         Ucenik uc = new Ucenik(ime, razred, knjige);
-        addUcenik(uc);
+        dodajUcenika(uc);
     }
     
     /**
      * Dodaje dati objekat u listu sa ucenicima, loguje akciju i stavlja je u undo stack.
      * Menja ucSize u configu.
      * @param ucenik ucenik koji se dodaje
+     * @throws rs.luka.biblioteka.exceptions.Duplikat ako taj ucenik vec postoji
      * @since 28.9.'14.
      */
-    public static void addUcenik(Ucenik ucenik) throws Duplikat {
+    public static void dodajUcenika(Ucenik ucenik) throws Duplikat {
         if(ucenici.contains(ucenik))
             throw new Duplikat(ucenik.toString() + "već postoji");
         ucenici.add(ucenik);
@@ -453,16 +474,18 @@ public class Podaci {
     }
     
     /**
+     * Dodaje novu generaciju, povecava sve razrede i brise one koji nisu validni.
+     * 
      * @param novaGen ucenici
      * @since 1.8.'13.
      * @since 25.8.'13.
      */
     public static void dodajNovuGen(String novaGen) {
         LOGGER.log(Level.INFO, "Iniciram dodavanje nove generacije...");
-        List<String> ucenici = asList(novaGen.split("\\s*,\\s*"));
-        ucenici.stream().forEach((ucenik) -> {
+        List<String> uceniciNoveGen = asList(novaGen.split("\\s*,\\s*"));
+        uceniciNoveGen.stream().forEach((ucenik) -> {
             try {
-                dodajUcenika(ucenik, Ucenik.getPrviRazred());
+                Podaci.dodajUcenika(ucenik, Ucenik.getPrviRazred());
             } catch (Duplikat ex) {
                 JOptionPane.showMessageDialog(null, "Uneli ste dva učenika sa istim imenom i prezimenom. "
                         + "Jedan od njih neće biti unet.", "Duplikat", JOptionPane.WARNING_MESSAGE);
@@ -506,6 +529,7 @@ public class Podaci {
      * i smanjuje ucSize u configu za 1.
      *
      * @param inx index ucenika
+     * @throws rs.luka.biblioteka.exceptions.PreviseKnjiga ako se kod Ucenika nalaze knjige
      * @since 1.7.'13.
      */
     public static void obrisiUcenika(int inx) throws PreviseKnjiga {
@@ -524,10 +548,12 @@ public class Podaci {
     
     /**
      * Trazi index prvog objekta u listi koji je {@link Ucenik#equals(java.lang.Object)}
-     * sa datim objektom i zove {@link #obrisiUcenika(int)} da ga obrise.
+     * sa datim objektom i zove {@link #obrisiUcenika(int)} da ga obrise. Ako ne postoji, vraca false.
      * 
      * @param ucenik Ucenik za brisanje
      * @return true ako je ucenik pronadjen i obrisan, false u suprotnom
+     * @throws rs.luka.biblioteka.exceptions.PreviseKnjiga ako {@link #obrisiUcenika(int)}
+     * throwuje PreviseKnjiga, tj. ako se kod Ucenika i dalje nalaze knjige
      */
     public static boolean obrisiUcenika(Ucenik ucenik) throws PreviseKnjiga {
         int inx = ucenici.indexOf(ucenik);
@@ -541,6 +567,8 @@ public class Podaci {
     /**
      * Brise naslov iz liste.
      * @param inx index naslova
+     * @throws rs.luka.biblioteka.exceptions.PreviseKnjiga ako {@link #obrisiKnjigu(rs.luka.biblioteka.data.Knjiga)}
+     * throwuje PreviseKnjiga, tj ako se kod nekog Ucenika nalazi Knjiga
      * @since 17.9.'14.
      */
     public static void obrisiKnjigu(int inx) throws PreviseKnjiga {
@@ -551,6 +579,7 @@ public class Podaci {
      * Brise prvo pojavljivanje objekta koji je equals sa datom Knjigom.
      * @param knj Knjiga za brisanje
      * @return true ako knjiga postoji i obrisana je, false u suprotnom
+     * @throws rs.luka.biblioteka.exceptions.PreviseKnjiga ako se kod nekog Ucenika nalazi data Knjiga
      * @since 3.10.'14.
      */
     public static boolean obrisiKnjigu(Knjiga knj) throws PreviseKnjiga {

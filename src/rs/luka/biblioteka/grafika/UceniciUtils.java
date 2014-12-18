@@ -26,7 +26,8 @@ import static rs.luka.biblioteka.grafika.Konstante.*;
 
                     
 /**
- *
+ * Sadrzi pomocne metode za Ucenici
+ * 
  * @author luka
  */
 public class UceniciUtils {

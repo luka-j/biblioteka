@@ -18,7 +18,7 @@
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING), posebno UzmiVratiButton
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception
  * Pocistiti +1/-1 haos
- * Bugfixing, optimizacija koda, ciscenje koda (UK -> Uc)
+ * Bugfixing, optimizacija koda, ciscenje koda
  * BeanShell (bsh) konzola
  * Ubaciti kvačice (šđžčć)
  * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e)
@@ -26,6 +26,7 @@
  */
 /**
  * @changelog
+ * Obrisao funkcije#Knjige i funkcije#Ucenici, premestio sve u data#Podaci i funkcije#Pretraga
  * UzmiVratiButton je sada klasa za sebe, koristi je i klasa grafika.Knjige
  * Dodao UzmiVratiButton kao podklasu Ucenici, trebalo bi da smanji upotrebu memorije
  * Promenio resolveSynonyms da podesi vrednost konstante kada naidje (sada se zove resolveKeys)
@@ -44,26 +45,24 @@
 //4434 linija, 24.9.'14. (cleanup)
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
+//6640 linija, 17.12.'14. (dodat UVButton, izbacen Knjige i Ucenici)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
+//1287 linija, 17.12.'14. (Knjige/Ucenici izbaceni(
 package rs.luka.biblioteka.funkcije;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import static java.lang.Thread.setDefaultUncaughtExceptionHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JOptionPane.showOptionDialog;
-import javax.swing.JPanel;
 import rs.luka.biblioteka.data.Config;
 import static rs.luka.biblioteka.data.Config.loadConfig;
 import static rs.luka.biblioteka.data.Datumi.proveriDatum;
@@ -120,7 +119,8 @@ public class Init {
     /**
      * Period na koji se podaci automatski cuvaju, u milisekundama.
      */
-    private static int autosave_period;
+    private static int AUTOSAVE_PERIOD;
+    private static final int MAX_EXITS=5;
 
     /**
      * Postavlja default UncaughtExceptionHandler, iscrtava mali prozor koji
@@ -167,13 +167,17 @@ public class Init {
         
         LOGGER.log(Level.INFO, "Inicijalizacija programa gotova.");
     }
-
+    
+    private static int exitCount = 0;
     /**
      * Cuva podatke i zatvara aplikaciju. Sav error handling radi unutar metode.
      *
      * @param sacuvaj
      */
     public static void exit(boolean sacuvaj) {
+        exitCount++;
+        if(exitCount==MAX_EXITS) 
+            System.exit(-1);
         String opcije[] = {"Da", "Ne"};
         LOGGER.log(Level.INFO, "Izlazim iz programa... Čuvam podatke: {0}", sacuvaj);
         if (sacuvaj) {
@@ -184,7 +188,7 @@ public class Init {
             } catch (IOException ex) {
                 try {
                     LOGGER.log(Level.SEVERE, "I/O Greška pri čuvanju podataka.", ex);
-                } catch (Exception | Error ex1) {
+                } catch (Throwable ex1) {
                     ex1.printStackTrace(); //nikad?
                 }
                 int zatvori = showOptionDialog(null, "Došlo je do greške "
@@ -196,7 +200,11 @@ public class Init {
                     finalizeLogger();
                     System.exit(1);
                 }
-            } catch (Exception | Error ex) {
+                else {
+                    exit(sacuvaj);
+                    return;
+                }
+            } catch (Throwable ex) {
                 try {
                     LOGGER.log(Level.SEVERE, "Nepoznata greška pri čuvanju podataka", ex);
                 } catch (Exception | Error ex2) {
@@ -209,6 +217,9 @@ public class Init {
                 if (zatvori == 0) {
                     finalizeLogger();
                     System.exit(2);
+                } else {
+                    exit(sacuvaj);
+                    return;
                 }
             }
         } else {
@@ -227,15 +238,15 @@ public class Init {
             return;
         }
         try {
-            autosave_period = (int)(Float.parseFloat(Config.get("savePeriod"))*60_000);
-            LOGGER.log(Level.CONFIG, "autosave period: {0}", autosave_period);
+            AUTOSAVE_PERIOD = (int)(Float.parseFloat(Config.get("savePeriod"))*60_000);
+            LOGGER.log(Level.CONFIG, "autosave period: {0}", AUTOSAVE_PERIOD);
         }
         catch(NumberFormatException ex) {
             LOGGER.log(Level.SEVERE, "Greška pri parsiranju autosave perioda iz configa", ex);
         }
         while (true) {
             try {
-                Thread.sleep(autosave_period);
+                Thread.sleep(AUTOSAVE_PERIOD);
                 LOGGER.log(Level.FINER, "autosaving...");
                 Save.save();
             } catch (InterruptedException ex) { //ne bi trebalo da se desi; ako se desi, ignorisati

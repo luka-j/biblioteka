@@ -112,6 +112,10 @@ public class Knjiga implements Comparable<Knjiga> {
     }
 
     //SETTERI
+    /**
+     * Smanjuje kolicinu date knjige
+     * @throws NemaViseKnjiga ako je kolicina manja od 1, jer ne moze biti negativna
+     */
     public void smanjiKolicinu() throws NemaViseKnjiga {
         if (kolicina < 1) {
             throw new rs.luka.biblioteka.exceptions.NemaViseKnjiga(naslov);
@@ -125,7 +129,8 @@ public class Knjiga implements Comparable<Knjiga> {
 
     //OVERRIDES
     /**
-     *
+     * Uporedjuje knjige na osnovu naslova. Koristi {@link String#compareToIgnoreCase(java.lang.String)}
+     * 
      * @param knj Knjiga sa kojom se uporedjuje
      * @return default
      * @since 23.6.2014.
@@ -135,6 +140,10 @@ public class Knjiga implements Comparable<Knjiga> {
         return this.naslov.compareToIgnoreCase(knj.getNaslov());
     }
 
+    /**
+     * Vraca user-friendly deskripciju objekta (naslov, kolicinu i pisca).
+     * @return objekat kao String
+     */
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
@@ -145,6 +154,11 @@ public class Knjiga implements Comparable<Knjiga> {
         return string.toString();
     }
     
+    /**
+     * Uporedjuje Knjige na osnovu naslova i pisca. 
+     * @param knj knjiga
+     * @return Ako su oba jednaka, vraca true, u suprotnom false
+     */
     @Override
     public boolean equals(Object knj) {
         if(!(knj instanceof Knjiga))
@@ -153,6 +167,10 @@ public class Knjiga implements Comparable<Knjiga> {
         return knjiga.getNaslov().equals(naslov) && knjiga.getPisac().equals(pisac);
     }
 
+    /**
+     * Contract sa equals. Automatski generisano
+     * @return hashCode objekta Knjiga, koji se gradi na osnovu naslova i pisca
+     */
     @Override
     public int hashCode() {
         int hash = 7;

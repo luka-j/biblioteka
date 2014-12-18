@@ -28,7 +28,7 @@ public class Datumi {
      * DateFormat koriscen za I/O.
      */
     public static final SimpleDateFormat df = new SimpleDateFormat("ddMMyy");
-    private static long razlika;
+    private static long razlika; //field zbog lambde
 
     /**
      * Proverava da li neki od ucenika zadrzava knjigu predugo. Limit se uzima

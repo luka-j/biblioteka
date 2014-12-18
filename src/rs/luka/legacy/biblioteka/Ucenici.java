@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import rs.luka.biblioteka.data.Podaci;
-import static rs.luka.biblioteka.data.Podaci.addUcenik;
+import static rs.luka.biblioteka.data.Podaci.dodajUcenika;
 import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import static rs.luka.biblioteka.data.Podaci.povecajRazred;
@@ -39,7 +39,7 @@ public class Ucenici {
         for (int i = 0; i < knjige.length; i++) {
             knjige[i] = "";
         }
-        addUcenik(ime, raz, knjige);
+//        dodajUcenika(ime, raz, knjige);
     }
 
     /**
