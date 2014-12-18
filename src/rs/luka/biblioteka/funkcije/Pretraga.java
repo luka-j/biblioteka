@@ -122,4 +122,7 @@ public class Pretraga {
                 new Object[]{inx.size(), pocetak});
         return inx;
     }
+
+    private Pretraga() {
+    }
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 /**
  * Test klasa.
@@ -45,4 +46,5 @@ public class Fajlovi {
             ex.printStackTrace();
         }
     }
+    private static final Logger LOG = Logger.getLogger(Fajlovi.class.getName());
 }

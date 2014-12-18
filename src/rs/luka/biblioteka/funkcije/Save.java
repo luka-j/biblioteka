@@ -91,4 +91,7 @@ public class Save {
         }
         LOGGER.log(Level.INFO, "Sačuvao knjige");
     }
+
+    private Save() {
+    }
 }

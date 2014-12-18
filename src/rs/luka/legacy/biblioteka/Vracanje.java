@@ -3,6 +3,7 @@ package rs.luka.legacy.biblioteka;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -13,14 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import static rs.luka.biblioteka.data.Podaci.indexOfUcenik;
-import rs.luka.biblioteka.exceptions.Prazno;
-import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import rs.luka.biblioteka.grafika.Dijalozi;
-import rs.luka.biblioteka.grafika.Grafika;
 
-/**
- * @author Luka
- */
+
 public class Vracanje {
 
     /**
@@ -32,6 +28,9 @@ public class Vracanje {
      */
     private JFrame winV;
 
+    /**
+     *
+     */
     public void Vracanje() {
         //-----------JFrame&JPanel------------------------------ 
         winV = new JFrame("Vracanje");
@@ -146,4 +145,5 @@ public class Vracanje {
         pan2.add(in);
         win2.setVisible(true);
     }
+    private static final Logger LOG = Logger.getLogger(Vracanje.class.getName());
 }

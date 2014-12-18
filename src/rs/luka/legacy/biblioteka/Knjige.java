@@ -77,8 +77,9 @@ public class Knjige {
         String naslov = Podaci.getKnjiga(inx).getNaslov();
         Iterator<Ucenik> it = Podaci.iteratorUcenika();
         while(it.hasNext()) {
-            if(it.next().hasKnjiga(naslov)) 
+            if(it.next().hasKnjiga(naslov)) {
                 throw new PreviseKnjiga(inx);
+            }
         }
         Podaci.obrisiKnjigu(inx);
     }

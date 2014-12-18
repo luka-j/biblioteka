@@ -1,13 +1,10 @@
 package rs.luka.legacy.biblioteka;
 
+import java.io.IOException;
+import java.util.List;
+import javax.swing.JOptionPane;
 import rs.luka.biblioteka.data.Podaci;
 import rs.luka.biblioteka.funkcije.Save;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -54,7 +51,7 @@ public class UnosLegacy {
      * @see grafika.UnosGrafika Unos metoda za ucenike
      */
     public void UnosUcenici() {
-        Save SR = new Save();
+//        Save SR = new Save();
         String ime, knj;
         boolean end = false;
         while (!end) {
@@ -88,9 +85,9 @@ public class UnosLegacy {
             }
         }
         try {
-            SR.saveKnjige();
+            Save.saveKnjige();
         } catch (IOException ex) {
-            Logger.getLogger(Podaci.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(Podaci.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

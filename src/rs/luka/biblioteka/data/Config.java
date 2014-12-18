@@ -22,71 +22,12 @@ import rs.luka.biblioteka.exceptions.ConfigException;
 import rs.luka.biblioteka.funkcije.Utils;
 import rs.luka.biblioteka.grafika.Konstante;
 
-/**
- * Klasa sa konfiguracijskim fajlom.
- *
- * @author luka
- * @since 22.8.'14.
- */
+
 public class Config {
     private static final java.util.logging.Logger LOGGER = 
             java.util.logging.Logger.getLogger(Config.class.getName());
 
 
-    /**
-     * Sastoji se od minimalne i maksimalne vrednosti i funkcije koja uzima int i vraca validnu vrednost.
-     */
-    private static class Limit {
-
-        final int MIN;
-        final int MAX;
-
-        /**
-         * Kreira Limit sa datim MIN- i MAX-om
-         * @param MIN minimalna vrednost za int
-         * @param MAX maksimala vrednost za int
-         */
-        private Limit(int MIN, int MAX) {
-            this.MAX = MAX;
-            this.MIN = MIN;
-        }
-
-        /**
-         * Kreira Limit kojem su MIN i MAX {@link Integer#MIN_VALUE} i {@link Integer#MAX_VALUE}
-         */
-        private Limit() {
-            this.MAX = Integer.MAX_VALUE;
-            this.MIN = Integer.MIN_VALUE;
-        }
-        
-        /**
-         * Kreira limit kojem je MIN data vrednost, a max {@link Integer#MAX_VALUE}.
-         * @param MIN 
-         */
-        private Limit(int MIN) {
-            this.MIN = MIN;
-            this.MAX = Integer.MAX_VALUE;
-        }
-
-        /**
-         * Vraca dati int ako se nalazi izmedju min i max-a. U suprotom, vraca MIN ili MAX, u zavisnosti
-         * sta je blize
-         * @param val vrednost
-         * @return validna vrednost (val, MIN ili MAX)
-         */
-        public int limit(int val) {
-            return Integer.max(Integer.min(val, MAX), MIN);
-        }
-
-        /**
-         * String wrapper za {@link #limit(int)}
-         * @param val vrednost kao String
-         * @return validna vrednost kao String
-         */
-        public String limit(String val) {
-            return String.valueOf(limit(Integer.valueOf(val)));
-        }
-    }
 
     /**
      * Properties.
@@ -327,6 +268,13 @@ public class Config {
         return Integer.parseInt(get(key));
     }
 
+    /**
+     * Vraca integer reprezentaciju trazenog kljuce ili njgeovog sinonima. Ako ne postoji, vraca default
+     * u int obliku.
+     * @param key kljuc cija se vrednost trazi
+     * @param def default vrednost
+     * @return odgovarajuca vrednost za kljuc
+     */
     public static int getAsInt(String key, String def) {
         return Integer.parseInt(get(key, def));
     }
@@ -504,5 +452,60 @@ public class Config {
             }
         }
         return vals;
+    }
+
+    /**
+     * Sastoji se od minimalne i maksimalne vrednosti i funkcije koja uzima int i vraca validnu vrednost.
+     */
+    private static class Limit {
+
+        final int MIN;
+        final int MAX;
+
+        /**
+         * Kreira Limit sa datim MIN- i MAX-om
+         * @param MIN minimalna vrednost za int
+         * @param MAX maksimala vrednost za int
+         */
+        private Limit(int MIN, int MAX) {
+            this.MAX = MAX;
+            this.MIN = MIN;
+        }
+
+        /**
+         * Kreira Limit kojem su MIN i MAX {@link Integer#MIN_VALUE} i {@link Integer#MAX_VALUE}
+         */
+        private Limit() {
+            this.MAX = Integer.MAX_VALUE;
+            this.MIN = Integer.MIN_VALUE;
+        }
+
+        /**
+         * Kreira limit kojem je MIN data vrednost, a max {@link Integer#MAX_VALUE}.
+         * @param MIN
+         */
+        private Limit(int MIN) {
+            this.MIN = MIN;
+            this.MAX = Integer.MAX_VALUE;
+        }
+
+        /**
+         * Vraca dati int ako se nalazi izmedju min i max-a. U suprotom, vraca MIN ili MAX, u zavisnosti
+         * sta je blize
+         * @param val vrednost
+         * @return validna vrednost (val, MIN ili MAX)
+         */
+        public int limit(int val) {
+            return Integer.max(Integer.min(val, MAX), MIN);
+        }
+
+        /**
+         * String wrapper za {@link #limit(int)}
+         * @param val vrednost kao String
+         * @return validna vrednost kao String
+         */
+        public String limit(String val) {
+            return String.valueOf(limit(Integer.valueOf(val)));
+        }
     }
 }

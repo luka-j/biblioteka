@@ -7,17 +7,16 @@ import static java.net.URLDecoder.decode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import rs.luka.biblioteka.data.Config;
 
-/**
- * Razne static metode koje mogu biti korisne u svakom delu programa.
- *
- * @author luka
- * @since 21.8.'14.
- */
+
 public class Utils {
+    
+    private static final Logger LOGGER = Logger.getLogger(Utils.class.getName());
 
     /**
      * Direktorijum iz koga je program pokrenut.
@@ -32,7 +31,9 @@ public class Utils {
     public static void setWorkingDir() {
         if (Config.hasKey("workingDir")) {
             workingDir = Config.get("workingDir");
+            LOGGER.log(Level.FINE, "Postavljen workingDir prema configu");
         }
+        LOGGER.log(Level.WARNING, "workingDir nije postavljen prema configu, koristim default");
     }
 
     /**
@@ -55,7 +56,10 @@ public class Utils {
             System.out.println(decoded);
             workingDir = str;
             System.out.println("System props:\n" + System.getProperties().toString());
+            LOGGER.log(Level.FINE, "Uspešno dekodiran i postavljen workingDir");
         } catch (UnsupportedEncodingException ex) {
+            LOGGER.log(Level.SEVERE, "Neuspešno dekodiran String workingDir-a: UnsupportedEncoding."
+                    + "Postavljam workingDir na user.home");
             showMessageDialog(null, "Neuspešno dekodiran String radnog direktorijuma\n"
                     + "Default lokacija je " + System.getProperty("user.home"), "GREŠKA!", JOptionPane.ERROR_MESSAGE);
             workingDir = System.getProperty("user.home");
@@ -95,6 +99,7 @@ public class Utils {
         for (int i = space; i < length; i++) {
             sb.append(chars.charAt(rnd.nextInt(chars.length())));
         }
+        LOGGER.log(Level.FINE, "Vraćam random String {0}", sb);
         return sb.toString();
     }
 
@@ -109,9 +114,11 @@ public class Utils {
     public static boolean arrayContains(int[] array, int value) {
         for (int element : array) {
             if (element == value) {
+                LOGGER.log(Level.FINE, "Dati niz sadrži datu vrednost");
                 return true;
             }
         }
+        LOGGER.log(Level.FINE, "Dati niz ne sadrži datu vrednost");
         return false;
     }
 
@@ -126,9 +133,11 @@ public class Utils {
     public static boolean arrayContains(String[] array, String value) {
         for (String element : array) {
             if (element.equals(value)) {
+                LOGGER.log(Level.FINE, "Dati niz sadrži datu vrednost");
                 return true;
             }
         }
+        LOGGER.log(Level.FINE, "Dati niz ne sadrži datu vrednost");
         return false;
     }
 
@@ -144,9 +153,11 @@ public class Utils {
     public static int getArrayIndex(int[] array, int element) {
         for (int i = 0; i < array.length; i++) {
             if (element == array[i]) {
+                LOGGER.log(Level.FINE, "Index datog elementa u nizu je {0}", i);
                 return i;
             }
         }
+        LOGGER.log(Level.FINE, "Dati niz ne sadrži datu vrednost");
         return -1;
     }
 
@@ -158,17 +169,20 @@ public class Utils {
      */
     public static boolean isInteger(String str) {
         if (str == null || str.isEmpty() || str.length() > 11) {
+            LOGGER.log(Level.FINE, "{0} nije ceo broj koji staje u int", str);
             return false;
         }
         for (int i = 0; i < str.length(); i++) {
             if (i == 0 && str.charAt(i) == '-') {
                 if (str.length() == 1) {
+                    LOGGER.log(Level.FINE, "{0} nije ceo broj, sadrži samo minus (prekratak)", str);
                     return false;
                 } else {
                     continue;
                 }
             }
             if (Character.digit(str.charAt(i), 10) < 0) {
+                LOGGER.log(Level.FINE, "{0} nije ceo broj", str);
                 return false;
             }
         }
@@ -182,9 +196,10 @@ public class Utils {
      */
     public static ArrayList<Integer> extractXFromPointList(List<Point> list) {
         ArrayList<Integer> ret = new ArrayList<>(list.size());
-        for(Point e : list) {
+        list.stream().forEach((e) -> {
             ret.add(e.x);
-        }
+        });
+        LOGGER.log(Level.FINE, "Uspešno ekstraktovao X iz liste Point-a i stavio u listu Integer-a");
         return ret;
     }
     
@@ -196,9 +211,12 @@ public class Utils {
      */
     public static int countCharsInString(String string, char ch) {
         int count=0;
-        for(int i=0; i<string.length(); i++) 
-            if(string.charAt(i)==ch)
+        for(int i=0; i<string.length(); i++) {
+            if (string.charAt(i)==ch) {
                 count++;
+            }
+        }
+        LOGGER.log(Level.FINE, "Broj karaktera {0} u {1} je {2}", new Object[]{ch, string, count});
         return count;
     }
 }

@@ -191,8 +191,9 @@ public class Podesavanja {
     private void sacuvaj() throws PreviseKnjiga, FileNotFoundException, IllegalArgumentException, LosFormat {
         try {
             for(int i=0; i<labels.length; i++) {
-                if(!textfields[i].getText().isEmpty())
+                if(!textfields[i].getText().isEmpty()) {
                     Config.set(labels[i].getText(), textfields[i].getText());
+                }
             }
         }
         catch(ConfigException ex) {

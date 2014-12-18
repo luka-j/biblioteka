@@ -39,6 +39,43 @@ public class Unos {
     private final Dimension UNOS_SIZE = new Dimension(UNOS_WIDTH, UNOS_HEIGHT);
     private final Dimension BUTTON_SIZE = new Dimension(UNOS_BUTTON_WIDTH, UNOS_BUTTON_HEIGHT);
 
+
+    //
+    //--------------------------------------------------------------------------
+    //
+    
+    private final Dimension UNOSKNJ_SIZE = new Dimension(UNOSKNJ_WIDTH, UNOSKNJ_HEIGHT);
+    private final Rectangle NASLOV_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_NASLOV_Y, 
+            UNOSKNJ_LABEL_WIDTH, 2*UNOSKNJ_LABEL_HEIGHT);
+    private final Rectangle NASLOVTF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_NASLOVTF_Y,
+            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
+    private final Rectangle PISAC_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_PISAC_Y, 
+            UNOSKNJ_LABEL_WIDTH, UNOSKNJ_LABEL_HEIGHT);
+    private final Rectangle PISACTF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_PISACTF_Y,
+            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
+    private final Rectangle KOLICINA_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_KOLICINA_Y, 
+            UNOSKNJ_LABEL_WIDTH, UNOSKNJ_LABEL_HEIGHT);
+    private final Rectangle KOLICINATF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_KOLICINATF_Y,
+            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
+    private final Rectangle KNJ_UNESI_BOUNDS = new Rectangle(UNOSKNJ_UNESI_X, UNOSKNJ_UNESI_Y, 
+            UNOSKNJ_UNESI_WIDTH, UNOSKNJ_UNESI_HEIGHT);
+
+    private final Dimension UNOSUC_SIZE = new Dimension(UNOSUC_WIDTH, UNOSUC_HEIGHT);
+    private final Rectangle IME_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_IME_Y, 
+            UNOSUC_LABEL_WIDTH, UNOSUC_LABEL_HEIGHT);
+    private final Rectangle IMETF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_IMETF_Y, 
+            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
+    private final Rectangle RAZRED_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_RAZRED_Y, 
+            UNOSUC_LABEL_WIDTH, UNOSUC_LABEL_HEIGHT);
+    private final Rectangle RAZREDTF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_RAZREDTF_Y, 
+            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
+    private final Rectangle KNJIGE_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_KNJIGE_Y, 
+            UNOSUC_LABEL_WIDTH, 2*UNOSUC_LABEL_HEIGHT);
+    private final Rectangle KNJIGETF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_KNJIGETF_Y, 
+            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
+    private final Rectangle UC_UNESI_BOUNDS = new Rectangle(UNOSUC_UNESI_X, UNOSUC_UNESI_Y, 
+            UNOSUC_UNESI_WIDTH, UNOSUC_UNESI_HEIGHT);
+    
     /**
      * Iscrtava glavni prozor za unos i 2 dugmeta za unos ucenika i knjiga.
      */
@@ -69,25 +106,6 @@ public class Unos {
         win.setVisible(true);
     }
 
-    //
-    //--------------------------------------------------------------------------
-    //
-    
-    private final Dimension UNOSKNJ_SIZE = new Dimension(UNOSKNJ_WIDTH, UNOSKNJ_HEIGHT);
-    private final Rectangle NASLOV_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_NASLOV_Y, 
-            UNOSKNJ_LABEL_WIDTH, 2*UNOSKNJ_LABEL_HEIGHT);
-    private final Rectangle NASLOVTF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_NASLOVTF_Y,
-            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
-    private final Rectangle PISAC_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_PISAC_Y, 
-            UNOSKNJ_LABEL_WIDTH, UNOSKNJ_LABEL_HEIGHT);
-    private final Rectangle PISACTF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_PISACTF_Y,
-            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
-    private final Rectangle KOLICINA_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_KOLICINA_Y, 
-            UNOSKNJ_LABEL_WIDTH, UNOSKNJ_LABEL_HEIGHT);
-    private final Rectangle KOLICINATF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_KOLICINATF_Y,
-            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
-    private final Rectangle KNJ_UNESI_BOUNDS = new Rectangle(UNOSKNJ_UNESI_X, UNOSKNJ_UNESI_Y, 
-            UNOSKNJ_UNESI_WIDTH, UNOSKNJ_UNESI_HEIGHT);
     /**
      * Iscrtava prozor za unos knjiga.
      */
@@ -122,7 +140,7 @@ public class Unos {
         nasText.setFont(Grafika.getLabelFont());
         nasText.setForeground(Grafika.getFgColor());
         nasText.setCaretColor(Grafika.getFgColor());
-            nasText.setBackground(Grafika.getTFColor());
+        nasText.setBackground(Grafika.getTFColor());
         pan.add(nasText);
         JLabel pisac = new JLabel("Unesite pisca knjige:");
         pisac.setBounds(PISAC_BOUNDS);
@@ -134,7 +152,7 @@ public class Unos {
         pisac.setFont(Grafika.getLabelFont());
         pisacText.setForeground(Grafika.getFgColor());
         pisacText.setCaretColor(Grafika.getFgColor());
-            pisacText.setBackground(Grafika.getTFColor());
+        pisacText.setBackground(Grafika.getTFColor());
         pan.add(pisacText);
         JLabel kolicina = new JLabel("Unesite količinu:");
         kolicina.setBounds(KOLICINA_BOUNDS);
@@ -146,7 +164,7 @@ public class Unos {
         kolText.setFont(Grafika.getLabelFont());
         kolText.setForeground(Grafika.getFgColor());
         kolText.setCaretColor(Grafika.getFgColor());
-            kolText.setBackground(Grafika.getTFColor());
+        kolText.setBackground(Grafika.getTFColor());
         pan.add(kolText);
         //----------JButton&ActionListener--------------------------------------
         JButton but = new JButton("Unesi podatke");
@@ -186,22 +204,6 @@ public class Unos {
         winKnj.setVisible(true);
     }
 
-    private final Dimension UNOSUC_SIZE = new Dimension(UNOSUC_WIDTH, UNOSUC_HEIGHT);
-    private final Rectangle IME_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_IME_Y, 
-            UNOSUC_LABEL_WIDTH, UNOSUC_LABEL_HEIGHT);
-    private final Rectangle IMETF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_IMETF_Y, 
-            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
-    private final Rectangle RAZRED_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_RAZRED_Y, 
-            UNOSUC_LABEL_WIDTH, UNOSUC_LABEL_HEIGHT);
-    private final Rectangle RAZREDTF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_RAZREDTF_Y, 
-            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
-    private final Rectangle KNJIGE_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_KNJIGE_Y, 
-            UNOSUC_LABEL_WIDTH, 2*UNOSUC_LABEL_HEIGHT);
-    private final Rectangle KNJIGETF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_KNJIGETF_Y, 
-            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
-    private final Rectangle UC_UNESI_BOUNDS = new Rectangle(UNOSUC_UNESI_X, UNOSUC_UNESI_Y, 
-            UNOSUC_UNESI_WIDTH, UNOSUC_UNESI_HEIGHT);
-    
     /**
      * Iscrtava prozor za unos ucenika.
      */
@@ -238,7 +240,7 @@ public class Unos {
         imeText.setFont(Grafika.getLabelFont());
         imeText.setForeground(Grafika.getFgColor());
         imeText.setCaretColor(Grafika.getFgColor());
-            imeText.setBackground(Grafika.getTFColor());
+        imeText.setBackground(Grafika.getTFColor());
         JLabel raz = new JLabel("Unesite razred u koji učenik ide(brojevima):");
         raz.setBounds(RAZRED_BOUNDS);
         raz.setFont(Grafika.getLabelFont());
@@ -249,7 +251,7 @@ public class Unos {
         razText.setFont(Grafika.getLabelFont());
         razText.setForeground(Grafika.getFgColor());
         razText.setCaretColor(Grafika.getFgColor());
-            razText.setBackground(Grafika.getTFColor());
+        razText.setBackground(Grafika.getTFColor());
         pan.add(razText);
         JLabel knj = new JLabel("<html>Unesite knjige koje se trenutno nalaze"
                 + " kod učenika, razdvojene zapetom:</html>");
@@ -262,7 +264,7 @@ public class Unos {
         knjText.setFont(Grafika.getLabelFont());
         knjText.setForeground(Grafika.getFgColor());
         knjText.setCaretColor(Grafika.getFgColor());
-            knjText.setBackground(Grafika.getTFColor());
+        knjText.setBackground(Grafika.getTFColor());
         //----------ActionListener----------------------------------------------
         ActionListener unesi = (ActionEvent ae) -> {
             if ("".equals(imeText.getText())) {

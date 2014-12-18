@@ -21,18 +21,6 @@ import rs.luka.biblioteka.funkcije.Utils;
 public class Ucenik implements Comparable<Ucenik> {
 
     /**
-     * Ime i prezime ucenika.
-     */
-    private final String ime;
-    /**
-     * Razred u koji ucenik trenutno ide.
-     */
-    private int razred;
-    /**
-     * Knjige koje su trenutno kod ucenika.
-     */
-    private final UcenikKnjiga[] knjige;
-    /**
      * Validni razredi.
      */
     protected static int validRazred[] = {1, 2, 3, 4, 5, 6, 7, 8};
@@ -104,6 +92,18 @@ public class Ucenik implements Comparable<Ucenik> {
     public static int getPrviRazred() {
         return validRazred[0];
     }
+    /**
+     * Ime i prezime ucenika.
+     */
+    private final String ime;
+    /**
+     * Razred u koji ucenik trenutno ide.
+     */
+    private int razred;
+    /**
+     * Knjige koje su trenutno kod ucenika.
+     */
+    private final UcenikKnjiga[] knjige;
 
     //KONSTRUKTORI:
     public Ucenik(String ime, int razred, String[] knjige) {
@@ -436,7 +436,7 @@ public class Ucenik implements Comparable<Ucenik> {
          */
         private final String splitString = new String(new char[]{splitChar});
 
-        public UcenikKnjiga(String naslov, Date datum) {
+        UcenikKnjiga(String naslov, Date datum) {
             this.naslov = naslov;
             this.datum = datum;
         }

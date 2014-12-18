@@ -14,8 +14,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.NoSuchElementException;
 import javax.swing.JOptionPane;
-import rs.luka.biblioteka.funkcije.Utils;
 import static javax.swing.JOptionPane.showMessageDialog;
+import rs.luka.biblioteka.funkcije.Utils;
 
 /**
  *

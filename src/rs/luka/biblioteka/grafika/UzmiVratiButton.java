@@ -3,6 +3,7 @@ package rs.luka.biblioteka.grafika;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import rs.luka.biblioteka.data.Podaci;
 
@@ -93,5 +94,7 @@ class UzmiVratiButton extends JButton {
         hash = 41 * hash + this.ucenikIndex;
         return hash;
     }
+    
+    private static final Logger LOG = Logger.getLogger(UzmiVratiButton.class.getName());
     
 }

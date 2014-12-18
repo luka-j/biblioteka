@@ -46,6 +46,15 @@ public class UceniciUtils {
     private final Rectangle UNESI_BOUNDS = new Rectangle(DODAJUCENIKA_DODAJ_X, DODAJUCENIKA_DODAJ_Y, 
             DODAJUCENIKA_DODAJ_WIDTH, DODAJUCENIKA_DODAJ_HEIGHT);
     
+    
+    private final Dimension DODAJGEN_SIZE = new Dimension(DODAJGENERACIJU_WIDTH, DODAJGENERACIJU_HEIGHT);
+    private final Rectangle IMENA_BOUNDS = new Rectangle(DODAJGENERACIJU_TEXT_X, DODAJGENERACIJU_IMENA_Y, 
+            DODAJGENERACIJU_IMENA_WIDTH, DODAJGENERACIJU_IMENA_HEIGHT);
+    private final Rectangle SCROLL_BOUNDS = new Rectangle(DODAJGENERACIJU_TEXT_X, DODAJGENERACIJU_SCROLL_Y,
+            DODAJGENERACIJU_SCROLL_WIDTH, DODAJGENERACIJU_SCROLL_HEIGHT);
+    private final Rectangle UNESIGEN_BOUNDS = new Rectangle(DODAJGENERACIJU_UNESI_X, DODAJGENERACIJU_UNESI_Y,
+            DODAJGENERACIJU_UNESI_WIDTH, DODAJGENERACIJU_UNESI_HEIGHT);
+    
     /**
      * Prozor za dodavanje novog ucenika.
      *
@@ -125,7 +134,9 @@ public class UceniciUtils {
         //---------JFrame&JPanel------------------------------------------------
         String ucenik = Dijalozi.showTextFieldDialog("Brisanje ucenika", "Unesite ime ucenika "
                 + "i pritisnite enter:", "");
-        if(ucenik == null || ucenik.equals("null")) return;
+        if (ucenik == null || ucenik.equals("null")) {
+            return;
+        }
         List<Integer> inx = indexOfUcenik(ucenik);
         if (inx.isEmpty()) {
             LOGGER.log(Level.INFO, "Učenik {0} nije pronađen", ucenik);
@@ -150,15 +161,7 @@ public class UceniciUtils {
             }
         }
     }
-    
-    private final Dimension DODAJGEN_SIZE = new Dimension(DODAJGENERACIJU_WIDTH, DODAJGENERACIJU_HEIGHT);
-    private final Rectangle IMENA_BOUNDS = new Rectangle(DODAJGENERACIJU_TEXT_X, DODAJGENERACIJU_IMENA_Y, 
-            DODAJGENERACIJU_IMENA_WIDTH, DODAJGENERACIJU_IMENA_HEIGHT);
-    private final Rectangle SCROLL_BOUNDS = new Rectangle(DODAJGENERACIJU_TEXT_X, DODAJGENERACIJU_SCROLL_Y,
-            DODAJGENERACIJU_SCROLL_WIDTH, DODAJGENERACIJU_SCROLL_HEIGHT);
-    private final Rectangle UNESIGEN_BOUNDS = new Rectangle(DODAJGENERACIJU_UNESI_X, DODAJGENERACIJU_UNESI_Y,
-            DODAJGENERACIJU_UNESI_WIDTH, DODAJGENERACIJU_UNESI_HEIGHT);
-    
+
     /**
      * Prozor za dodavanje nove generacije.
      *

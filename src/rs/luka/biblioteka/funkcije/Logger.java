@@ -2,10 +2,8 @@ package rs.luka.biblioteka.funkcije;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.SimpleFormatter;
 import javax.swing.JOptionPane;
 import rs.luka.biblioteka.data.Config;
@@ -85,5 +83,8 @@ public class Logger {
             handler.close();
             ROOT_LOGGER.removeHandler(handler);
         }
+    }
+
+    private Logger() {
     }
 }

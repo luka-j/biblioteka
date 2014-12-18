@@ -36,10 +36,12 @@ public class Unos {
      * @param kol kolicina knjige
      * @param pisac pisac knjige
      * @return 0 ako je sve OK, 1 ako naslov vec postoji
+     * @throws rs.luka.biblioteka.exceptions.Prazno
      */
     public int UnosKnj(String nas, int kol, String pisac) throws Prazno {
-        if(nas==null || nas.isEmpty())
+        if(nas==null || nas.isEmpty()) {
             throw new Prazno("String naslova knjige je \"\" ili null");
+        }
         if (Podaci.naslovExists(nas)) {
             LOGGER.log(Level.WARNING, "Naslov {0} već postoji", nas);
             showMessageDialog(null, "Naslov već postoji.", "Dupli unos",
@@ -59,6 +61,7 @@ public class Unos {
      * @param raz razred u koji ucenik trenutno ide
      * @return 0 ako je sve OK, 1 ako ucenik vec postoji, 2 ako je ucenik null
      * @throws rs.luka.biblioteka.exceptions.PreviseKnjiga ako se unosi previse knjiga (prema configu)
+     * @throws rs.luka.biblioteka.exceptions.Prazno
      */
     public int UnosUc(String uc, String[] knjige, int raz) throws PreviseKnjiga, Prazno {
         if (uc == null || uc.isEmpty()) {
@@ -66,8 +69,9 @@ public class Unos {
         }
         if (indexOfUcenik(uc).isEmpty()) {
             int brKnjiga = parseInt(Config.get("brKnjiga"));
-            if(knjige.length > brKnjiga)
+            if(knjige.length > brKnjiga) {
                 throw new PreviseKnjiga("Previše knjiga pri unosu");
+            }
             UcToDisk(uc, raz, knjige);
             return 0;
         }
@@ -87,6 +91,7 @@ public class Unos {
      * @param kol kolicina
      * @param pisac pisac knjige
      * @return 0 ako je sve OK
+     * @throws rs.luka.biblioteka.exceptions.Prazno
      * @since 10.11.'13.
      */
     public int KnjToDisk(String knj, int kol, String pisac) throws Prazno {

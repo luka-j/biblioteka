@@ -3,12 +3,16 @@ package rs.luka.biblioteka.funkcije;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import rs.luka.biblioteka.data.Akcija;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.data.Knjiga;
 import rs.luka.biblioteka.data.Podaci;
 import rs.luka.biblioteka.data.Ucenik;
-import rs.luka.biblioteka.exceptions.*;
+import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
+import rs.luka.biblioteka.exceptions.PreviseKnjiga;
+import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 
 /**
  *
@@ -16,10 +20,6 @@ import rs.luka.biblioteka.exceptions.*;
  * @since 27.9.'14.
  */
 public class Undo {
-    /**
-     * Ne moze se inicijalizovati.
-     */
-    private Undo() {throw new IllegalAccessError();}
 
     private static final java.util.logging.Logger LOGGER
             = java.util.logging.Logger.getLogger(Undo.class.getName());
@@ -74,8 +74,10 @@ public class Undo {
             LOGGER.log(Level.FINE, "Undo se trenutno izvršava i ne dozvoljava nove unose u stack.");
             return;
         }
-        for(int i=pointer; i<stack.size(); i++) //brise eventualne kandidate za redo
+        for(int i=pointer; i<stack.size(); i++) {
+            //brise eventualne kandidate za redo
             stack.remove(i);
+        }
         stack.add(new UndoAkcija(akcija, data));
         if (stack.size() > stackDepth) {
             stack.remove(0);
@@ -107,24 +109,27 @@ public class Undo {
      * @since 15.10.'14.
      */
     public static void redo() {
-        if(stack.size()==pointer)
+        if(stack.size()==pointer) {
             return;
+        }
         inProgress=true;
         String akcija = stack.get(pointer).redo();
         pointer++;
         inProgress=false;
         LOGGER.log(Level.INFO, "Redo završen za akciju {0}", akcija);
     }
+
+    /**
+     * Ne moze se inicijalizovati.
+     */
+    private Undo() {
+        throw new IllegalAccessError();
+    }
 }
 
 
 
-/**
- * Klasa koja predstavlja jednu undo akciju. Sadrzi sve fieldove i metode potrebne za undo i redo.
- * Vrsi proveru validnosti podataka unutar kontruktora.
- * @author luka
- * @since 15.10.'14.
- */
+
 class UndoAkcija {
     /**
      * Akcija koja je ubacena u stack.
@@ -171,7 +176,7 @@ class UndoAkcija {
      * @throws UnsupportedOperationException ako podaci nisu zadovoljavajuci
      * @since 15.10.'14.
      */
-    public UndoAkcija(Akcija akcija, Object[] objs) {
+    UndoAkcija(Akcija akcija, Object[] objs) {
         if (akcija.equals(Akcija.BRISANJE_KNJIGE)
                 || akcija.equals(Akcija.DODAVANJE_KNJIGE) && objs[0] instanceof Knjiga) {
             this.akcija = akcija;
@@ -221,20 +226,22 @@ class UndoAkcija {
      */
     private void pickAndDo() {
         try {
-            if(akcija.isBrisanje())
+            if(akcija.isBrisanje()) {
                 doWhat*=BRISANJE;
-            else 
+            } else { 
                 doWhat*=DODAVANJE;
-            if(akcija.isKnjiga()) 
+            } 
+            if(akcija.isKnjiga()) {
                 knjige();
-            else if(akcija.isUcenik())
+            } else if(akcija.isUcenik()) {
                 ucenici();
-            else
+            } else {
                 uzimanjeVracanje();
+            }
         } catch (VrednostNePostoji | PreviseKnjiga | NemaViseKnjiga ex) {
             throw new RuntimeException("Exception prilikom undo procesa", ex);
         } catch(Duplikat ex) {
-            java.util.logging.Logger.getLogger(UndoAkcija.class.getName()).log(Level.FINE, "Duplikat pri undo");
+            LOG.log(Level.FINE, "Duplikat pri undo");
             //smem ignorisati ???
         }
     }
@@ -285,4 +292,5 @@ class UndoAkcija {
             knjiga.povecajKolicinu();
         }
     }
+    private static final Logger LOG = Logger.getLogger(UndoAkcija.class.getName());
 }

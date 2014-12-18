@@ -2,7 +2,7 @@
 //1145 linija, 24.9.'14.
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
-//2198 linija, 17.12.'14. (trenutno)
+//2372 linija, 18.12.'14. (trenutno)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -45,12 +45,6 @@ import rs.luka.biblioteka.grafika.Dijalozi;
  */
 public class Podaci {
 
-    /**
-     * Ne moze da se konstruise objekat, jer ova klasa sadrzi samo static metode.
-     */
-    private Podaci() {
-        throw new IllegalAccessError();
-    }
     private static final java.util.logging.Logger LOGGER = 
             java.util.logging.Logger.getLogger(Podaci.class.getName());
 
@@ -85,7 +79,9 @@ public class Podaci {
     public static void loadData() {
         if(TEST) {
             new Test().testUnos();
-            if(true) return;
+            if(true) {
+                return;
+            }
         }
         backup();
         
@@ -169,15 +165,17 @@ public class Podaci {
                 LOGGER.log(Level.WARNING, "Fajl sa podacima o knjigama je bio prazan, "
                         + "zamenio sam ga sa backupom");
             }
-            else
+            else {
                 copy(knjigeF.toPath(), knjigeBackup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
             if(uceniciF.length()==0) {
                 copy(uceniciBackup.toPath(), uceniciF.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 LOGGER.log(Level.WARNING, "Fajl sa podacima o ucenicima je bio prazan, "
                         + "zamenio sam ga sa backupom");
             }
-            else
+            else {
                 copy(uceniciF.toPath(), uceniciBackup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "I/O greška pri kreiranju backup-a", ex);
             showMessageDialog(null, "Doslo je do greske pri kreiranju backupa.",
@@ -401,8 +399,9 @@ public class Podaci {
      * @since 28.9.'14.
      */
     public static void dodajKnjigu(Knjiga knj) throws Duplikat {
-        if(naslovExists(knj.getNaslov()))
+        if(naslovExists(knj.getNaslov())) {
             throw new Duplikat(vrednost.Knjiga);
+        }
         knjige.add(knj);
         LOGGER.log(Level.INFO, "Naslov dodat: {0}", knj);
         Undo.push(Akcija.DODAVANJE_KNJIGE, new Object[]{knj});
@@ -461,8 +460,9 @@ public class Podaci {
      * @since 28.9.'14.
      */
     public static void dodajUcenika(Ucenik ucenik) throws Duplikat {
-        if(ucenici.contains(ucenik))
+        if(ucenici.contains(ucenik)) {
             throw new Duplikat(ucenik.toString() + "već postoji");
+        }
         ucenici.add(ucenik);
         
         LOGGER.log(Level.INFO, "Učenik dodat: ", new Object[]{ucenik.toString()});
@@ -561,7 +561,9 @@ public class Podaci {
             obrisiUcenika(inx);
             return true;
         }
-        else return false;
+        else {
+            return false;
+        }
     }
     
     /**
@@ -585,8 +587,9 @@ public class Podaci {
     public static boolean obrisiKnjigu(Knjiga knj) throws PreviseKnjiga {
         Iterator<Ucenik> it = Podaci.iteratorUcenika();
         while(it.hasNext()) {
-            if(it.next().hasKnjiga(knj.getNaslov())) 
+            if(it.next().hasKnjiga(knj.getNaslov())) { 
                 throw new PreviseKnjiga(knj.getNaslov());
+            }
         }
         
         if(knjige.remove(knj)) {
@@ -653,8 +656,9 @@ public class Podaci {
     public static void uzmiKnjigu(int ucIndex, Knjiga knjiga) 
             throws PreviseKnjiga, NemaViseKnjiga, VrednostNePostoji, Duplikat {
         int knjIndex = knjige.indexOf(knjiga); //vraca original, zbog equals() metode u Knjiga.java
-        if(knjIndex<0)
+        if(knjIndex<0) {
             throw new VrednostNePostoji(vrednost.Knjiga);
+        }
         Ucenik uc = ucenici.get(ucIndex);
         Knjiga knj = knjige.get(knjIndex);
         try {
@@ -684,12 +688,14 @@ public class Podaci {
             throws PreviseKnjiga, Duplikat, NemaViseKnjiga, VrednostNePostoji {
         List<Integer> indexes = indexOfUcenik(ucenik);
         int ucIndex;
-        if(indexes.isEmpty())
+        if(indexes.isEmpty()) {
             throw new VrednostNePostoji(vrednost.Ucenik);
-        if(indexes.size() > 1)
+        }
+        if(indexes.size() > 1) {
             ucIndex = indexes.get(Dijalozi.viseRazreda(indexes));
-        else
+        } else {
             ucIndex = indexes.get(0);
+        }
         Ucenik uc = ucenici.get(ucIndex);
         Knjiga knj = knjige.get(knjIndex);
         try {
@@ -721,5 +727,12 @@ public class Podaci {
     public static void sortKnjige() {
         knjige.sort(null);
         LOGGER.log(Level.FINE, "Knjige sortirane");
+    }
+
+    /**
+     * Ne moze da se konstruise objekat, jer ova klasa sadrzi samo static metode.
+     */
+    private Podaci() {
+        throw new IllegalAccessError();
     }
 }

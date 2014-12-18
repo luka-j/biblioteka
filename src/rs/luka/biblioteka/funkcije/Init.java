@@ -45,13 +45,13 @@
 //4434 linija, 24.9.'14. (cleanup)
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
-//6640 linija, 17.12.'14. (dodat UVButton, izbacen Knjige i Ucenici)
+//6986 linija, 17.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, dokumentacija)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
-//1287 linija, 17.12.'14. (Knjige/Ucenici izbaceni(
+//1315 linija, 18.12.'14. (Knjige/Ucenici izbaceni)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -84,6 +84,7 @@ import static rs.luka.biblioteka.grafika.Grafika.initGrafika;
  * @since '14.
  */
 class Handler implements Thread.UncaughtExceptionHandler {
+    private static final Logger LOG = Logger.getLogger(Handler.class.getName());
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
@@ -96,7 +97,7 @@ class Handler implements Thread.UncaughtExceptionHandler {
         e.printStackTrace(pw);
         String stackTrace = sw.toString();
         
-        java.util.logging.Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, "Uncaught exception", e);
+        LOG.log(Level.SEVERE, "Uncaught exception", e);
         showMessageDialog(null, "Došlo je do neočekivane greške. Detalji:\n" + stackTrace
                 + "\novi podaci su sačuvani u log.", "Nepoznata greška", JOptionPane.ERROR_MESSAGE);
     }
@@ -122,6 +123,8 @@ public class Init {
     private static int AUTOSAVE_PERIOD;
     private static final int MAX_EXITS=5;
 
+    
+    private static int exitCount = 0;
     /**
      * Postavlja default UncaughtExceptionHandler, iscrtava mali prozor koji
      * oznacava da je ucitavanje podataka u toku, zove {@link #init()} ,
@@ -137,7 +140,7 @@ public class Init {
     }
 
     /**
-     * Radi inicijalizaciju programa. Zove init*, load* i set* metode odgovarajucim redosledom. 
+     * Radi inicijalizaciju programa. Zove init*, load* i set* metode odgovarajucim redosledom.
      * Vidi see also odeljak. 
      * Ne menjati redosled, osim ako neki deo ne radi (exceptioni pri inicijalizaciji).
      *
@@ -167,8 +170,7 @@ public class Init {
         
         LOGGER.log(Level.INFO, "Inicijalizacija programa gotova.");
     }
-    
-    private static int exitCount = 0;
+
     /**
      * Cuva podatke i zatvara aplikaciju. Sav error handling radi unutar metode.
      *
@@ -176,8 +178,9 @@ public class Init {
      */
     public static void exit(boolean sacuvaj) {
         exitCount++;
-        if(exitCount==MAX_EXITS) 
+        if (exitCount==MAX_EXITS) { 
             System.exit(-1);
+        }
         String opcije[] = {"Da", "Ne"};
         LOGGER.log(Level.INFO, "Izlazim iz programa... Čuvam podatke: {0}", sacuvaj);
         if (sacuvaj) {
@@ -199,10 +202,8 @@ public class Init {
                 if (zatvori == 0) {
                     finalizeLogger();
                     System.exit(1);
-                }
-                else {
+                } else {
                     exit(sacuvaj);
-                    return;
                 }
             } catch (Throwable ex) {
                 try {
@@ -219,7 +220,6 @@ public class Init {
                     System.exit(2);
                 } else {
                     exit(sacuvaj);
-                    return;
                 }
             }
         } else {

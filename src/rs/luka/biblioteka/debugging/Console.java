@@ -1,15 +1,21 @@
 package rs.luka.biblioteka.debugging;
 
-import rs.luka.legacy.biblioteka.Knjige;
-import rs.luka.legacy.biblioteka.Ucenici;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import javax.swing.JOptionPane;
-import rs.luka.biblioteka.data.*;
-import rs.luka.biblioteka.funkcije.*;
-import rs.luka.biblioteka.grafika.Grafika;
+import rs.luka.biblioteka.data.Config;
+import rs.luka.biblioteka.data.Datumi;
+import rs.luka.biblioteka.data.Podaci;
+import rs.luka.biblioteka.funkcije.Init;
+import rs.luka.biblioteka.funkcije.Logger;
+import rs.luka.biblioteka.funkcije.Save;
+import rs.luka.biblioteka.funkcije.Undo;
+import rs.luka.biblioteka.funkcije.Utils;
 import rs.luka.biblioteka.grafika.Dijalozi;
+import rs.luka.biblioteka.grafika.Grafika;
+import rs.luka.legacy.biblioteka.Knjige;
+import rs.luka.legacy.biblioteka.Ucenici;
 
 /**
  * @author luka
@@ -29,15 +35,19 @@ public class Console {
     private final String dijalozi = getAllMethods(Dijalozi.class);
     private final String grafika = getAllMethods(Grafika.class);
 
+    /**
+     *
+     */
     public void console() {
         JOptionPane.showMessageDialog(null, "Trenutno radi samo za static metode bez argumenata");
         String komanda = Dijalozi.showTextFieldDialog("Konzola",
                 "Unesite komandu u formi funkcija:arg1,arg2,...", "help");
-        if(komanda.isEmpty()) 
+        if(komanda.isEmpty()) { 
             return;
-        if (komanda.equals("help")) 
+        } 
+        if (komanda.equals("help")) {
             System.out.println(help());
-        else {
+        } else {
             String[] split = komanda.split(":");
             Object[] args = new Object[split.length - 1];
             for (int i = 1; i < split.length; i++) {
@@ -96,4 +106,5 @@ public class Console {
         }
         return retString.toString();
     }
+    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(Console.class.getName());
 }

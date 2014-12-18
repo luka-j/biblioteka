@@ -39,7 +39,9 @@ public class Datumi {
         StringBuilder predugo = new StringBuilder();
         try (final FileWriter predugoFW = new FileWriter(new File(Utils.getWorkingDir() + "predugo.txt"))) {
             int limit = parseInt(Config.get("dateLimit"));
-            if(limit==0) return;
+            if(limit==0) {
+                return;
+            }
             Iterator<Ucenik> it = Podaci.iteratorUcenika();
             it.forEachRemaining((Ucenik uc) -> {
                 for (int j = 0; j < uc.getMaxBrojKnjiga(); j++) {
@@ -71,5 +73,8 @@ public class Datumi {
                     + " ili fajla sa listom učenika koji imaju knjige predugo kod sebe\n"
                     + "Provera datuma nije uradjena", "I/O Greška", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private Datumi() {
     }
 }

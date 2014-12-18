@@ -9,6 +9,16 @@ import rs.luka.biblioteka.exceptions.Prazno;
  * @since 3.7.'13.
  */
 public class Knjiga implements Comparable<Knjiga> {
+    /**
+     * Karakter koji se u fajlovima koristi za razdvajanje polja.
+     * @since 23.9.'14.
+     */
+    private static final char splitChar = '/';
+    /**
+     * String wrapper za {@link #splitChar}.
+     * @since 23.9.'14.
+     */
+    private static final String splitString = new String(new char[]{splitChar});
 
     /**
      * Naslov knjige.
@@ -22,16 +32,6 @@ public class Knjiga implements Comparable<Knjiga> {
      * Pisac knjige.
      */
     private String pisac;
-    /**
-     * Karakter koji se u fajlovima koristi za razdvajanje polja.
-     * @since 23.9.'14.
-     */
-    private static final char splitChar = '/';
-    /**
-     * String wrapper za {@link #splitChar}.
-     * @since 23.9.'14.
-     */
-    private static final String splitString = new String(new char[]{splitChar});
 
     /**
      * Konstruktor koji ne uzima pisca u obzir.
@@ -53,8 +53,9 @@ public class Knjiga implements Comparable<Knjiga> {
      * @param pisac opciono, pisac knjige
      */
     public Knjiga(String naslov, int kolicina, String pisac) throws Prazno {
-        if(naslov == null || naslov.isEmpty())
+        if(naslov == null || naslov.isEmpty()) {
             throw new Prazno("Prazan argument prosledjen konstruktoru");
+        }
         this.naslov = naslov;
         this.kolicina = kolicina;
         this.pisac = pisac;
@@ -69,8 +70,9 @@ public class Knjiga implements Comparable<Knjiga> {
         String [] fields = IOString.split(splitString);
         this.naslov = fields[0];
         this.kolicina = Integer.parseInt(fields[1]);
-        if(fields.length > 2)
+        if(fields.length > 2) {
             this.pisac = fields[2];
+        }
     }
     
     /**
@@ -106,8 +108,9 @@ public class Knjiga implements Comparable<Knjiga> {
     public String getAsIOString() {
         StringBuilder string = new StringBuilder(naslov);
         string.append(splitChar).append(kolicina).append(splitChar);
-        if(pisac!=null)
+        if(pisac!=null) {
             string.append(pisac);
+        }
         return string.toString();
     }
 
@@ -161,8 +164,9 @@ public class Knjiga implements Comparable<Knjiga> {
      */
     @Override
     public boolean equals(Object knj) {
-        if(!(knj instanceof Knjiga))
+        if(!(knj instanceof Knjiga)) {
             return false;
+        }
         Knjiga knjiga = (Knjiga) knj;
         return knjiga.getNaslov().equals(naslov) && knjiga.getPisac().equals(pisac);
     }

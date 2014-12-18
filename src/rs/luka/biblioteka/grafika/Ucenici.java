@@ -63,6 +63,15 @@ public class Ucenici implements FocusListener {
 
     private static final java.util.logging.Logger LOGGER
             = java.util.logging.Logger.getLogger(Ucenici.class.getName());
+    private static final int maxKnjiga = getMaxBrojUcenikKnjiga();
+    private static final JFrame win = new JFrame("Pregled učenika");
+
+    /**
+     * Dispose-uje {@link #win}
+     */
+    protected static void close() {
+        win.dispose();
+    }
 
     /**
      * Matrix sa knjigama pocinje od [][1], na 0 su labeli "Knjiga".
@@ -72,12 +81,8 @@ public class Ucenici implements FocusListener {
     private final String SEARCH_TEXT = UCENICI_SEARCH_TEXT;
     private final Insets INSET = new Insets(UCENICI_TOP_INSET, UCENICI_LEFT_INSET,
             UCENICI_BOTTOM_INSET, UCENICI_RIGHT_INSET); //ne sme static, da se ne bi prerano inicijalizovala
-
-
-    private static final int maxKnjiga = getMaxBrojUcenikKnjiga();
     private final JSplitPane split;
     private final JPanel butPan;
-    private static final JFrame win = new JFrame("Pregled učenika");
     private final JSeparator[][] knjSeparatori;
     private final JSeparator[] ucSeparatori;
     private final JPanel[] knjigePan;
@@ -627,7 +632,6 @@ public class Ucenici implements FocusListener {
     private void setSidePanSize(int red) { //WORKAROUND, pri scrollu se vraca na staro
         if(red==-1 || sidePan.getHeight() < 
             ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL) {
-            System.out.println("red: " + red);
             sidePan.setSize(UCENICI_SIDEPAN_WIDTH,
                 ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL);
         }
@@ -642,8 +646,8 @@ public class Ucenici implements FocusListener {
             uceniciPan.remove(sep); //remove ili samo reset ??
         }
         for (int i = 0; i < maxKnjiga; i++) {
-            for (int j = 0; j < knjSeparatori[i].length; j++) {
-                knjigePan[i].remove(knjSeparatori[i][j]);
+            for (JSeparator knjSeparatori1 : knjSeparatori[i]) {
+                knjigePan[i].remove(knjSeparatori1);
             }
         }
         ArrayList<Integer> ucIndexes = Pretraga.pretraziUcenike(searchBox.getText());
@@ -687,25 +691,19 @@ public class Ucenici implements FocusListener {
         pan.repaint();
     }
 
-    /**
-     * Dispose-uje {@link #win}
-     */
-    protected static void close() {
-        win.dispose();
-    }
-
     //==========FOCUS============================================================
+
     @Override
     public void focusGained(FocusEvent e) {
         if (searchBox.getText().equals(SEARCH_TEXT)) {
             searchBox.setText("");
         }
     }
-
     @Override
     public void focusLost(FocusEvent e) {
         if (searchBox.getText().isEmpty()) {
             searchBox.setText(SEARCH_TEXT);
         }
     }
+
 }

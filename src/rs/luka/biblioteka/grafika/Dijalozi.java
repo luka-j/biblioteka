@@ -18,13 +18,8 @@ import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.funkcije.Utils;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
-/**
- *
- * @author luka
- * @since 17.05.'14.
- */
+
 public class Dijalozi {
-    
 
     /**
      * Prikazuje dijalog za odabir razreda ucenika.
@@ -146,7 +141,11 @@ public class Dijalozi {
      * Ako prozor ne postoji, ignorise poziv.
      */
     public static void disposeInfoWindow() {
-        if(infoWindow != null)
+        if(infoWindow != null) {
             infoWindow.dispose();
+        }
+    }
+
+    private Dijalozi() {
     }
 }

@@ -5,13 +5,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import rs.luka.biblioteka.funkcije.Utils;
 
-/**
- * Sadrži sve konstante vezane za grafiku
- * @author luka
- * @since 11.'14.
- */
+
 public class Konstante {
 
+    private static final Logger LOG = Logger.getLogger(Konstante.class.getName());
     /**
      * Postavlja konstantu sa datim imenom na datu vrednost
      * @param podesavanje ime konstante, dozvoljava tačke umesto donjih crta
@@ -20,7 +17,7 @@ public class Konstante {
      */
     public static void set(String podesavanje, String vrednost) {
         if (!Utils.isInteger(vrednost)) {
-            Logger.getLogger(Konstante.class.getName()).log(Level.WARNING,
+            LOG.log(Level.WARNING,
                     "set() nije uspeo, vrednost {0} nije ceo broj", vrednost);
             return;
         }
@@ -32,6 +29,7 @@ public class Konstante {
              modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL); //evil
              field.set(null, Integer.parseInt(vrednost));*/
             field.set(null, Integer.parseInt(vrednost));
+            LOG.log(Level.FINE, "Podesio {0} na {1}", new Object[]{podesavanje, vrednost});
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
             Logger.getLogger(Konstante.class.getName()).log(Level.WARNING, "set() nije uspeo", ex);
         }

@@ -3,6 +3,7 @@
 //204 linije, 29.11.'14.
 package rs.luka.biblioteka.debugging;
 
+import java.util.logging.Logger;
 import rs.luka.biblioteka.data.Podaci;
 import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
@@ -14,9 +15,12 @@ import rs.luka.biblioteka.exceptions.VrednostNePostoji;
  */
 public class Test {
 
+    /**
+     *
+     */
     public void testUnos() {
         int i = 0, j = 0;
-        for (i = 0; i < 5000; i++) {
+        for (i = 0; i < 5_000; i++) {
             try{Podaci.dodajUcenika("Pera Peric " + i, (i%8)+1, new String[]{});}
             catch(Duplikat ex) {}
         }
@@ -25,4 +29,5 @@ public class Test {
             catch (Duplikat | VrednostNePostoji ex) {}
         }
     }
+    private static final Logger LOG = Logger.getLogger(Test.class.getName());
 }

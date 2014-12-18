@@ -51,14 +51,16 @@ public class StringMultiMap implements Map<String, ArrayList<String>> {
         if (value instanceof String) {
             return values.stream().anyMatch((vals) -> (vals.stream().anyMatch((val) -> (val.equalsIgnoreCase((String)value)))));
         }
-        else
+        else {
             return values.stream().anyMatch((val) -> (val.equals(value)));
+        }
     }
 
     @Override
     public ArrayList<String> get(Object key) {
-        if(key==null || !this.containsKey(key))
+        if(key==null || !this.containsKey(key)) {
             return null;
+        }
         return values.get(keys.indexOf((String)key));
     }
 
@@ -127,8 +129,9 @@ public class StringMultiMap implements Map<String, ArrayList<String>> {
             values.add(new ArrayList<>());
             values.get(values.size()-1).add(val);
         }
-        else if(!values.get(inx).contains(val)) 
+        else if(!values.get(inx).contains(val)) {
             values.get(inx).add(val);
+        }
     }
     
     /**
@@ -158,11 +161,13 @@ public class StringMultiMap implements Map<String, ArrayList<String>> {
      * @since 25.10.'.14
      */
     public String getKey(String value) {
-        for(int i=0; i<values.size(); i++)
+        for(int i=0; i<values.size(); i++) {
             for (String val : values.get(i)) {
-                if(val.equalsIgnoreCase(value))
+                if (val.equalsIgnoreCase(value)) {
                     return keys.get(i);
+                }
             }
+        }
         return null;
     }
     
@@ -179,8 +184,9 @@ public class StringMultiMap implements Map<String, ArrayList<String>> {
     public String getLastValue(String key) {
         //return values.get(keys.indexOf(key)).get(values.get(keys.indexOf(key)).size()-1);
         int inx = keys.indexOf(key);
-        if(inx==-1)
+        if(inx==-1) {
             return null;
+        }
         return getLastValue(inx);
     }
     

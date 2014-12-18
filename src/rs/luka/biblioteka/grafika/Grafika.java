@@ -2,7 +2,7 @@
 //1994 linije, 24.9.'14.
 //2141 linija, 25.10.'14.
 //2570 linija, 29.11.'14.
-//2743 linija, 12.17.'14. (trenutno, dodavanje UVButton)
+//2890 linija, 12.17.'14. (trenutno, dodavanje UVButton)
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Color;
@@ -98,8 +98,9 @@ public class Grafika {
         System.out.println("system LaF: " + getSystemLookAndFeelClassName());
         System.out.println("cross LaF: " + getCrossPlatformLookAndFeelClassName());
         System.out.println("sve");
-        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
             System.out.println(info.getName() + "\t" + info.getClassName());
+        }
         try {
             String LaF = Config.get("lookAndFeel");
             LaF = LaF.toLowerCase();
@@ -128,6 +129,12 @@ public class Grafika {
         }
     }
     
+    /**
+     *
+     * @param invoke
+     * @param obj
+     * @return
+     */
     protected static Action generateEmptyResetAction(Method invoke, Object obj) {
         return new Action() {
             @Override public Object getValue(String key) {return null;}
@@ -172,6 +179,10 @@ public class Grafika {
         return fgColor;
     }
 
+    /**
+     *
+     * @return
+     */
     protected static Color getTFColor() {
         return TFColor;
     }
@@ -200,5 +211,8 @@ public class Grafika {
             //drugim recima, cuva samo ako je odabrana prva opcija
         }
         LOGGER.log(Level.FINE, "Izlaz otkazan. Ostajem u aplikaciji.");
+    }
+
+    private Grafika() {
     }
 }
