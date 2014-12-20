@@ -1,21 +1,15 @@
 package rs.luka.biblioteka.debugging;
 
-import java.lang.reflect.InvocationTargetException;
+import bsh.EvalError;
+import bsh.Interpreter;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import javax.swing.JOptionPane;
-import rs.luka.biblioteka.data.Config;
-import rs.luka.biblioteka.data.Datumi;
-import rs.luka.biblioteka.data.Podaci;
-import rs.luka.biblioteka.funkcije.Init;
-import rs.luka.biblioteka.funkcije.Logger;
-import rs.luka.biblioteka.funkcije.Save;
-import rs.luka.biblioteka.funkcije.Undo;
-import rs.luka.biblioteka.funkcije.Utils;
-import rs.luka.biblioteka.grafika.Dijalozi;
-import rs.luka.biblioteka.grafika.Grafika;
-import rs.luka.legacy.biblioteka.Knjige;
-import rs.luka.legacy.biblioteka.Ucenici;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import rs.luka.biblioteka.data.*;
+import rs.luka.biblioteka.funkcije.*;
+import rs.luka.biblioteka.grafika.*;
 
 /**
  * @author luka
@@ -26,10 +20,9 @@ public class Console {
     private final String datumi = getAllMethods(Datumi.class);
     private final String podaci = getAllMethods(Podaci.class);
     private final String init = getAllMethods(Init.class);
-    private final String knjige = getAllMethods(Knjige.class);
     private final String logger = getAllMethods(Logger.class);
     private final String save = getAllMethods(Save.class);
-    private final String ucenici = getAllMethods(Ucenici.class);
+    private final String pretraga = getAllMethods(Pretraga.class);
     private final String undo = getAllMethods(Undo.class);
     private final String utils = getAllMethods(Utils.class);
     private final String dijalozi = getAllMethods(Dijalozi.class);
@@ -38,61 +31,29 @@ public class Console {
     /**
      *
      */
-    public void console() {
-        JOptionPane.showMessageDialog(null, "Trenutno radi samo za static metode bez argumenata");
-        String komanda = Dijalozi.showTextFieldDialog("Konzola",
-                "Unesite komandu u formi funkcija:arg1,arg2,...", "help");
-        if(komanda.isEmpty()) { 
-            return;
-        } 
-        if (komanda.equals("help")) {
-            System.out.println(help());
-        } else {
-            String[] split = komanda.split(":");
-            Object[] args = new Object[split.length - 1];
-            for (int i = 1; i < split.length; i++) {
-                args[i - 1] = split[i];
-            }
-            try {
-                if (config.contains(split[0])) {
-                    Config.class.getMethod(komanda).invoke(null, args);
-                } else if (datumi.contains(split[0])) {
-                    Datumi.class.getMethod(komanda).invoke(null, args);
-                } else if (podaci.contains(split[0])) {
-                    Podaci.class.getMethod(komanda).invoke(null, args);
-                } else if (init.contains(split[0])) {
-                    Init.class.getMethod(komanda).invoke(null, args);
-                } else if (knjige.contains(split[0])) {
-                    Knjige.class.getMethod(komanda).invoke(null, args);
-                } else if (logger.contains(split[0])) {
-                    Logger.class.getMethod(komanda).invoke(null, args);
-                } else if (save.contains(split[0])) {
-                    Save.class.getMethod(komanda).invoke(null, args);
-                } else if (ucenici.contains(split[0])) {
-                    Ucenici.class.getMethod(komanda).invoke(null, args);
-                } else if (undo.contains(split[0])) {
-                    Undo.class.getMethod(komanda).invoke(null, args);
-                } else if (utils.contains(split[0])) {
-                    Utils.class.getMethod(komanda).invoke(null, args);
-                } else if (dijalozi.contains(split[0])) {
-                    Dijalozi.class.getMethod(komanda).invoke(null, args);
-                } else if (grafika.contains(split[0])) {
-                    Grafika.class.getMethod(komanda).invoke(null, args);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Metoda nije pronadjena");
-                    console();
-                }
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-                JOptionPane.showMessageDialog(null, "Greska pri pozivanju metode: " + ex.getMessage());
-                console();
-            }
-        }
+    public void console() throws EvalError, IOException {
+        JFrame frame = new JFrame();
+        JPanel pan = new JPanel(null);
+        frame.setLocationRelativeTo(null);
+        frame.setSize(500, 500);
+        frame.setContentPane(pan);
+        bsh.util.JConsole console = new bsh.util.JConsole();
+        console.setBounds(0, 0, 500, 500);
+        pan.add(console);
+        Interpreter interpreter = new Interpreter( console );
+        new Thread( interpreter ).start();
+        interpreter.print("Konzola za biblioteku. Odavde se mogu pokretati sve public funkcije.\n");
+        frame.setVisible(true);
+    }
+    
+    public void fullConsoleWindow() {
+        bsh.Console.main(null);
     }
 
     private String help() {
         StringBuilder appMethods = new StringBuilder();
-        appMethods.append(config).append(datumi).append(podaci).append(init).append(knjige).append(logger)
-                .append(save).append(ucenici).append(undo).append(utils).append(dijalozi).append(grafika);
+        appMethods.append(config).append(datumi).append(podaci).append(init).append(pretraga).append(logger)
+                .append(save).append(undo).append(utils).append(dijalozi).append(grafika);
         return appMethods.toString();
     }
     
@@ -106,5 +67,4 @@ public class Console {
         }
         return retString.toString();
     }
-    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(Console.class.getName());
 }

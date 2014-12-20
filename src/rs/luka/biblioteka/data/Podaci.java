@@ -2,7 +2,7 @@
 //1145 linija, 24.9.'14.
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
-//2372 linija, 18.12.'14. (trenutno)
+//2394 linija, 20.12.'14. (trenutno)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -151,9 +151,12 @@ public class Podaci {
         LOGGER.log(Level.FINER, "Počeo backup podataka pri učitavanju");
         File knjigeF = new File(Utils.getWorkingDir() + "Data" + File.separator + "Knjige.dat");
         File uceniciF = new File(Utils.getWorkingDir() + "Data" + File.separator + "Ucenici.dat");
+        File data = new File(Utils.getWorkingDir() + "Data");
         File knjigeBackup = new File(Utils.getWorkingDir() + "Data" + File.separator + "Knjige.dat~");
         File uceniciBackup = new File(Utils.getWorkingDir() + "Data" + File.separator + "Ucenici.dat~");
         try {
+            if(data.isDirectory())
+                data.mkdir();
             knjigeBackup.createNewFile();
             uceniciBackup.createNewFile();
             if (!knjigeF.exists() || !uceniciF.exists()) {

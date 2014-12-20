@@ -94,6 +94,7 @@ public class Unos {
         knj.addActionListener((ActionEvent e1) -> {
             UnosKnjige();
         });
+        knj.setFont(Grafika.getButtonFont());
         knj.setPreferredSize(BUTTON_SIZE);
         pan.add(knj);
 
@@ -101,6 +102,7 @@ public class Unos {
         uc.addActionListener((ActionEvent e2) -> {
             UnosUcenici();
         });
+        uc.setFont(Grafika.getButtonFont());
         uc.setPreferredSize(BUTTON_SIZE);
         pan.add(uc);
         win.setVisible(true);
@@ -153,6 +155,7 @@ public class Unos {
         pisacText.setForeground(Grafika.getFgColor());
         pisacText.setCaretColor(Grafika.getFgColor());
         pisacText.setBackground(Grafika.getTFColor());
+        pisacText.setFont(Grafika.getLabelFont());
         pan.add(pisacText);
         JLabel kolicina = new JLabel("Unesite količinu:");
         kolicina.setBounds(KOLICINA_BOUNDS);
@@ -168,6 +171,7 @@ public class Unos {
         pan.add(kolText);
         //----------JButton&ActionListener--------------------------------------
         JButton but = new JButton("Unesi podatke");
+        but.setFont(Grafika.getButtonFont());
         but.setBounds(KNJ_UNESI_BOUNDS);
         ActionListener ubaci = (ActionEvent ae) -> {
             if ("".equals(nasText.getText())) {
@@ -301,6 +305,7 @@ public class Unos {
         //----------JButton-----------------------------------------------------
         JButton but = new JButton("Unesi podatke");
         but.setBounds(UC_UNESI_BOUNDS);
+        but.setFont(Grafika.getButtonFont());
         but.addActionListener(unesi);
         pan.add(but);
         //----------setVisible--------------------------------------------------

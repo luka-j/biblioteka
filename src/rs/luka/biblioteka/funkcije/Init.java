@@ -1,10 +1,10 @@
 /**
  * @lastmod 14.12.'14. 
- * Uveo UzmiVratiButton za knjige
+ * fontovi
  */
 /**
  * @curr 
- * organizacija koda, ciscenje, misc. funkcije
+ * ...
  */
 /**
  * @bugs 
@@ -19,21 +19,12 @@
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception
  * Pocistiti +1/-1 haos
  * Bugfixing, optimizacija koda, ciscenje koda
- * BeanShell (bsh) konzola
  * Ubaciti kvačice (šđžčć)
  * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e)
  * Izbaciti sve preostale workaround-ove
  */
 /**
  * @changelog
- * Obrisao funkcije#Knjige i funkcije#Ucenici, premestio sve u data#Podaci i funkcije#Pretraga
- * UzmiVratiButton je sada klasa za sebe, koristi je i klasa grafika.Knjige
- * Dodao UzmiVratiButton kao podklasu Ucenici, trebalo bi da smanji upotrebu memorije
- * Promenio resolveSynonyms da podesi vrednost konstante kada naidje (sada se zove resolveKeys)
- * Uveo konstante u jednoj klasi (za grafiku)
- * Napravio uzimanje da radi preko dijaloga
- * Popravio uzimanje knjiga
- * Popravio brisanje knjiga
  * Pomerio changelog u fajl.
  */
 //2771 linija, sa svim klasama osim onih iz legacy package-a. 24.11.'13.
@@ -45,13 +36,13 @@
 //4434 linija, 24.9.'14. (cleanup)
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
-//6986 linija, 17.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, dokumentacija)
+//7043 linija, 17.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, dokumentacija, bsh konzola)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
-//1315 linija, 18.12.'14. (Knjige/Ucenici izbaceni)
+//1307 linija, 20.12.'14. (Knjige/Ucenici izbaceni)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -121,6 +112,9 @@ public class Init {
      * Period na koji se podaci automatski cuvaju, u milisekundama.
      */
     private static int AUTOSAVE_PERIOD;
+    /**
+     * Maksimalan broj izlazenja (ili pokusaja izlazenja).
+     */
     private static final int MAX_EXITS=5;
 
     

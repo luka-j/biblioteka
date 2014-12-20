@@ -2,7 +2,7 @@
 //1994 linije, 24.9.'14.
 //2141 linija, 25.10.'14.
 //2570 linija, 29.11.'14.
-//2890 linija, 12.17.'14. (trenutno, dodavanje UVButton)
+//2953 linija, 20.12.'14. (trenutno, dodavanje UVButton)
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Color;
@@ -43,7 +43,12 @@ public class Grafika {
      * Font koji se koristi za JLabele. Menja se samo preko configa i zvanjem
      * {@link #setVariables} metode za refresh.
      */
-    private static final Font labelFont;
+    private static Font labelFont;
+    /**
+     * Font koji se koristi za veliku dugmad (sve osim UVButton).
+     */
+    private static Font largeButtonFont;
+    private static Font smallButtonFont;
     /**
      * Pozadinska boja za prozore.
      */
@@ -59,6 +64,8 @@ public class Grafika {
 
     static {
         labelFont = new Font("Segoe UI", Font.PLAIN, 15);
+        largeButtonFont = new Font("Arial Bold", Font.PLAIN, 13);
+        smallButtonFont = new Font("Arial", Font.BOLD, 12);
         bgColor = new Color(40, 255, 40, 220); //zelena
         fgColor = new Color(0); //crna
         TFColor = new Color(-1); //bela
@@ -88,6 +95,24 @@ public class Grafika {
         if (Config.hasKey("TFColor")) {
             TFColor = new Color(Config.getAsInt("TFColor"));
             LOGGER.log(Level.CONFIG, "TFColor: {0}", TFColor.toString());
+        }
+        if(Config.hasKey("labelFontName")) {
+            if(Config.hasKey("labelFontSize"))
+                labelFont = new Font(Config.get("labelFontName"), Font.PLAIN, Config.getAsInt("labelFontSize"));
+            else
+                labelFont = new Font(Config.get("labelFontName"), Font.PLAIN, labelFont.getSize());
+        }
+        if(Config.hasKey("butFontName")) {
+            if(Config.hasKey("butFontSize"))
+                largeButtonFont = new Font(Config.get("butFontName"), Font.PLAIN, Config.getAsInt("butFontSize"));
+            else
+                largeButtonFont = new Font(Config.get("butFontName"), Font.PLAIN, labelFont.getSize());
+        }
+        if(Config.hasKey("smallButFontName")) {
+            if(Config.hasKey("smallButFontSize"))
+                smallButtonFont = new Font(Config.get("smallButFontName"), Font.PLAIN, Config.getAsInt("smallButFontSize"));
+            else
+                smallButtonFont = new Font(Config.get("smallButFontName"), Font.PLAIN, labelFont.getSize());
         }
     }
 
@@ -120,6 +145,9 @@ public class Grafika {
                     break;
                 case "motif":
                     setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+                    break;
+                case "win classic":
+                    setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel");
             }
             LOGGER.log(Level.CONFIG, "lookAndFeel: {0}", UIManager.getLookAndFeel());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
@@ -165,6 +193,14 @@ public class Grafika {
         return labelFont;
     }
 
+    protected static Font getButtonFont() {
+        return largeButtonFont;
+    }
+    
+    protected static Font getSmallButtonFont() {
+        return smallButtonFont;
+    }
+    
     /**
      * @return the bgColor
      */

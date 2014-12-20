@@ -116,6 +116,7 @@ public class Podesavanja {
         }
         //----------JButtons&JCheckBoxes----------------------------------------
         JButton promeniBojuBut = new JButton("Pozadinska boja");
+        promeniBojuBut.setFont(Grafika.getButtonFont());
         promeniBojuBut.addActionListener((ActionEvent e3) -> {
             promeniBoju("bg");
         });
@@ -123,6 +124,7 @@ public class Podesavanja {
                 PODESAVANJA_HEIGHT_PER_LABEL, PODESAVANJA_PROMENIBG_WIDTH, PODESAVANJA_BUTTONS_HEIGHT);
         pan.add(promeniBojuBut);
         JButton promeniFgBojuBut = new JButton("Boja fonta");
+        promeniFgBojuBut.setFont(Grafika.getButtonFont());
         promeniFgBojuBut.addActionListener((ActionEvent e) -> {
             promeniBoju("fg");
         });
@@ -130,6 +132,7 @@ public class Podesavanja {
                 PODESAVANJA_HEIGHT_PER_LABEL, PODESAVANJA_PROMENIFG_WIDTH, PODESAVANJA_BUTTONS_HEIGHT);
         pan.add(promeniFgBojuBut);
         JButton promeniTFBojuBut = new JButton("Boja polja za unos");
+        promeniTFBojuBut.setFont(Grafika.getButtonFont());
         promeniTFBojuBut.addActionListener((ActionEvent e) -> {
             promeniBoju("tf");
         });

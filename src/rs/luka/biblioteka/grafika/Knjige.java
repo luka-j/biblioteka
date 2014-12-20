@@ -193,18 +193,21 @@ public class Knjige implements FocusListener {
      */
     private void initButtons() {
         JButton novi = new JButton("Ubaci novi naslov");
+        novi.setFont(Grafika.getButtonFont());
         novi.setPreferredSize(new Dimension(KNJIGE_NOVI_WIDTH, KNJIGE_BUTTON_HEIGHT));
         novi.addActionListener((ActionEvent e) -> {
             new KnjigeUtils().novi();
         });
         butPan.add(novi);
         JButton obrisi = new JButton("Obriši naslov");
+        obrisi.setFont(Grafika.getButtonFont());
         obrisi.setPreferredSize(new Dimension(KNJIGE_OBRISI_WIDTH, KNJIGE_BUTTON_HEIGHT));
         obrisi.addActionListener((ActionEvent e) -> {
             obrisiNaslov();
         });
         butPan.add(obrisi);
         JButton ucSearch = new JButton("Kod koga je naslov...");
+        ucSearch.setFont(Grafika.getButtonFont());
         ucSearch.setPreferredSize(new Dimension(KNJIGE_UCSEARCH_WIDTH, KNJIGE_BUTTON_HEIGHT));
         ucSearch.addActionListener((ActionEvent e) -> {
             new KnjigeUtils().ucSearch(getFirstSelected(), visina);

@@ -23,10 +23,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -197,21 +199,26 @@ public class Ucenici implements FocusListener {
      * Postavlja precice na tastaturi.
      */
     private void setInputMaps() {
+        InputMap inputMap = pan.getInputMap();
+        ActionMap actionMap = pan.getActionMap();
         Console console = new rs.luka.biblioteka.debugging.Console();
-        Method consoleMethod = null, undoMethod = null, redoMethod = null;
+        Method consoleMethod = null, undoMethod = null, redoMethod = null, fullConsoleMethod = null;
         try {
             consoleMethod = console.getClass().getDeclaredMethod("console", null);
             undoMethod = Undo.class.getDeclaredMethod("undo", null);
             redoMethod = Undo.class.getDeclaredMethod("redo", null);
+            fullConsoleMethod = console.getClass().getDeclaredMethod("fullConsoleWindow", null);
         } catch (NoSuchMethodException | SecurityException ex) {
             LOGGER.log(Level.SEVERE, "Greška pri kreiranju neke od metoda", ex);
         }
-        pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl Z"), "undo");
-        pan.getActionMap().put("undo", generateEmptyResetAction(undoMethod, null));
-        pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl Y"), "redo");
-        pan.getActionMap().put("redo", generateEmptyResetAction(redoMethod, null));
-        pan.getInputMap().put(KeyStroke.getKeyStroke("ctrl shift T"), "console");
-        pan.getActionMap().put("console", generateEmptyResetAction(consoleMethod, console));
+        inputMap.put(KeyStroke.getKeyStroke("ctrl Z"), "undo");
+        actionMap.put("undo", generateEmptyResetAction(undoMethod, null));
+        inputMap.put(KeyStroke.getKeyStroke("ctrl Y"), "redo");
+        actionMap.put("redo", generateEmptyResetAction(redoMethod, null));
+        inputMap.put(KeyStroke.getKeyStroke("ctrl shift T"), "console");
+        actionMap.put("console", generateEmptyResetAction(consoleMethod, console));
+        inputMap.put(KeyStroke.getKeyStroke("ctrl alt T"), "fullconsole");
+        actionMap.put("fullconsole", generateEmptyResetAction(fullConsoleMethod, console));
     }
 
     /**
@@ -301,17 +308,20 @@ public class Ucenici implements FocusListener {
     private void initButtons() {
         JButton noviUc = new JButton("Dodati novog ucenika");
         noviUc.setPreferredSize(new Dimension(UCENICI_NOVIUC_WIDTH, UCENICI_BUTPAN_BUTTON_HEIGHT));
+        noviUc.setFont(Grafika.getButtonFont());
         noviUc.addActionListener((ActionEvent e) -> {
             new UceniciUtils().dodajNovogUcenika();
         });
         butPan.add(noviUc);
         JButton delUc = new JButton("Obrisati ucenika");
+        delUc.setFont(Grafika.getButtonFont());
         delUc.setPreferredSize(new Dimension(UCENICI_DELUC_WIDTH, UCENICI_BUTPAN_BUTTON_HEIGHT));
         delUc.addActionListener((ActionEvent e) -> {
             obrisiUcenika();
         });
         butPan.add(delUc);
         JButton novaGen = new JButton("Uneti novu generaciju");
+        novaGen.setFont(Grafika.getButtonFont());
         novaGen.setPreferredSize(new Dimension(UCENICI_NOVAGEN_WIDTH, UCENICI_BUTPAN_BUTTON_HEIGHT));
         novaGen.addActionListener((ActionEvent e) -> {
             new UceniciUtils().dodajNovuGeneraciju();
@@ -436,8 +446,9 @@ public class Ucenici implements FocusListener {
         searchBox.setForeground(Grafika.getFgColor());
         searchBox.setCaretColor(Grafika.getFgColor());
         sidePan.add(searchBox);
-        sidePan.setPreferredSize(new Dimension(UCENICI_SIDEPAN_WIDTH,
-                ucenici[Podaci.getBrojUcenika() - 1].getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL));
+        if(Podaci.getBrojUcenika()>0)
+            sidePan.setPreferredSize(new Dimension(UCENICI_SIDEPAN_WIDTH,
+                    ucenici[Podaci.getBrojUcenika() - 1].getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL));
         //NE RADI
         pan.add(sidePan);
     }

@@ -102,6 +102,7 @@ public class UceniciUtils {
         pan.add(razTF);
         //---------JButton------------------------------------------------------
         JButton unesi = new JButton("Unesi podatke");
+        unesi.setFont(Grafika.getButtonFont());
         unesi.setBounds(UNESI_BOUNDS);
         unesi.addActionListener((ActionEvent e) -> {
             try {
@@ -198,6 +199,7 @@ public class UceniciUtils {
         pan.add(jsp);
         //----------JButton-----------------------------------------------------
         JButton but = new JButton("Unesi novu generaciju");
+        but.setFont(Grafika.getButtonFont());
         but.setBounds(UNESIGEN_BOUNDS);
         but.addActionListener((ActionEvent e) -> {
             Podaci.dodajNovuGen(genTF.getText());

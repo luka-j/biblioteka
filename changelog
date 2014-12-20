@@ -1,4 +1,14 @@
- * pretraga ucenika po knjigama iz searchBoxa za ucenike
+ * Fontovi se podesavaju iz config-a, postoji largeButtonFont i smallButtonFont; bugfixes
+ * BeanShell konzola, ctrl+shift+t ili BeanShell desktop ctrl+alt+T (dodao)
+ * Obrisao funkcije#Knjige i funkcije#Ucenici, premestio sve u data#Podaci i funkcije#Pretraga
+ * UzmiVratiButton je sada klasa za sebe, koristi je i klasa grafika.Knjige
+ * Dodao UzmiVratiButton kao podklasu Ucenici, trebalo bi da smanji upotrebu memorije
+ * Promenio resolveSynonyms da podesi vrednost konstante kada naidje (sada se zove resolveKeys)
+ * Uveo konstante u jednoj klasi (za grafiku)
+ * Napravio uzimanje da radi preko dijaloga
+ * Popravio uzimanje knjiga
+ * Popravio brisanje knjiga 
+* pretraga ucenika po knjigama iz searchBoxa za ucenike
  * searchBox bug popravljen
  * EmptyBorders i Insets za sve komponente, regulisani iz fieldova
  * BETA faza

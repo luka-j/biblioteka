@@ -201,14 +201,6 @@ public class Unos {
                     "Greška pri unosu.", JOptionPane.ERROR_MESSAGE);
 
         }
-        
-        /*String[] options = {"Da", "Ne"};
-        int ugasiti = showOptionDialog(null, "Da biste videli promene, potrebno je restartovati program. "
-                + "Ugasiti sada?", "Potrebno restartovanje", JOptionPane.YES_NO_OPTION,
-                JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-        if (ugasiti == 0) {
-            Init.exit(false);
-        }*/
         Grafika.reset();
     }
 }

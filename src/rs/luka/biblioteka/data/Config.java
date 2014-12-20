@@ -83,6 +83,8 @@ public class Config {
     private static final Limit UNDO = new Limit(0);
     private static final Limit LOG_SIZE = new Limit(0, 100_000_000);
     private static final Limit LOG_COUNT = new Limit(0, 1_000);
+    private static final Limit LABEL_FONT = new Limit(1, 50);
+    private static final Limit BUTTON_FONT = new Limit(1, 20);
 
     /**
      * Ucitava config iz fajla u Properties.
@@ -162,6 +164,18 @@ public class Config {
                 "Maksimalna veličina log fajla u bajtovima");
         vrednosti.put("logFileCount", "logFileCount", "logCount", "logFileNumber", "brojLogFajlova",
                 "Maksimalan broj log fajlova");
+        vrednosti.put("labelFontName", "labelFontName", "labelName", "fontName", "font", 
+                "Font korišćen za labele");
+        vrednosti.put("labelFontSize", "labelFontSize", "labelSize", "fontSize", 
+                "Veličina font-a korišćena za labele");
+        vrednosti.put("butFontName", "butFontName", "buttonFontName", "butName", "buttonName",
+                "Font korišćen za veliku dugmad");
+        vrednosti.put("butFontSize", "butFontSize", "buttonFontSize", "butSize", "buttonSize",
+                "Veličina fonta korišćena za veliku dugmad");
+        vrednosti.put("smallButFontName", "smallButFontName", "sButFontName", "sButName", "smallButtonName",
+                "UzmiVratiFontName", "UzmiVratiName", "UVFont", "Font korišćen za malu dugmad");
+        vrednosti.put("smallButFontSize", "smallButFontSize", "sButFontSize", "sButSize", "smallButtonSize",
+                "UzmiVratiFontSize", "UzmiVratiSize", "UVSize", "Veličina fonta korišćena za malu dugmad");
     }
 
     /**
@@ -182,6 +196,9 @@ public class Config {
         limiti.put("maxUndo", UNDO);
         limiti.put("logSizeLimit", LOG_SIZE);
         limiti.put("logFileCount", LOG_COUNT);
+        limiti.put("labelFontSize", LABEL_FONT);
+        limiti.put("butFontSize", BUTTON_FONT);
+        limiti.put("smallButFontSize", BUTTON_FONT);
     }
 
     /**
@@ -371,7 +388,7 @@ public class Config {
         }
         if ("lookAndFeel".equalsIgnoreCase(vrednosti.getKey(key))) {
             return val.equals("system") || val.equals("ocean") || val.equals("metal")
-                    || val.equals("Nimbus") || val.equals("motif");
+                    || val.equals("Nimbus") || val.equals("motif") || val.equals("win classic");
         }
         if ("firstRun".equalsIgnoreCase(vrednosti.getKey(key)) || "TFBoja".equals(vrednosti.getKey(key))) {
             return val.equals("0") || val.equals("1") || val.equals("true") || val.equals("false");
@@ -383,6 +400,8 @@ public class Config {
             } catch (NumberFormatException ex) {
                 return false;
             }
+            return true;
+        } if(val.toLowerCase().endsWith("name")) {
             return true;
         } else {
             return Utils.isInteger(val);

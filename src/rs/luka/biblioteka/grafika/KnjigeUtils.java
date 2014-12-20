@@ -113,6 +113,7 @@ public class KnjigeUtils {
         nnPan.add(kolicinaTF);
         //----------JButton-----------------------------------------------------
         JButton unos = new JButton("Unesi podatke");
+        unos.setFont(Grafika.getButtonFont());
         unos.setBounds(NOVI_UNOS_BOUNDS);
         ActionListener listener = (ActionEvent e) -> {
             try {
@@ -206,6 +207,7 @@ public class KnjigeUtils {
                         + dateBuild.toString() + "</html>");
 
                 JButton ok = new JButton("OK");
+                ok.setFont(Grafika.getButtonFont());
                 ok.setLocation(UCSEARCH_OK_X, UCSEARCH_OK_FIXED_Y + inx.size() * UCSEARCH_UCENIK_HEIGHT);
                 ok.setSize(UCSEARCH_OK_WIDTH, UCSEARCH_OK_HEIGHT);
                 ok.addActionListener((ActionEvent ae) -> {

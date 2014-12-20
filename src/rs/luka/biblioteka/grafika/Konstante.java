@@ -119,7 +119,7 @@ public class Konstante {
     static int PODESAVANJA_LABEL_X = 20;
     static int PODESAVANJA_LABEL_FIXED_Y = 20;
     static int PODESAVANJA_LABEL_WIDTH = 480;
-    static int PODESAVANJA_LABEL_HEIGHT = 17;
+    static int PODESAVANJA_LABEL_HEIGHT = 21;
     static int PODESAVANJA_TEXTFIELD_X = 460;
     static int PODESAVANJA_TEXTFIELD_FIXED_Y = 15;
     static int PODESAVANJA_TEXTFIELD_WIDTH = 130;
