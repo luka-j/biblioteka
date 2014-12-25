@@ -1,5 +1,6 @@
 package rs.luka.biblioteka.funkcije;
 
+import java.awt.Font;
 import java.awt.Point;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -218,5 +219,23 @@ public class Utils {
         }
         LOGGER.log(Level.FINE, "Broj karaktera {0} u {1} je {2}", new Object[]{ch, string, count});
         return count;
+    }
+    
+    /**
+     * Zakljucuje o kojoj tezini fonta se radi na osnovu stringa. BOLD, ITALIC ili BOLD|ITALIC.
+     * Default-uje na PLAIN, ako nije nista od prethodna 3
+     * @param str string koji se parsuje
+     * @return int vrednost iz klase Font
+     */
+    public static int parseWeight(String str) {
+        str = str.toLowerCase();
+        if(str.equals("bold"))
+            return Font.BOLD;
+        if(str.equals("italic"))
+            return Font.BOLD;
+        if(str.startsWith("bold") && str.endsWith("italic"))
+            return Font.BOLD | Font.ITALIC;
+        else
+            return Font.PLAIN;
     }
 }

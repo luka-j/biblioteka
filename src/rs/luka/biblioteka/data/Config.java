@@ -168,14 +168,18 @@ public class Config {
                 "Font korišćen za labele");
         vrednosti.put("labelFontSize", "labelFontSize", "labelSize", "fontSize", 
                 "Veličina font-a korišćena za labele");
+        vrednosti.put("labelFontWeight", "labelFontWeight", "labelWeight", "fontWeight");
         vrednosti.put("butFontName", "butFontName", "buttonFontName", "butName", "buttonName",
                 "Font korišćen za veliku dugmad");
         vrednosti.put("butFontSize", "butFontSize", "buttonFontSize", "butSize", "buttonSize",
                 "Veličina fonta korišćena za veliku dugmad");
+        vrednosti.put("butFontWeight", "butFontWeight", "buttonFontWeight", "butWeight", "buttonWeight");
         vrednosti.put("smallButFontName", "smallButFontName", "sButFontName", "sButName", "smallButtonName",
                 "UzmiVratiFontName", "UzmiVratiName", "UVFont", "Font korišćen za malu dugmad");
         vrednosti.put("smallButFontSize", "smallButFontSize", "sButFontSize", "sButSize", "smallButtonSize",
                 "UzmiVratiFontSize", "UzmiVratiSize", "UVSize", "Veličina fonta korišćena za malu dugmad");
+        vrednosti.put("smallButWeight", "smallButWeight", "smallButtonWeight", "sButW", "sButWeight",
+                "UzmiVratiFontWeight", "UzmiVratiWeight", "UVWeight");
     }
 
     /**
@@ -401,7 +405,10 @@ public class Config {
                 return false;
             }
             return true;
-        } if(val.toLowerCase().endsWith("name")) {
+        } else if(key.endsWith("weight")) {
+            return val.equals("bold") || val.equals("italic") || val.equals("plain") ||
+                    (val.startsWith("bold") && val.endsWith("italic"));
+        } else if(key.endsWith("name")) {
             return true;
         } else {
             return Utils.isInteger(val);

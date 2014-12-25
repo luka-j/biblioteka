@@ -28,7 +28,7 @@ import javax.swing.plaf.metal.DefaultMetalTheme;
 import static javax.swing.plaf.metal.MetalLookAndFeel.setCurrentTheme;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.funkcije.Init;
-import static rs.luka.biblioteka.funkcije.Utils.parseBoolean;
+import rs.luka.biblioteka.funkcije.Utils;
 
 /**
  *
@@ -36,8 +36,8 @@ import static rs.luka.biblioteka.funkcije.Utils.parseBoolean;
  */
 public class Grafika {
 
-    private static final java.util.logging.Logger LOGGER = 
-            java.util.logging.Logger.getLogger(Grafika.class.getName());
+    private static final java.util.logging.Logger LOGGER
+            = java.util.logging.Logger.getLogger(Grafika.class.getName());
 
     /**
      * Font koji se koristi za JLabele. Menja se samo preko configa i zvanjem
@@ -48,6 +48,9 @@ public class Grafika {
      * Font koji se koristi za veliku dugmad (sve osim UVButton).
      */
     private static Font largeButtonFont;
+    /**
+     * Font koji se koristi za UVButton-e (i svu ostalu malu dugmad).
+     */
     private static Font smallButtonFont;
     /**
      * Pozadinska boja za prozore.
@@ -65,7 +68,7 @@ public class Grafika {
     static {
         labelFont = new Font("Segoe UI", Font.PLAIN, 15);
         largeButtonFont = new Font("Arial Bold", Font.PLAIN, 13);
-        smallButtonFont = new Font("Arial", Font.BOLD, 12);
+        smallButtonFont = new Font("Dialog", Font.BOLD, 12);
         bgColor = new Color(40, 255, 40, 220); //zelena
         fgColor = new Color(0); //crna
         TFColor = new Color(-1); //bela
@@ -96,23 +99,47 @@ public class Grafika {
             TFColor = new Color(Config.getAsInt("TFColor"));
             LOGGER.log(Level.CONFIG, "TFColor: {0}", TFColor.toString());
         }
-        if(Config.hasKey("labelFontName")) {
-            if(Config.hasKey("labelFontSize"))
-                labelFont = new Font(Config.get("labelFontName"), Font.PLAIN, Config.getAsInt("labelFontSize"));
-            else
-                labelFont = new Font(Config.get("labelFontName"), Font.PLAIN, labelFont.getSize());
+        if (Config.hasKey("labelFontName")) {
+            if (Config.hasKey("labelFontSize")) {
+                if (Config.hasKey("labelFontWeight")) {
+                    labelFont = new Font(Config.get("labelFontName"),
+                            Utils.parseWeight(Config.get("labelFontWeight")), Config.getAsInt("labelFontSize"));
+                } else {
+                    labelFont = new Font(Config.get("labelFontName"), labelFont.getStyle(),
+                            Config.getAsInt("labelFontSize"));
+                }
+            } else {
+                labelFont = new Font(Config.get("labelFontName"), labelFont.getStyle(), labelFont.getSize());
+            }
         }
-        if(Config.hasKey("butFontName")) {
-            if(Config.hasKey("butFontSize"))
-                largeButtonFont = new Font(Config.get("butFontName"), Font.PLAIN, Config.getAsInt("butFontSize"));
-            else
-                largeButtonFont = new Font(Config.get("butFontName"), Font.PLAIN, labelFont.getSize());
+        if (Config.hasKey("butFontName")) {
+            if (Config.hasKey("butFontSize")) {
+                if (Config.hasKey("butFontWeight")) {
+                    largeButtonFont = new Font(Config.get("butFontName"),
+                            Utils.parseWeight(Config.get("butFontWeight")), Config.getAsInt("butFontSize"));
+                } else {
+                    largeButtonFont = new Font(Config.get("butFontName"), largeButtonFont.getStyle(),
+                            Config.getAsInt("butFontSize"));
+                }
+            } else {
+                largeButtonFont = new Font(Config.get("butFontName"), largeButtonFont.getStyle(), 
+                        largeButtonFont.getSize());
+            }
         }
-        if(Config.hasKey("smallButFontName")) {
-            if(Config.hasKey("smallButFontSize"))
-                smallButtonFont = new Font(Config.get("smallButFontName"), Font.PLAIN, Config.getAsInt("smallButFontSize"));
-            else
-                smallButtonFont = new Font(Config.get("smallButFontName"), Font.PLAIN, labelFont.getSize());
+        if (Config.hasKey("smallButFontName")) {
+            if (Config.hasKey("smallButFontSize")) {
+                if (Config.hasKey("smallButFontWeight")) {
+                    smallButtonFont = new Font(Config.get("smallButFontName"),
+                            Utils.parseWeight(Config.get("smallButFontWeight")),
+                            Config.getAsInt("smallButFontSize"));
+                } else {
+                    smallButtonFont = new Font(Config.get("smallButFontName"), smallButtonFont.getStyle(), 
+                            Config.getAsInt("smallButFontSize"));
+                }
+            } else {
+                smallButtonFont = new Font(Config.get("smallButFontName"), smallButtonFont.getStyle(), 
+                        smallButtonFont.getSize());
+            }
         }
     }
 
@@ -156,23 +183,43 @@ public class Grafika {
                     "LookAndFeel greška", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     /**
-     *
-     * @param invoke
-     * @param obj
-     * @return
+     * Generise praznu akciju, koja na actionPerformed() izvrsava metodu invoke na objektu obj.
+     * @param invoke metoda koju treba izvrsiti
+     * @param obj objekat ciju metodu treba izvrsiti
+     * @return prazna akcija sa opisanom actionPerformed() metodom
      */
     protected static Action generateEmptyResetAction(Method invoke, Object obj) {
         return new Action() {
-            @Override public Object getValue(String key) {return null;}
-            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
-            @Override public void setEnabled(boolean b) { }
-            @Override public boolean isEnabled() {return true;}
-            @Override public void addPropertyChangeListener(PropertyChangeListener l) 
-            {throw new UnsupportedOperationException();}
-            @Override public void removePropertyChangeListener(PropertyChangeListener listener) 
-            {throw new UnsupportedOperationException();}
+            @Override
+            public Object getValue(String key) {
+                return null;
+            }
+
+            @Override
+            public void putValue(String key, Object value) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setEnabled(boolean b) {
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+
+            @Override
+            public void addPropertyChangeListener(PropertyChangeListener l) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void removePropertyChangeListener(PropertyChangeListener listener) {
+                throw new UnsupportedOperationException();
+            }
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -196,11 +243,11 @@ public class Grafika {
     protected static Font getButtonFont() {
         return largeButtonFont;
     }
-    
+
     protected static Font getSmallButtonFont() {
         return smallButtonFont;
     }
-    
+
     /**
      * @return the bgColor
      */
@@ -222,7 +269,7 @@ public class Grafika {
     protected static Color getTFColor() {
         return TFColor;
     }
-    
+
     /**
      * Zatvara prozor sa ucenicima i ponovo poziva {@link Init#init() init}.
      */
@@ -230,20 +277,20 @@ public class Grafika {
         Ucenici.close();
         Init.init();
     }
-    
+
     /**
-     * Prikazuje dijalog za cuvanje podataka i zove {@link Init#exit(boolean) exit}
-     * sa odgovarajucim argumentom.
+     * Prikazuje dijalog za cuvanje podataka i zove
+     * {@link Init#exit(boolean) exit} sa odgovarajucim argumentom.
      */
     protected static void exit() {
         LOGGER.log(Level.FINE, "Iniciram zatvaranje aplikacije i "
-                        + "prikazujem dijalog za čuvanje podataka.");
+                + "prikazujem dijalog za čuvanje podataka.");
         String[] opcije = {"Da", "Ne"};
         int sacuvaj = showOptionDialog(null, "Sačuvati izmene?",
                 "Izlaz", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, opcije, opcije[0]); //0 za da, 1 za ne, -1 za X
         if (sacuvaj != -1) {
-            Init.exit(!parseBoolean(sacuvaj)); //0 oznacava false (sacuvati), a 1 true (brisati)
+            Init.exit(!Utils.parseBoolean(sacuvaj)); //0 oznacava false (sacuvati), a 1 true (brisati)
             //drugim recima, cuva samo ako je odabrana prva opcija
         }
         LOGGER.log(Level.FINE, "Izlaz otkazan. Ostajem u aplikaciji.");

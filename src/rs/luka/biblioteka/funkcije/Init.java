@@ -16,6 +16,7 @@
 /**
  * @todo 
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING), posebno UzmiVratiButton
+ * Proveriti bagove i izbaciti STABLE
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception
  * Pocistiti +1/-1 haos
  * Bugfixing, optimizacija koda, ciscenje koda
@@ -25,6 +26,7 @@
  */
 /**
  * @changelog
+ * dodao font weight i popravio verovatni bug u Config-u
  * Pomerio changelog u fajl.
  */
 //2771 linija, sa svim klasama osim onih iz legacy package-a. 24.11.'13.
@@ -115,7 +117,7 @@ public class Init {
     /**
      * Maksimalan broj izlazenja (ili pokusaja izlazenja).
      */
-    private static final int MAX_EXITS=5;
+    private static final int MAX_EXITS=3;
 
     
     private static int exitCount = 0;

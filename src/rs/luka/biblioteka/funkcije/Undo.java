@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import rs.luka.biblioteka.data.Akcija;
-import rs.luka.biblioteka.data.Config;
-import rs.luka.biblioteka.data.Knjiga;
-import rs.luka.biblioteka.data.Podaci;
-import rs.luka.biblioteka.data.Ucenik;
+import rs.luka.biblioteka.data.*;
 import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
@@ -125,12 +121,10 @@ public class Undo {
     private Undo() {
         throw new IllegalAccessError();
     }
-}
-
-
-
-
-class UndoAkcija {
+    
+    //===========UNDOAKCIJA=====================================================
+    
+    static class UndoAkcija {
     /**
      * Akcija koja je ubacena u stack.
      */
@@ -293,4 +287,5 @@ class UndoAkcija {
         }
     }
     private static final Logger LOG = Logger.getLogger(UndoAkcija.class.getName());
+}
 }
