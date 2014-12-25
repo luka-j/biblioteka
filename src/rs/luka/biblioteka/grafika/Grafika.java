@@ -2,7 +2,7 @@
 //1994 linije, 24.9.'14.
 //2141 linija, 25.10.'14.
 //2570 linija, 29.11.'14.
-//2953 linija, 20.12.'14. (trenutno, dodavanje UVButton)
+//3000 linija, 25.12.'14. (dodavanje UVButton)
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Color;
@@ -29,6 +29,7 @@ import static javax.swing.plaf.metal.MetalLookAndFeel.setCurrentTheme;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.funkcije.Init;
 import rs.luka.biblioteka.funkcije.Utils;
+import static rs.luka.biblioteka.grafika.Konstante.INVALID;
 
 /**
  *
@@ -225,7 +226,7 @@ public class Grafika {
             public void actionPerformed(ActionEvent e) {
                 try {
                     invoke.invoke(obj);
-                    new Ucenici();
+                    new Ucenici().pregledUcenika();
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     Logger.getLogger(Grafika.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -289,7 +290,7 @@ public class Grafika {
         int sacuvaj = showOptionDialog(null, "Sačuvati izmene?",
                 "Izlaz", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, opcije, opcije[0]); //0 za da, 1 za ne, -1 za X
-        if (sacuvaj != -1) {
+        if (sacuvaj != INVALID) {
             Init.exit(!Utils.parseBoolean(sacuvaj)); //0 oznacava false (sacuvati), a 1 true (brisati)
             //drugim recima, cuva samo ako je odabrana prva opcija
         }

@@ -35,16 +35,19 @@ public class Konstante {
         }
     }
 
+    static final int INVALID = -1;
     /*----------Dijalozi.java-------------------------------------------------*/
-    static int DIJALOZI_LINE_HEIGHT = 20;
+    static int DIJALOZI_LINE_HEIGHT = 40;
     static int DIJALOZI_SIRINA = 350;
     static int DIJALOZI_FIXED_VISINA = 110;
     static int DIJALOZI_TEXT_X = 10;
     static int DIJALOZI_LABEL_Y = 10;
     static int DIJALOZI_LABEL_WIDTH = 330;
-    static int DIJALOZI_TEXTFIELD_FIXED_Y = 25;
+    static int DIJALOZI_TEXTFIELD_FIXED_Y = 30;
     static int DIJALOZI_TEXTFIELD_WIDTH = 300;
     static int DIJALOZI_TEXTFIELD_HEIGHT = 25;
+    static int DIJALOZI_INFOWINDOW_WIDTH = 250;
+    static int DIJALOZI_INFOWINDOW_HEGHT = 80;
     /*----------Knjige.java---------------------------------------------------*/
     static  String KNJIGE_SEARCH_TEXT = "Pretraži knjige...";
     static int KNJIGE_TOP_INSET = 5;
@@ -54,7 +57,7 @@ public class Konstante {
     static int KNJIGE_SIRINA = 550;
     static int KNJIGE_VISINA = 750;
     static int KNJIGE_PANELS_ALIGNMENT_Y = 0;
-    static int KNJIGE_SIDEPAN_WIDTH = 140;
+    static int KNJIGE_SIDEPAN_WIDTH = 150;
     static int KNJIGE_SIDEPAN_UCENIK_HEIGHT = 26;
     static int KNJIGE_SCROLL_INCREMENT = 16;
     static int KNJIGE_DIVIDER_LOCATION = 90;
@@ -62,7 +65,7 @@ public class Konstante {
     static int KNJIGE_NOVI_WIDTH = 140;
     static int KNJIGE_OBRISI_WIDTH = 130;
     static int KNJIGE_UCSEARCH_WIDTH = 150;
-    static int KNJIGE_SEARCHBOX_X = 2;
+    static int KNJIGE_SEARCHBOX_X = 0;
     static int KNJIGE_SEARCHBOX_Y = 0;
     static int KNJIGE_SEARCHBOX_WIDTH = 135;
     static int KNJIGE_SEARCHBOX_HEIGHT = 30;
@@ -135,7 +138,7 @@ public class Konstante {
     static int PODESAVANJA_PROMENIBOJU_WIDTH = 600;
     static int PODESAVANJA_PROMENIBOJU_HEIGHT = 320;
     /*----------Ucenici.java--------------------------------------------------*/
-    static  String UCENICI_SEARCH_TEXT = "Pretraži učenike...";
+    static String UCENICI_SEARCH_TEXT = "Pretraži učenike...";
     static int UCENICI_TOP_INSET = 5;
     static int UCENICI_LEFT_INSET = 5;
     static int UCENICI_RIGHT_INSET = 5;
@@ -151,7 +154,7 @@ public class Konstante {
     static int UCENICI_NOVAGEN_WIDTH = 250;
     static int UCENICI_BUTPAN_RIGIDAREA_WIDTH = 100;
     static int UCENICI_ICON_HEIGHT = 35;
-    static int UCENICI_ICON_WIDTH = UCENICI_ICON_HEIGHT;
+    static int UCENICI_ICON_WIDTH = 35;
     static int UCENICI_SEARCHBOX_X = 0;
     static int UCENICI_SEARCHBOX_Y = 0;
     static int UCENICI_SEARCHBOX_WIDTH = 150;

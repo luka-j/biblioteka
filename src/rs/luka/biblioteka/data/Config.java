@@ -63,7 +63,7 @@ public class Config {
             + "razredi - String validnih razreda, razdvojenih zapetom\n"
             + "workingDir - radni direktorijum aplikacije\n"
             + "logSizeLimit i logCount - broj i velicina log fajla (fajlova)";
-
+    private static String KONSTANTE_PREFIX = "k_";
     /**
      * Sve vrednosti koje kljuc moze da ima, sem onih koji pocinju sa k_ (koje se nalaze u Konstante.java).
      */
@@ -84,7 +84,7 @@ public class Config {
     private static final Limit LOG_SIZE = new Limit(0, 100_000_000);
     private static final Limit LOG_COUNT = new Limit(0, 1_000);
     private static final Limit LABEL_FONT = new Limit(1, 50);
-    private static final Limit BUTTON_FONT = new Limit(1, 20);
+    private static final Limit BUTTON_FONT = new Limit(1, 25);
 
     /**
      * Ucitava config iz fajla u Properties.
@@ -102,6 +102,7 @@ public class Config {
             FileReader configFR = new FileReader(configFile);
             Config.config.load(configFR);
             resolveKeys();
+            setKPrefix();
         } catch (FileNotFoundException FNFex) {
             showMessageDialog(null, "Konfiguracijski fajl nije pronadjen. Lokacija: " + path);
         } catch (IOException ex) {
@@ -180,6 +181,7 @@ public class Config {
                 "UzmiVratiFontSize", "UzmiVratiSize", "UVSize", "Veličina fonta korišćena za malu dugmad");
         vrednosti.put("smallButWeight", "smallButWeight", "smallButtonWeight", "sButW", "sButWeight",
                 "UzmiVratiFontWeight", "UzmiVratiWeight", "UVWeight");
+        vrednosti.put("kPrefix", "kPrefix", "konstantePrefix", "PrefixZaKonstante");
     }
 
     /**
@@ -223,6 +225,11 @@ public class Config {
                 it.remove();
             }
         }
+    }
+    
+    private static void setKPrefix() {
+        if(config.containsKey("kPrefix"))
+            KONSTANTE_PREFIX = config.getProperty("kPrefix");
     }
 
     /**
@@ -333,7 +340,7 @@ public class Config {
         if (!isNameValid(key, val)) {
             throw new IllegalArgumentException("Vrednost " + val + " nije validna za kljuc " + key);
         }
-        if (key.startsWith("k_")) {
+        if (key.startsWith(KONSTANTE_PREFIX)) {
             Konstante.set(key.substring(2), val);
             return;
         }
@@ -364,7 +371,7 @@ public class Config {
      * @since 24.10.'14.
      */
     private static boolean isNameValid(String key, String val) {
-        if (key.startsWith("k_")) {
+        if (key.startsWith(KONSTANTE_PREFIX)) {
             return true;
         }
         if (!vrednosti.contains(key)) {
@@ -372,7 +379,8 @@ public class Config {
             return false;
         }
         val = val.toLowerCase();
-        if ("razredi".equalsIgnoreCase(vrednosti.getKey(key))) {
+        String realKey = vrednosti.getKey(key).toLowerCase();
+        if ("razredi".equals(realKey)) {
             String[] razredi = val.split(",");
             for (String razred : razredi) {
                 razred = razred.trim();
@@ -382,7 +390,7 @@ public class Config {
             }
             return true;
         }
-        if ("logLevel".equalsIgnoreCase(vrednosti.getKey(key))) {
+        if ("loglevel".equals(realKey)) {
             try {
                 Level.parse(val.toUpperCase());
             } catch (IllegalArgumentException ex) {
@@ -390,25 +398,25 @@ public class Config {
             }
             return true;
         }
-        if ("lookAndFeel".equalsIgnoreCase(vrednosti.getKey(key))) {
+        if ("lookandfeel".equals(realKey)) {
             return val.equals("system") || val.equals("ocean") || val.equals("metal")
-                    || val.equals("Nimbus") || val.equals("motif") || val.equals("win classic");
+                    || val.equals("nimbus") || val.equals("motif") || val.equals("win classic");
         }
-        if ("firstRun".equalsIgnoreCase(vrednosti.getKey(key)) || "TFBoja".equals(vrednosti.getKey(key))) {
+        if ("firstrun".equals(realKey) || "tfboja".equals(realKey)) {
             return val.equals("0") || val.equals("1") || val.equals("true") || val.equals("false");
         }
-        if ("bgBoja".equalsIgnoreCase(vrednosti.getKey(key)) || "fgBoja".equals(vrednosti.getKey(key))
-                || "TFColor".equalsIgnoreCase(vrednosti.getKey(key))) {
+        if ("bgboja".equalsIgnoreCase(realKey) || "fgboja".equals(realKey)
+                || "tfcolor".equalsIgnoreCase(realKey)) {
             try {
                 Color.decode(val);
             } catch (NumberFormatException ex) {
                 return false;
             }
             return true;
-        } else if(key.endsWith("weight")) {
+        } else if(realKey.endsWith("weight")) {
             return val.equals("bold") || val.equals("italic") || val.equals("plain") ||
                     (val.startsWith("bold") && val.endsWith("italic"));
-        } else if(key.endsWith("name")) {
+        } else if(realKey.endsWith("name") || realKey.equals("kprefix")) {
             return true;
         } else {
             return Utils.isInteger(val);
@@ -479,6 +487,8 @@ public class Config {
         }
         return vals;
     }
+    
+    //==========LIMITS==========================================================
 
     /**
      * Sastoji se od minimalne i maksimalne vrednosti i funkcije koja uzima int i vraca validnu vrednost.

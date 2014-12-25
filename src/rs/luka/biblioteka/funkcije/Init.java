@@ -8,19 +8,18 @@
  */
 /**
  * @bugs 
- * Ucenici sidePan.setPreferredSize ne radi, postoji workaround koji se resetuje pri scrollu
+ * Ucenici sidePan.setPreferredSize ne radi, postoji workaround koji se resetuje pri scroll-u
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije pri push(),
  * tako da setKnjiga throwuje Duplikat (da li smem ignorisati?)
  * undoVracanje postavlja datum na trenutni, umesto datum iznajmljivanja knjige
  */
 /**
  * @todo 
- * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING), posebno UzmiVratiButton
- * Proveriti bagove i izbaciti STABLE
+ * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING)
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception
- * Pocistiti +1/-1 haos
- * Bugfixing, optimizacija koda, ciscenje koda
+ * Bugfixing, optimizacija koda, cišđenje koda
  * Ubaciti kvačice (šđžčć)
+ * Izbaciti +1/-1 koliko može
  * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e)
  * Izbaciti sve preostale workaround-ove
  */
@@ -38,13 +37,13 @@
 //4434 linija, 24.9.'14. (cleanup)
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
-//7043 linija, 17.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, dokumentacija, bsh konzola)
+//7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
-//1307 linija, 20.12.'14. (Knjige/Ucenici izbaceni)
+//1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -96,7 +95,7 @@ class Handler implements Thread.UncaughtExceptionHandler {
     }
 
     private void handleX11Ex() {
-        new rs.luka.biblioteka.grafika.Ucenici();
+        new rs.luka.biblioteka.grafika.Ucenici().pregledUcenika();
     }
 }
 
@@ -162,7 +161,7 @@ public class Init {
         //new Test().testUnos();
         proveriDatum();
         initUndo();
-        new rs.luka.biblioteka.grafika.Ucenici();
+        new rs.luka.biblioteka.grafika.Ucenici().pregledUcenika();
         
         LOGGER.log(Level.INFO, "Inicijalizacija programa gotova.");
     }

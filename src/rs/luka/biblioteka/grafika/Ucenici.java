@@ -127,7 +127,6 @@ public class Ucenici implements FocusListener {
         selectAllUc = new JCheckBox("<html>Ucenici:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                 + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                 + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br></html>");
-        pregledUcenika();
     }
 
     /**
@@ -136,7 +135,7 @@ public class Ucenici implements FocusListener {
      *
      * @since 1.7.'13.
      */
-    private void pregledUcenika() {
+    public void pregledUcenika() {
         initPanels();
         initText();
         setTextAndSeparators();
@@ -345,7 +344,7 @@ public class Ucenici implements FocusListener {
             LOGGER.log(Level.SEVERE, "IO greška pri učitavanju slike za dugme za pregled knjiga", ex);
         }
         pregledBut.addActionListener((ActionEvent e) -> {
-            new Knjige();
+            new Knjige().pregledKnjiga();
         });
         pregledBut.setFocusable(false);
         //pregledBut.setBackground(Color.WHITE);
@@ -527,7 +526,7 @@ public class Ucenici implements FocusListener {
             }
         }
         win.dispose();
-        new Ucenici();
+        new Ucenici().pregledUcenika();
     }
 
     /**
@@ -544,9 +543,9 @@ public class Ucenici implements FocusListener {
         if (ucenici[red].isSelected()) {
             selected = true;
         }
-        if (buttons.contains(new UzmiVratiButton(red, -1, -1))) { //contains radi argument.equals(element)
+        int index = buttons.indexOf(new UzmiVratiButton(red, INVALID, INVALID));
+        if (index!=INVALID) { //contains radi argument.equals(element)
             if (!selected) { //ako nema selektovanih boxova, a dugme postoji
-                int index = buttons.indexOf(new UzmiVratiButton(red, -1, -1));
                 sidePan.remove(index + 1); //ukloni dugme, +1 zato sto se na prvom mestu nalazi searchBox
                 buttons.remove(index); //ukloni dugme iz liste
                 for (int k = 0; k < maxKnjiga; k++) {
@@ -560,7 +559,7 @@ public class Ucenici implements FocusListener {
                 return;
             }
         }
-        UzmiVratiButton button = new UzmiVratiButton(red, -1,
+        UzmiVratiButton button = new UzmiVratiButton(red, INVALID,
                 ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
         setSidePanSize(red);
         button.uzmi();
@@ -581,7 +580,7 @@ public class Ucenici implements FocusListener {
      */
     private void vracanjeKnjige(int kol, int red) {
         boolean selected = false;
-        int knjIndex = -1;
+        int knjIndex = INVALID;
         try {
             knjIndex = Podaci.indexOfNaslov(knjige[kol][red + 1].getText());
         } catch (VrednostNePostoji ex) {
@@ -594,7 +593,7 @@ public class Ucenici implements FocusListener {
             }
         }
         if (!selected) { //ako nema selektovanih boxova
-            int index = buttons.indexOf(new UzmiVratiButton(red, -1, -1));
+            int index = buttons.indexOf(new UzmiVratiButton(red, INVALID, INVALID));
             //contains radi argument.equals(element), pa argument mora da bude UzmiVratiButton
             sidePan.remove(index + 1); //ukloni dugme
             buttons.remove(index);
@@ -641,7 +640,7 @@ public class Ucenici implements FocusListener {
      * @param red 
      */
     private void setSidePanSize(int red) { //WORKAROUND, pri scrollu se vraca na staro
-        if(red==-1 || sidePan.getHeight() < 
+        if(red==INVALID || sidePan.getHeight() < 
             ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL) {
             sidePan.setSize(UCENICI_SIDEPAN_WIDTH,
                 ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL);

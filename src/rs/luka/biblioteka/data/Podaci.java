@@ -2,7 +2,7 @@
 //1145 linija, 24.9.'14.
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
-//2394 linija, 20.12.'14. (trenutno)
+//2400 linija, 24.12.'14.
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;

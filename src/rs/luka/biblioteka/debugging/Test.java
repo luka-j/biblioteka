@@ -1,7 +1,7 @@
 //126 linija, 24.8.'14.
 //202 linije, 25.10.'14.
 //204 linije, 29.11.'14.
-//184 linija, 20.12.'14. (bsh konzola)
+//186 linija, 25.12.'14. (bsh konzola)
 package rs.luka.biblioteka.debugging;
 
 import java.util.logging.Logger;

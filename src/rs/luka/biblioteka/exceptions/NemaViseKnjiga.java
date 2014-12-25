@@ -2,6 +2,7 @@
 //142 linije, 24.9.'14.
 //143 linije, 25.10.'14.
 //205 linija, 29.11.'14.
+//206 linija, 25.12.'14.
 package rs.luka.biblioteka.exceptions;
 
 import rs.luka.biblioteka.data.Knjiga;

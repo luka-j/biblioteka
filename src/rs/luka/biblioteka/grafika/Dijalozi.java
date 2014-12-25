@@ -116,6 +116,8 @@ public class Dijalozi {
      * @see #disposeInfoWindow() 
      */
     private static JDialog infoWindow;
+    private static final Dimension INFOWINDOW_BOUNDS = 
+            new Dimension(DIJALOZI_INFOWINDOW_WIDTH, DIJALOZI_INFOWINDOW_HEGHT);
     /**
      * Iscrtava info poruku sa datim naslovom i porukom koja se koristi kao test u JLabel-u.
      * Koristi default vrednosti umesto onih u klasi Grafika za boje.
@@ -125,7 +127,7 @@ public class Dijalozi {
     public static void drawInfoWindow(String naslov, String poruka) {
         infoWindow = new JDialog();
         infoWindow.setTitle(naslov);
-        infoWindow.setSize(250, 80);
+        infoWindow.setSize(INFOWINDOW_BOUNDS);
         infoWindow.setLocationRelativeTo(null);
         infoWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         infoWindow.setAlwaysOnTop(true);

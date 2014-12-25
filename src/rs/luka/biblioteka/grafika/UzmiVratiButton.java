@@ -37,8 +37,11 @@ class UzmiVratiButton extends JButton {
     public void uzmi() {
         this.setText("Iznajmi knjigu");
         this.addActionListener((ActionEvent e) -> {
+            if(this.getActionListeners().length>1)
+                return;
             new Uzimanje().uzmi(ucenikIndex);
-            new Ucenici();
+            Knjige.refresh();
+            new Ucenici().pregledUcenika();
         });
         this.setVisible(true);
     }
@@ -50,7 +53,8 @@ class UzmiVratiButton extends JButton {
         this.setText("Vrati knjigu");
         this.addActionListener((ActionEvent e) -> {
             Podaci.vratiViseKnjigaSafe(ucenikIndex, naslovi);
-            new Ucenici();
+            Knjige.refresh();
+            new Ucenici().pregledUcenika();
         });
         this.setVisible(true);
     }
@@ -77,7 +81,6 @@ class UzmiVratiButton extends JButton {
             return true;
         }
         if (obj instanceof Integer && (Integer)obj == ucenikIndex) {
-            System.out.println("contains");
             return true;
         }
         /*if(obj instanceof JTextField) {

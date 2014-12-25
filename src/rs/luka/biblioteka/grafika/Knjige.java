@@ -87,13 +87,12 @@ public class Knjige implements FocusListener {
         mainPan = new JPanel(null);
         scroll = new JScrollPane(mainPan);
         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scroll, butPan);
-        pregledKnjiga();
     }
 
     /**
      * Pregled knjiga koje su trenutno u biblioteci. Zove init* metoda i postavlja {@link #win} na visible.
      */
-    private void pregledKnjiga() {
+    public void pregledKnjiga() {
         initPanels();
         initText();
         initButtons();
@@ -284,7 +283,7 @@ public class Knjige implements FocusListener {
             }
         }
         win.dispose();
-        new Knjige();
+        new Knjige().pregledKnjiga();
     }
 
     /**
@@ -303,13 +302,17 @@ public class Knjige implements FocusListener {
     private void uzmiKnjigu(int red) {
         if (knjige[red].isSelected()) {
             LOGGER.log(Level.FINER, "Prikazujem dugme za uzimanje br {0}", red);
-            UzmiVratiButton button = new UzmiVratiButton(red, -1, 
+            UzmiVratiButton button = new UzmiVratiButton(red, INVALID, 
                     knjige[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
             button.addActionListener((ActionEvent ae) -> {
                 String ucenik = Dijalozi.showTextFieldDialog("Iznajmljivanje knjige",
                         "Unesite ime učenika koji iznajmljuje knjigu i pritisnite enter:", "");
                 try {
                     Podaci.uzmiKnjigu(red, ucenik);
+                    JOptionPane.showMessageDialog(null, "Učenik je uspešno iznajmio knjigu", 
+                            "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
+                    new Ucenici().pregledUcenika();
+                    new Knjige().pregledKnjiga();
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Kod učenika {0} se "
                             + "trenutno nalazi previše knjiga", ucenik);
@@ -341,7 +344,7 @@ public class Knjige implements FocusListener {
             sidePan.repaint();
             LOGGER.log(Level.FINE, "Dugme za uzimanje br. {0} prikazano.", red);
         } else {
-            int delIndex = buttons.indexOf(new UzmiVratiButton(red, -1, -1));
+            int delIndex = buttons.indexOf(new UzmiVratiButton(red, INVALID, INVALID));
             sidePan.remove(delIndex + 1);
             buttons.remove(delIndex);
             sidePan.repaint();
@@ -387,6 +390,15 @@ public class Knjige implements FocusListener {
             }
         }
         return null;
+    }
+    
+    /**
+     * Radi refresh prozora (zove {@link #pregledKnjiga()}) ako je on prikazan.
+     * U suprotnom, ignorise poziv.
+     */
+    public static void refresh() {
+        if(win.isVisible())
+            new Knjige().pregledKnjiga();
     }
 
     

@@ -586,5 +586,4 @@ public class Ucenik implements Comparable<Ucenik> {
             return hash;
         }
     }
-
 }

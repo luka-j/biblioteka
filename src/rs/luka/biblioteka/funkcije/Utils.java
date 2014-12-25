@@ -133,7 +133,7 @@ public class Utils {
      */
     public static boolean arrayContains(String[] array, String value) {
         for (String element : array) {
-            if (element.equals(value)) {
+            if (element.equalsIgnoreCase(value)) {
                 LOGGER.log(Level.FINE, "Dati niz sadrži datu vrednost");
                 return true;
             }
@@ -232,7 +232,7 @@ public class Utils {
         if(str.equals("bold"))
             return Font.BOLD;
         if(str.equals("italic"))
-            return Font.BOLD;
+            return Font.ITALIC;
         if(str.startsWith("bold") && str.endsWith("italic"))
             return Font.BOLD | Font.ITALIC;
         else
