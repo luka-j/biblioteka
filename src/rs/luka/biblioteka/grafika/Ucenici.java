@@ -1,6 +1,5 @@
 package rs.luka.biblioteka.grafika;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -104,8 +102,14 @@ public class Ucenici implements FocusListener {
     public Ucenici() {
         butPan = new JPanel();
         sidePan = new JPanel(null);
-        knjSeparatori = new JSeparator[Podaci.getMaxBrojUcenikKnjiga()][Ucenik.getBrojRazreda()-1];
-        ucSeparatori = new JSeparator[Ucenik.getBrojRazreda() - 1];
+        if(Ucenik.sortedByRazred()) {
+            knjSeparatori = new JSeparator[Podaci.getMaxBrojUcenikKnjiga()][Ucenik.getBrojRazreda()-1];
+            ucSeparatori = new JSeparator[Ucenik.getBrojRazreda() - 1]; 
+        }
+        else {
+            knjSeparatori=null;
+            ucSeparatori=null;
+        }
         knjigePan = new JPanel[getMaxBrojUcenikKnjiga()];
         uceniciPan = new JPanel();
         pan = new JPanel();
@@ -189,7 +193,7 @@ public class Ucenici implements FocusListener {
         sidePan.setBackground(Grafika.getBgColor());
 //        sidePan.setPreferredSize(new Dimension(UCENICI_SIDEPAN_WIDTH,
 //                (Podaci.getBrojUcenika() + 1) * UCENICI_HEIGHT_PER_LABEL));
-        sidePan.setBorder(BorderFactory.createLineBorder(Color.RED));
+//        sidePan.setBorder(BorderFactory.createLineBorder(Color.RED));
         sidePan.setAlignmentY(0);
         win.setContentPane(split);
     }
@@ -271,28 +275,30 @@ public class Ucenici implements FocusListener {
      * Dodaje JCheckBoxove na panel i postavlja separatore.
      */
     private void setTextAndSeparators() {
-        for (int i = 0; i < ucSeparatori.length; i++) {
-            ucSeparatori[i] = new JSeparator(SwingConstants.HORIZONTAL);
-        }
+        if(ucSeparatori != null)
+            for (int i = 0; i < ucSeparatori.length; i++) {
+                ucSeparatori[i] = new JSeparator(SwingConstants.HORIZONTAL);
+            }
         int[] razredi = Podaci.getGraniceRazreda();
         int razredIterator = 0;
         for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
             uceniciPan.add(ucenici[i]);
-            if (i == razredi[razredIterator] && i != Podaci.getBrojUcenika()-1) {
+            if (ucSeparatori != null && i == razredi[razredIterator] && i != Podaci.getBrojUcenika()-1) {
                 uceniciPan.add(ucSeparatori[razredIterator]);
                 razredIterator++;
             }
         }
-        for (JSeparator[] knjSeparatori0 : knjSeparatori) {
-            for (int i = 0; i < knjSeparatori0.length; i++) { //ne moze preko for : loopa.
-                knjSeparatori0[i] = new JSeparator(SwingConstants.HORIZONTAL);
+        if(knjSeparatori != null)
+            for (JSeparator[] knjSeparatori0 : knjSeparatori) {
+                for (int i = 0; i < knjSeparatori0.length; i++) { //ne moze preko for : loopa.
+                    knjSeparatori0[i] = new JSeparator(SwingConstants.HORIZONTAL);
+                }
             }
-        }
         for (int i = 0; i < maxKnjiga; i++) {
             razredIterator = 0;
             for (int j = 0; j < Podaci.getBrojUcenika() + 1; j++) {
                 knjigePan[i].add(knjige[i][j]);
-                if (j - 1 == razredi[razredIterator] && j != Podaci.getBrojUcenika()) {
+                if (knjSeparatori != null && j - 1 == razredi[razredIterator] && j != Podaci.getBrojUcenika()) {
                     knjigePan[i].add(knjSeparatori[i][razredIterator]);
                     razredIterator++;
                 }
@@ -652,12 +658,14 @@ public class Ucenici implements FocusListener {
      */
     private void search() {
         LOGGER.log(Level.FINE, "Počinjem pretragu (grafički)");
-        for (JSeparator sep : ucSeparatori) {
-            uceniciPan.remove(sep); //remove ili samo reset ??
-        }
-        for (int i = 0; i < maxKnjiga; i++) {
-            for (JSeparator knjSeparatori1 : knjSeparatori[i]) {
-                knjigePan[i].remove(knjSeparatori1);
+        if(ucSeparatori != null) {
+            for (JSeparator sep : ucSeparatori) {
+                uceniciPan.remove(sep); //remove ili samo reset ??
+            }
+            for (int i = 0; i < maxKnjiga; i++) {
+                for (JSeparator knjSeparatori1 : knjSeparatori[i]) {
+                    knjigePan[i].remove(knjSeparatori1);
+                }
             }
         }
         ArrayList<Integer> ucIndexes = Pretraga.pretraziUcenike(searchBox.getText());

@@ -24,7 +24,7 @@ public class Logger {
      * handler namenjen za root logger, trebalo bi da koristi UTF-8 i
      * simpleformat.
      */
-    private static java.util.logging.Handler handler;
+    private static java.util.logging.Handler handler = null;
     /**
      * Logging level za handler i root logger. Pri ucitavanju je INFO, a pri
      * inicijalizaciji u metodi se uzima vrednost iz configa.
@@ -45,22 +45,24 @@ public class Logger {
         FILE_COUNT = Config.getAsInt("logFileCount");
         ROOT_LOGGER.setLevel(LOGGING_LEVEL);
         try {
-            File logFolder = new File(Utils.getWorkingDir() + "logs");
-            if (!logFolder.exists() && !logFolder.mkdir()) {
-                throw new IOException("logFolder nije kreiran");
-            }
-            handler = new FileHandler(Utils.getWorkingDir() + "logs/biblioteka.log%g",
-                    FILE_SIZE_LIMIT, FILE_COUNT, false);
-            handler.setEncoding("UTF-8");
-            handler.setFormatter(new SimpleFormatter());
-            handler.setLevel(LOGGING_LEVEL);
+            if (FILE_SIZE_LIMIT > 0 && FILE_COUNT > 0) {
+                File logFolder = new File(Utils.getWorkingDir() + "logs");
+                if (!logFolder.exists() && !logFolder.mkdir()) {
+                    throw new IOException("logFolder nije kreiran");
+                }
+                handler = new FileHandler(Utils.getWorkingDir() + "logs/biblioteka.log%g",
+                        FILE_SIZE_LIMIT, FILE_COUNT, false);
+                handler.setEncoding("UTF-8");
+                handler.setFormatter(new SimpleFormatter());
+                handler.setLevel(LOGGING_LEVEL);
 
-            ROOT_LOGGER.addHandler(handler);
-            //za debugging:
-            //for(java.util.logging.Handler handler0 : java.util.logging.Logger.getLogger("").getHandlers())
-            //    if(handler0 instanceof ConsoleHandler) {
-            //        handler0.setLevel(Level.FINE);
-            //        System.out.println("found");}
+                ROOT_LOGGER.addHandler(handler);
+                //za debugging:
+                //for(java.util.logging.Handler handler0 : java.util.logging.Logger.getLogger("").getHandlers())
+                //    if(handler0 instanceof ConsoleHandler) {
+                //        handler0.setLevel(Level.FINE);
+                //        System.out.println("found");}
+            }
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, "Greška pri inicijalizaciji loggera.\n"
                     + "Neke funkcije logovanja neće raditi", "I/O Greska",

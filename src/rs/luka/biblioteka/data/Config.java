@@ -62,7 +62,12 @@ public class Config {
             + "maxUndo - maksimalan broj akcija koje se nalaze u undo stack-u\n"
             + "razredi - String validnih razreda, razdvojenih zapetom\n"
             + "workingDir - radni direktorijum aplikacije\n"
-            + "logSizeLimit i logCount - broj i velicina log fajla (fajlova)";
+            + "logSizeLimit i logCount - broj i velicina log fajla (fajlova)\n"
+            + "label,but i smallBut Font Name/Size/Weight - osobine fontova koriscenih za labele i dugmad\n"
+            + "kPrefix - prefix za kljuceve koji oznacavaju da se vrednost odnosi na konstantu,"
+            + "default je k_\n"
+            + "ucSort - metoda sortiranja ucenika. Default je po razredu (razred||raz), a moze i po imenu (ime)";
+    
     private static String KONSTANTE_PREFIX = "k_";
     /**
      * Sve vrednosti koje kljuc moze da ima, sem onih koji pocinju sa k_ (koje se nalaze u Konstante.java).
@@ -74,17 +79,17 @@ public class Config {
     private static final Map<String, Limit> limiti = new HashMap<>();
 
     //LIMITI ZA CONFIG
-    private static final Limit SIRINA = new Limit(100, 3_000);
-    private static final Limit VISINA = new Limit(50, 2_000);
+    private static final Limit SIRINA = new Limit(100, 4_000);
+    private static final Limit VISINA = new Limit(70, 3_000);
     private static final Limit BR_KNJIGA = new Limit(1, 15);
-    private static final Limit UC_KNJ_SIZE = new Limit(50);
+    private static final Limit UC_KNJ_SIZE = new Limit(30);
     private static final Limit DATE_LIMIT = new Limit(1, 365);
-    private static final Limit SAVE_PERIOD = new Limit(0);
-    private static final Limit UNDO = new Limit(0);
+    private static final Limit SAVE_PERIOD = new Limit();
+    private static final Limit UNDO = new Limit();
     private static final Limit LOG_SIZE = new Limit(0, 100_000_000);
     private static final Limit LOG_COUNT = new Limit(0, 1_000);
     private static final Limit LABEL_FONT = new Limit(1, 50);
-    private static final Limit BUTTON_FONT = new Limit(1, 25);
+    private static final Limit BUTTON_FONT = new Limit(1, 30);
 
     /**
      * Ucitava config iz fajla u Properties.
@@ -101,8 +106,8 @@ public class Config {
             path = configFile.getCanonicalPath();
             FileReader configFR = new FileReader(configFile);
             Config.config.load(configFR);
-            resolveKeys();
             setKPrefix();
+            resolveKeys();
         } catch (FileNotFoundException FNFex) {
             showMessageDialog(null, "Konfiguracijski fajl nije pronadjen. Lokacija: " + path);
         } catch (IOException ex) {
@@ -182,6 +187,7 @@ public class Config {
         vrednosti.put("smallButWeight", "smallButWeight", "smallButtonWeight", "sButW", "sButWeight",
                 "UzmiVratiFontWeight", "UzmiVratiWeight", "UVWeight");
         vrednosti.put("kPrefix", "kPrefix", "konstantePrefix", "PrefixZaKonstante");
+        vrednosti.put("ucSort", "ucSort", "uceniciSort", "sortiratiUcenikePo", "uceniciSortKriterijum");
     }
 
     /**
@@ -346,7 +352,7 @@ public class Config {
         }
 
         String realKey = vrednosti.getKey(key);
-        check(realKey, val);
+        checkValue(realKey, val);
 
         if (limiti.containsKey(key)) {
             config.setProperty(realKey,
@@ -418,6 +424,8 @@ public class Config {
                     (val.startsWith("bold") && val.endsWith("italic"));
         } else if(realKey.endsWith("name") || realKey.equals("kprefix")) {
             return true;
+        } else if(realKey.equals("ucSort")) {
+            return val.equals("ime") || val.equals("razred") || val.equals("raz");
         } else {
             return Utils.isInteger(val);
         }
@@ -428,7 +436,7 @@ public class Config {
      * @param key ako je jedan od 3 koji se proverava, radi proveru, u suprotnom ignorise
      * @param val vrednost kljuca
      */
-    private static void check(String key, String val) {
+    private static void checkValue(String key, String val) {
         Iterator<Ucenik> iterator;
         switch (key) {
             case "brKnjiga":
@@ -513,7 +521,7 @@ public class Config {
          */
         private Limit() {
             this.MAX = Integer.MAX_VALUE;
-            this.MIN = Integer.MIN_VALUE;
+            this.MIN = 0;
         }
 
         /**

@@ -92,6 +92,14 @@ public class Ucenik implements Comparable<Ucenik> {
     public static int getPrviRazred() {
         return validRazred[0];
     }
+    
+    /**
+     * Vraca da li se ucenici sortiraju po razredu. Ako je false, ucenici se sortiraju po imenu.
+     * @return true ili false, u zavisnosti od nacina sortiranja
+     */
+    public static boolean sortedByRazred() {
+        return !Config.hasKey("ucSort")||Config.get("ucSort").equals("razred")||Config.get("ucSort").equals("raz");
+    }
     /**
      * Ime i prezime ucenika.
      */
@@ -259,8 +267,9 @@ public class Ucenik implements Comparable<Ucenik> {
 
     /**
      * Proverava da li je dato mesto za Knjigu kod ucenika prazno
+     *
      * @param i mesto
-     * @return 
+     * @return
      */
     public boolean isKnjigaEmpty(int i) {
         if (i < knjige.length) {
@@ -339,12 +348,11 @@ public class Ucenik implements Comparable<Ucenik> {
      */
     protected void povecajRazred() {
         for (int i = 0; i < validRazred.length; i++) {
-            if (razred == validRazred[i] && i+1 < validRazred.length) {
+            if (razred == validRazred[i] && i + 1 < validRazred.length) {
                 razred = validRazred[i + 1];
                 break;
-            }
-            else {
-                razred=-1;
+            } else {
+                razred = -1;
             }
         }
     }
@@ -367,11 +375,13 @@ public class Ucenik implements Comparable<Ucenik> {
      */
     @Override
     public int compareTo(Ucenik uc) {
-        if (Utils.getArrayIndex(validRazred, razred) < Utils.getArrayIndex(validRazred, uc.getRazred())) {
-            return -1;
-        }
-        if (Utils.getArrayIndex(validRazred, razred) > Utils.getArrayIndex(validRazred, uc.getRazred())) {
-            return 1;
+        if (sortedByRazred()) {
+            if (Utils.getArrayIndex(validRazred, razred) < Utils.getArrayIndex(validRazred, uc.getRazred())) {
+                return -1;
+            }
+            if (Utils.getArrayIndex(validRazred, razred) > Utils.getArrayIndex(validRazred, uc.getRazred())) {
+                return 1;
+            }
         }
         return this.ime.compareToIgnoreCase(uc.getIme());
     }
@@ -403,8 +413,6 @@ public class Ucenik implements Comparable<Ucenik> {
         return hash;
     }
 
-    
-    
     /**
      * Klasa za knjige koje se nalaze kod ucenika. Sadrzi naslov knjige i datum
      * kada je izdata.
@@ -474,7 +482,7 @@ public class Ucenik implements Comparable<Ucenik> {
                 datum = new Date(uk.getDatum().getTime());
             }
         }
-        
+
         /**
          * Konstruise praznu UcenikKnjiga (sa "" naslovom i null datumom)
          */
@@ -527,7 +535,8 @@ public class Ucenik implements Comparable<Ucenik> {
 
         /**
          * Postavlja naslov na dati String, datum na trenutni.
-         * @param naslov 
+         *
+         * @param naslov
          */
         protected void setNaslov(String naslov) {
             this.naslov = naslov;
@@ -541,7 +550,8 @@ public class Ucenik implements Comparable<Ucenik> {
         //is... METODE
         /**
          * Vraca true ako je "" prazan, false u suprotnom
-         * @return 
+         *
+         * @return
          */
         public boolean isEmpty() {
             return naslov.isEmpty();

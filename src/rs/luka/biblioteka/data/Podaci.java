@@ -25,11 +25,7 @@ import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import rs.luka.biblioteka.debugging.Test;
-import rs.luka.biblioteka.exceptions.Duplikat;
-import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
-import rs.luka.biblioteka.exceptions.Prazno;
-import rs.luka.biblioteka.exceptions.PreviseKnjiga;
-import rs.luka.biblioteka.exceptions.VrednostNePostoji;
+import rs.luka.biblioteka.exceptions.*;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji.vrednost;
 import rs.luka.biblioteka.funkcije.Undo;
 import rs.luka.biblioteka.funkcije.Utils;
@@ -200,7 +196,7 @@ public class Podaci {
     }
 
     /**
-     * Vraca kopiju knjige koja se nalazi na indexu i.
+     * Getter. Vraca kopiju knjige koja se nalazi na indexu i.
      * @param i index
      * @return Knjiga na indexu i
      * @since 23.8.'14.
@@ -623,7 +619,7 @@ public class Podaci {
     
     /**
      * Za svaku knjigu u listi, trazi index knjige i zove
-     * {@link Podaci#vratiKnjigu(int, int)}
+     * {@link Podaci#vratiKnjigu(int, int)}. Ako dodje do greske (VrednostNePostoji) throwuje RuntimeException.
      *
      * @param indexUcenika index ucenika
      * @param indexKnjiga lista sa indexima knjiga za vracanje

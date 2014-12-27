@@ -3,6 +3,7 @@ package rs.luka.biblioteka.grafika;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import rs.luka.biblioteka.data.Podaci;
@@ -43,6 +44,7 @@ class UzmiVratiButton extends JButton {
             Knjige.refresh();
             new Ucenici().pregledUcenika();
         });
+        LOG.log(Level.FINE, "Dodato dugme za uzimanje br {0}", ucenikIndex);
         this.setVisible(true);
     }
 
@@ -56,6 +58,7 @@ class UzmiVratiButton extends JButton {
             Knjige.refresh();
             new Ucenici().pregledUcenika();
         });
+        LOG.log(Level.FINE, "Dodato dugme za vraćanje br {0}", ucenikIndex);
         this.setVisible(true);
     }
 

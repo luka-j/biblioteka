@@ -232,5 +232,5 @@ public class Konstante {
     /*----------UzmiVratiButton.java------------------------------------------*/
     static int UVBUTTON_WIDTH = 140;
     static int UVBUTTON_HEIGHT = 23;
-    static int UVBUTTON_X = 5;
+    static int UVBUTTON_X = 0;
 }
