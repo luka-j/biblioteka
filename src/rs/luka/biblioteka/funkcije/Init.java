@@ -9,22 +9,25 @@
  */
 /**
  * @bugs 
- * Ucenici sidePan.setPreferredSize ne radi, postoji workaround koji se
- * resetuje pri scroll-u ^^^ Samo u netbeans okruzenju, setPreferredSize radi
- * normalno kada se pokrene posebno kao aplikacija !!! undo u kombinaciji sa
- * prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije
+ * Ucenici sidePan.setPreferredSize ne radi, postoji workaround koji se resetuje pri scroll-u 
+ * ^^^ Samo u netbeans okruzenju, setPreferredSize radi normalno kada se pokrene posebno kao aplikacija !!! 
+ * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije
  * pri push(), tako da setKnjiga throwuje Duplikat (da li smem ignorisati?)
  * undoVracanje postavlja datum na trenutni, umesto datum iznajmljivanja knjige
  */
 /**
  * @todo 
- * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING) Smisliti nacin da ponovo iscrta
- * prozor u showTextFieldDialog ako throwuje Exception Bugfixing, optimizacija
- * koda, cišenje koda Ubaciti kvačice (šđžčć) Napraviti pravu implementaciju
- * MultiMap-e (umesto 2 arraylist-e) Izbaciti sve preostale workaround-ove
+ * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING) 
+ * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception 
+ * Bugfixing, optimizacija koda, cišenje koda 
+ * Ubaciti kvačice (šđžčć) 
+ * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e) 
+ * Izbaciti sve preostale workaround-ove
  */
 /**
  * @changelog 
+ * Ubacio PeriodicActions (izbacio deo iz Init-a) 
+ * Fodao datePeriod (period automatske provere datuma, float, u danima) u Config i Podesavanja
  * Proverava datum na 24h (ako je program ukljucen duze vreme), 
  * preimenovao autosave() u periodicActions() i dodao (razdvojio na) autosave() i checkDate()
  * ucSort - korisnik (preko configa) bira kako ce ucenici biti
@@ -32,6 +35,7 @@
  * listener se ne aktivira ako vec postoji neki dodao font weight i popravio
  * verovatni bug u Config-u Pomerio changelog u fajl.
  */
+ 
 //2771 linija, sa svim klasama osim onih iz legacy package-a. 24.11.'13.
 //2802 linije, 22.2.'14.
 //2942 linije, 17.5.'14.
@@ -42,18 +46,20 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
+//7255 linija, 28.12.'14. (trenutno, fontovi, ucSort, PeriodicActions, cleanup)
+
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
 //1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
+//1422 linija, 27.12.'14. (trenutno, auto)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import static java.lang.Thread.setDefaultUncaughtExceptionHandler;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -73,6 +79,7 @@ import static rs.luka.biblioteka.funkcije.Utils.setWorkingDir;
 import rs.luka.biblioteka.grafika.Dijalozi;
 import rs.luka.biblioteka.grafika.Grafika;
 import static rs.luka.biblioteka.grafika.Grafika.initGrafika;
+import static rs.luka.biblioteka.funkcije.PeriodicActions.doPeriodicActions;
 
 /**
  *
@@ -113,20 +120,16 @@ class Handler implements Thread.UncaughtExceptionHandler {
  */
 public class Init {
 
-    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(Init.class.getName());
-    /**
-     * Period na koji se podaci automatski cuvaju, u milisekundama.
-     */
-    private static int AUTOSAVE_PERIOD;
+    private static final java.util.logging.Logger LOGGER = 
+            java.util.logging.Logger.getLogger(Init.class.getName());
+    
     /**
      * Maksimalan broj izlazenja (ili pokusaja izlazenja).
      */
     private static final int MAX_EXITS = 3;
-
-    private static final Date START_TIME = new Date();
-    private static final int MS_U_DANU = 86_400_000;
-    private static boolean AUTOSAVE = true;
-
+    /**
+     * Oznacava broj izlaza do sada.
+     */
     private static int exitCount = 0;
 
     /**
@@ -140,7 +143,6 @@ public class Init {
         Dijalozi.drawInfoWindow("Učitavanje podataka...", "Učitavanje podataka...");
         init();
         Dijalozi.disposeInfoWindow();
-        periodicActions();
     }
 
     /**
@@ -173,6 +175,8 @@ public class Init {
         new rs.luka.biblioteka.grafika.Ucenici().pregledUcenika();
 
         LOGGER.log(Level.INFO, "Inicijalizacija programa gotova.");
+        
+        doPeriodicActions();
     }
 
     /**
@@ -229,52 +233,6 @@ public class Init {
         } else {
             finalizeLogger();
             System.exit(0);
-        }
-    }
-
-    /**
-     * Zaustavlja trenutni Thread , cuva podatke i ponavlja isti proces
-     * beskonacno. BLOKIRA TRENUTNI THREAD DO ZAUSTAVLJANJA PROGRAMA !!!
-     */
-    private static void periodicActions() {
-        if (Config.get("savePeriod").equals("0")) {
-            LOGGER.log(Level.FINE, "autosave isključen.");
-            AUTOSAVE = false;
-            AUTOSAVE_PERIOD = 600_000;
-        }
-        try {
-            AUTOSAVE_PERIOD = (int) (Float.parseFloat(Config.get("savePeriod")) * 60_000);
-            LOGGER.log(Level.CONFIG, "autosave period: {0}", AUTOSAVE_PERIOD);
-        } catch (NumberFormatException ex) {
-            LOGGER.log(Level.SEVERE, "Greška pri parsiranju autosave perioda iz configa", ex);
-        }
-        while (true) {
-            try {
-                Thread.sleep(AUTOSAVE_PERIOD);
-                LOGGER.log(Level.FINER, "autosaving&checking date...");
-                autosave();
-                checkDate();
-            } catch (InterruptedException ex) { //ne bi trebalo da se desi; ako se desi, ignorisati
-                LOGGER.log(Level.WARNING, "autosave interrupted", ex);
-            }
-        }
-    }
-
-    private static void autosave() {
-        try {
-            if (AUTOSAVE) {
-                Save.save();
-            }
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Greška pri automatskom čuvanju podataka", ex);
-            JOptionPane.showMessageDialog(null, "Greška pri automatskom čuvanju podataka",
-                    "I/O greska", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private static void checkDate() {
-        if (new Date().after(new Date(START_TIME.getTime() + MS_U_DANU))) {
-            proveriDatum();
         }
     }
 }

@@ -84,12 +84,13 @@ public class Config {
     private static final Limit BR_KNJIGA = new Limit(1, 15);
     private static final Limit UC_KNJ_SIZE = new Limit(30);
     private static final Limit DATE_LIMIT = new Limit(1, 365);
-    private static final Limit SAVE_PERIOD = new Limit();
+    private static final Limit SAVE_PERIOD = new Limit(0, 1440); //1 dan
     private static final Limit UNDO = new Limit();
     private static final Limit LOG_SIZE = new Limit(0, 100_000_000);
     private static final Limit LOG_COUNT = new Limit(0, 1_000);
     private static final Limit LABEL_FONT = new Limit(1, 50);
     private static final Limit BUTTON_FONT = new Limit(1, 30);
+    private static final Limit DATE_CHECK_LIMIT = new Limit(0, 30); //1 mesec
 
     /**
      * Ucitava config iz fajla u Properties.
@@ -172,22 +173,21 @@ public class Config {
                 "Maksimalan broj log fajlova");
         vrednosti.put("labelFontName", "labelFontName", "labelName", "fontName", "font", 
                 "Font korišćen za labele");
-        vrednosti.put("labelFontSize", "labelFontSize", "labelSize", "fontSize", 
-                "Veličina font-a korišćena za labele");
+        vrednosti.put("labelFontSize", "labelFontSize", "labelSize", "fontSize");
         vrednosti.put("labelFontWeight", "labelFontWeight", "labelWeight", "fontWeight");
         vrednosti.put("butFontName", "butFontName", "buttonFontName", "butName", "buttonName",
                 "Font korišćen za veliku dugmad");
-        vrednosti.put("butFontSize", "butFontSize", "buttonFontSize", "butSize", "buttonSize",
-                "Veličina fonta korišćena za veliku dugmad");
+        vrednosti.put("butFontSize", "butFontSize", "buttonFontSize", "butSize", "buttonSize");
         vrednosti.put("butFontWeight", "butFontWeight", "buttonFontWeight", "butWeight", "buttonWeight");
         vrednosti.put("smallButFontName", "smallButFontName", "sButFontName", "sButName", "smallButtonName",
                 "UzmiVratiFontName", "UzmiVratiName", "UVFont", "Font korišćen za malu dugmad");
         vrednosti.put("smallButFontSize", "smallButFontSize", "sButFontSize", "sButSize", "smallButtonSize",
-                "UzmiVratiFontSize", "UzmiVratiSize", "UVSize", "Veličina fonta korišćena za malu dugmad");
+                "UzmiVratiFontSize", "UzmiVratiSize", "UVSize");
         vrednosti.put("smallButWeight", "smallButWeight", "smallButtonWeight", "sButW", "sButWeight",
                 "UzmiVratiFontWeight", "UzmiVratiWeight", "UVWeight");
         vrednosti.put("kPrefix", "kPrefix", "konstantePrefix", "PrefixZaKonstante");
         vrednosti.put("ucSort", "ucSort", "uceniciSort", "sortiratiUcenikePo", "uceniciSortKriterijum");
+        vrednosti.put("datePeriod", "datePeriod", "dateCheckPeriod", "Period proveravanja datuma (u danima)");
     }
 
     /**
@@ -211,6 +211,7 @@ public class Config {
         limiti.put("labelFontSize", LABEL_FONT);
         limiti.put("butFontSize", BUTTON_FONT);
         limiti.put("smallButFontSize", BUTTON_FONT);
+        limiti.put("datePeriod", DATE_CHECK_LIMIT);
     }
 
     /**
@@ -352,7 +353,7 @@ public class Config {
         }
 
         String realKey = vrednosti.getKey(key);
-        checkValue(realKey, val);
+        checkValue(realKey, val); //throwuje ConfigException-e (koji su Runtime)
 
         if (limiti.containsKey(key)) {
             config.setProperty(realKey,
@@ -426,6 +427,8 @@ public class Config {
             return true;
         } else if(realKey.equals("ucSort")) {
             return val.equals("ime") || val.equals("razred") || val.equals("raz");
+        } else if(realKey.equals("dateperiod")) {
+            return Utils.isDouble(val);
         } else {
             return Utils.isInteger(val);
         }
@@ -544,12 +547,12 @@ public class Config {
         }
 
         /**
-         * String wrapper za {@link #limit(int)}
+         * String wrapper za {@link #limit(int)}. Prihvata float-ove
          * @param val vrednost kao String
          * @return validna vrednost kao String
          */
         public String limit(String val) {
-            return String.valueOf(limit(Integer.valueOf(val)));
+            return String.valueOf(limit((int)Math.ceil(Float.valueOf(val))));
         }
     }
 }

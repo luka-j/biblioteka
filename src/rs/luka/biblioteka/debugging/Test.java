@@ -2,6 +2,7 @@
 //202 linije, 25.10.'14.
 //204 linije, 29.11.'14.
 //186 linija, 25.12.'14. (bsh konzola)
+//172 linije, 27.12.'14. (trenutno, auto, cleanup konzole)
 package rs.luka.biblioteka.debugging;
 
 import java.util.logging.Logger;
