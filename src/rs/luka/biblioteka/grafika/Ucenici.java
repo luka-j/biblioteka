@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
@@ -76,11 +77,11 @@ public class Ucenici implements FocusListener {
     /**
      * Matrix sa knjigama pocinje od [][1], na 0 su labeli "Knjiga".
      */
-    private JCheckBox[][] knjige;
-    private JCheckBox[] ucenici;
+    private IndexedCheckbox[][] knjige;
+    private IndexedCheckbox[] ucenici;
     private final String SEARCH_TEXT = UCENICI_SEARCH_TEXT;
-    private final Insets INSET = new Insets(UCENICI_TOP_INSET, UCENICI_LEFT_INSET,
-            UCENICI_BOTTOM_INSET, UCENICI_RIGHT_INSET); //ne sme static, da se ne bi prerano inicijalizovala
+    private final Insets INSET = new Insets(CHECKBOX_TOP_INSET, CHECKBOX_LEFT_INSET,
+            CHECKBOX_BOTTOM_INSET, CHECKBOX_RIGHT_INSET); //ne sme static, da se ne bi prerano inicijalizovala
     private final JSplitPane split;
     private final JPanel butPan;
     private final JSeparator[][] knjSeparatori;
@@ -230,40 +231,28 @@ public class Ucenici implements FocusListener {
     private void initText() {
         Podaci.sortUcenike();
         Ucenik uc;
-        knjige = new JCheckBox[maxKnjiga][Podaci.getBrojUcenika() + 1];
+        knjige = new IndexedCheckbox[maxKnjiga][Podaci.getBrojUcenika() + 1];
         selectAllUc.setFont(Grafika.getLabelFont());
         selectAllUc.setForeground(Grafika.getFgColor());
         selectAllUc.setBackground(Grafika.getBgColor());
         selectAllUc.setBorder(new EmptyBorder(INSET));
 
-        ucenici = new JCheckBox[Podaci.getBrojUcenika()];
+        ucenici = new IndexedCheckbox[Podaci.getBrojUcenika()];
         Iterator<Ucenik> it = Podaci.iteratorUcenika();
         for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
-            ucenici[i] = new JCheckBox(it.next().getIme());
-            ucenici[i].setFont(Grafika.getLabelFont());
-            ucenici[i].setForeground(Grafika.getFgColor());
-            ucenici[i].setBackground(Grafika.getBgColor());
-            ucenici[i].setBorder(new EmptyBorder(INSET));
+            ucenici[i] = new IndexedCheckbox(it.next().getIme(), i, INVALID);
         }
 
         for (int i = 0; i < maxKnjiga; i++) {
-            knjige[i][0] = new JCheckBox("<html>Knjige:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br></html>");
-            knjige[i][0].setFont(Grafika.getLabelFont());
-            knjige[i][0].setBackground(Grafika.getBgColor());
-            knjige[i][0].setForeground(Grafika.getFgColor());
-            knjige[i][0].setBorder(new EmptyBorder(INSET));
+            knjige[i][0] = new IndexedCheckbox("<html>Knjige:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br></html>", 1, i);
             it = Podaci.iteratorUcenika();
             for (int j = 1; j < Podaci.getBrojUcenika() + 1; j++) {
                 uc = it.next();
-                knjige[i][j] = new JCheckBox(" ");
+                knjige[i][j] = new IndexedCheckbox(" ", j-1, i);
                 if (!uc.isKnjigaEmpty(i) && i < uc.getMaxBrojKnjiga()) {
                     knjige[i][j].setText(uc.getNaslovKnjige(i));
                 }
-                knjige[i][j].setBorder(new EmptyBorder(INSET));
-                knjige[i][j].setFont(Grafika.getLabelFont());
-                knjige[i][j].setForeground(Grafika.getFgColor());
-                knjige[i][j].setBackground(Grafika.getBgColor());
             }
         }
         LOGGER.log(Level.FINE, "Postavio labele učenika");
@@ -412,25 +401,23 @@ public class Ucenici implements FocusListener {
                 selectAllKnj(red);
             });
         }
+        ItemListener uzimanjeListener = (ItemEvent e) -> {
+            uzimanjeKnjige((IndexedCheckbox)e.getItem());
+            sidePan.repaint();
+        };
+        ItemListener vracanjeListener = (ItemEvent e) -> {
+            vracanjeKnjige((IndexedCheckbox)e.getItem());
+            sidePan.repaint();
+        };
         for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
-            final int red = i; //uvek ekvivalentno i, final zbog lambde
-            ucenici[i].addItemListener((ItemEvent e) -> {
-                uzimanjeKnjige(red);
-            });
+            ucenici[i].addItemListener(uzimanjeListener);
 
             //knjige
             for (int j = 0; j < maxKnjiga; j++) {
-                final int kol = j; //uvek ekvivalentno j, final zbog lambde
-                knjige[kol][red + 1].addItemListener((ItemEvent e) -> {
-                    //uzimanje
-                    if (knjige[kol][red + 1].getText().equals(" ")) {
-                        uzimanjeKnjige(red);
-                    } //vracanje
-                    else {
-                        vracanjeKnjige(kol, red);
-                    }
-                    sidePan.repaint();
-                });
+                if(knjige[j][i+1].getText().equals(" "))
+                    knjige[j][i+1].addItemListener(uzimanjeListener);
+                else
+                    knjige[j][i+1].addItemListener(vracanjeListener);
             }
         }
     }
@@ -539,10 +526,12 @@ public class Ucenici implements FocusListener {
      * Uzima knjigu za selektovanog ucenika.
      * @param red 
      */
-    private void uzimanjeKnjige(int red) {
+    private void uzimanjeKnjige(IndexedCheckbox box) {
         boolean selected = false;
+        int red = box.getIndex();
+        int knjRed = red+1;
         for (int k = 0; k < maxKnjiga; k++) {
-            if (knjige[k][red + 1].isSelected()) {
+            if (knjige[k][knjRed].isSelected()) {
                 selected = true; //makar jedan selektovan checkbox
             }
         }
@@ -555,8 +544,8 @@ public class Ucenici implements FocusListener {
                 sidePan.remove(index + 1); //ukloni dugme, +1 zato sto se na prvom mestu nalazi searchBox
                 buttons.remove(index); //ukloni dugme iz liste
                 for (int k = 0; k < maxKnjiga; k++) {
-                    if (!knjige[k][red + 1].getText().equals(" ")) {
-                        knjige[k][red + 1].setEnabled(true); //ponovo omogucuje checkboxove za vracanje
+                    if (!knjige[k][knjRed].getText().equals(" ")) {
+                        knjige[k][knjRed].setEnabled(true); //ponovo omogucuje checkboxove za vracanje
                     }
                 }
                 sidePan.repaint();
@@ -572,8 +561,8 @@ public class Ucenici implements FocusListener {
         buttons.add(button);
         sidePan.add(button);
         for (int k = 0; k < maxKnjiga; k++) {
-            if (!knjige[k][red + 1].getText().equals(" ")) {
-                knjige[k][red + 1].setEnabled(false); //onemogucuje jcheckboxove za vracanje
+            if (!knjige[k][knjRed].getText().equals(" ")) {
+                knjige[k][knjRed].setEnabled(false); //onemogucuje jcheckboxove za vracanje
             }
         }
         sidePan.repaint();
@@ -584,17 +573,22 @@ public class Ucenici implements FocusListener {
      * @param kol kolona u kojoj je knjige
      * @param red red u kojoj su ucenik i knjiga
      */
-    private void vracanjeKnjige(int kol, int red) {
+    private void vracanjeKnjige(IndexedCheckbox box) {
         boolean selected = false;
         int knjIndex = INVALID;
+        int kol = box.getKol();
+        int red = box.getIndex();
+        int knjRed = red+1;
         try {
-            knjIndex = Podaci.indexOfNaslov(knjige[kol][red + 1].getText());
+            System.out.println("kol: " + kol + "\tred:" + red + "\ttext:" + knjige[kol][knjRed].getText());
+            knjIndex = Podaci.indexOfNaslov(knjige[kol][knjRed].getText());
+
         } catch (VrednostNePostoji ex) {
-            throw new RuntimeException(ex);
+            System.out.println("greska");
         }
 
         for (int k = 0; k < maxKnjiga; k++) {
-            if (knjige[k][red + 1].isSelected()) {
+            if (knjige[k][knjRed].isSelected()) {
                 selected = true; //makar jedan selektovan checkbox 
             }
         }
@@ -605,8 +599,8 @@ public class Ucenici implements FocusListener {
             buttons.remove(index);
             ucenici[red].setEnabled(true); //ponovo omogucuje checkboxove za uzimanje
             for (int k = 0; k < maxKnjiga; k++) {
-                if (knjige[k][red + 1].getText().equals(" ")) {
-                    knjige[k][red + 1].setEnabled(true);
+                if (knjige[k][knjRed].getText().equals(" ")) {
+                    knjige[k][knjRed].setEnabled(true);
                 }
             }
             return; //izadji iz listenera
@@ -635,8 +629,8 @@ public class Ucenici implements FocusListener {
         sidePan.add(button);
         ucenici[red].setEnabled(false); //ne mogu i uzimanje i vracanje biti vidljivi u istom trenutku
         for (int k = 0; k < maxKnjiga; k++) {
-            if (knjige[k][red + 1].getText().equals(" ")) {
-                knjige[k][red + 1].setEnabled(false);
+            if (knjige[k][knjRed].getText().equals(" ")) {
+                knjige[k][knjRed].setEnabled(false);
             }
         }
     }

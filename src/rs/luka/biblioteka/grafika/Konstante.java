@@ -48,12 +48,13 @@ public class Konstante {
     static int DIJALOZI_TEXTFIELD_HEIGHT = 25;
     static int DIJALOZI_INFOWINDOW_WIDTH = 250;
     static int DIJALOZI_INFOWINDOW_HEGHT = 80;
+    /*----------IndexedCheckbox.java------------------------------------------*/
+    static int CHECKBOX_TOP_INSET = 5;
+    static int CHECKBOX_LEFT_INSET = 5;
+    static int CHECKBOX_RIGHT_INSET = 5;
+    static int CHECKBOX_BOTTOM_INSET = 5;
     /*----------Knjige.java---------------------------------------------------*/
     static  String KNJIGE_SEARCH_TEXT = "Pretraži knjige...";
-    static int KNJIGE_TOP_INSET = 5;
-    static int KNJIGE_LEFT_INSET = 0;
-    static int KNJIGE_BOTTOM_INSET = 5;
-    static int KNJIGE_RIGHT_INSET = 8;
     static int KNJIGE_SIRINA = 550;
     static int KNJIGE_VISINA = 750;
     static int KNJIGE_PANELS_ALIGNMENT_Y = 0;
@@ -69,9 +70,6 @@ public class Konstante {
     static int KNJIGE_SEARCHBOX_Y = 0;
     static int KNJIGE_SEARCHBOX_WIDTH = 135;
     static int KNJIGE_SEARCHBOX_HEIGHT = 30;
-    /*static int KNJIGE_UZMI_WIDTH = 140; 
-    static int KNJIGE_UZMI_HEIGHT = 23;
-    static int KNJIGE_UZMI_X = 0;*/
     /*----------KnjigeUtils.java----------------------------------------------*/
     static int NOVINASLOV_WIDTH = 330;
     static int NOVINASLOV_HEIGHT = 330;
@@ -139,10 +137,6 @@ public class Konstante {
     static int PODESAVANJA_PROMENIBOJU_HEIGHT = 320;
     /*----------Ucenici.java--------------------------------------------------*/
     static String UCENICI_SEARCH_TEXT = "Pretraži učenike...";
-    static int UCENICI_TOP_INSET = 5;
-    static int UCENICI_LEFT_INSET = 5;
-    static int UCENICI_RIGHT_INSET = 5;
-    static int UCENICI_BOTTOM_INSET = 5;
     static int UCENICI_KNJPANEL_WIDTH = 170;
     static int UCENICI_FIXED_WIDTH = 360;
     static int UCENICI_HEIGHT = 600;

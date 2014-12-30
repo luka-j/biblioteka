@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import static java.lang.Integer.parseInt;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,7 +44,7 @@ public class Knjige implements FocusListener {
     private static final JFrame win = new JFrame("Pregled knjiga");
 
     private final Insets INSET = new Insets
-        (KNJIGE_TOP_INSET, KNJIGE_LEFT_INSET, KNJIGE_BOTTOM_INSET, KNJIGE_RIGHT_INSET);
+        (CHECKBOX_TOP_INSET, CHECKBOX_LEFT_INSET, CHECKBOX_BOTTOM_INSET, CHECKBOX_RIGHT_INSET);
     
     /**
      * searchBox za pretrazivanje knjiga.
@@ -55,7 +56,7 @@ public class Knjige implements FocusListener {
     private final LinkedList<UzmiVratiButton> buttons;
     private final JLabel[] pisac;
     private final JLabel[] kolicina;
-    private final JCheckBox[] knjige;
+    private final IndexedCheckbox[] knjige;
     private final JLabel kolicinaTitle;
     private final JLabel pisacTitle;
     private final JCheckBox selectAll;
@@ -75,7 +76,7 @@ public class Knjige implements FocusListener {
         buttons = new LinkedList<>();
         pisac = new JLabel[Podaci.getBrojKnjiga()];
         kolicina = new JLabel[Podaci.getBrojKnjiga()];
-        knjige = new JCheckBox[Podaci.getBrojKnjiga()];
+        knjige = new IndexedCheckbox[Podaci.getBrojKnjiga()];
         kolicinaTitle = new JLabel("Količina:");
         pisacTitle = new JLabel("Pisac:");
         selectAll = new JCheckBox("Naslovi:");
@@ -163,13 +164,8 @@ public class Knjige implements FocusListener {
         Knjiga knj;
         for (int i = 0; i < knjige.length; i++) {
             knj = it.next();
-            knjige[i] = new JCheckBox();
-            knjige[i].setText(knj.getNaslov());
-            knjige[i].setBorder(new EmptyBorder(INSET));
+            knjige[i] = new IndexedCheckbox(knj.getNaslov(), i, INVALID);
             knjige[i].setMinimumSize(new Dimension(300, 30));
-            knjige[i].setFont(Grafika.getLabelFont());
-            knjige[i].setForeground(Grafika.getFgColor());
-            knjige[i].setBackground(Grafika.getBgColor());
             knjPan.add(knjige[i]);
 
             pisac[i] = new JLabel(knj.getPisac());
@@ -221,11 +217,11 @@ public class Knjige implements FocusListener {
         selectAll.addItemListener((ItemEvent e) -> {
             selectAll();
         });
+        ItemListener uzimanjeListener = (ItemEvent e) -> {
+            uzmiKnjigu((IndexedCheckbox)e.getItem());
+        };
         for (int i = 0; i < Podaci.getBrojKnjiga(); i++) {
-            final int red = i;
-            knjige[i].addItemListener((ItemEvent ie) -> {
-                uzmiKnjigu(red);
-            });
+            knjige[i].addItemListener(uzimanjeListener);
         }
     }
 
@@ -299,7 +295,8 @@ public class Knjige implements FocusListener {
      * Uzima datu knjigu od ucenika i vraca biblioteci. Ucenik se unosi preko dijaloga.
      * @param red red u kome se nalazi knjiga za iznajmljivanje
      */
-    private void uzmiKnjigu(int red) {
+    private void uzmiKnjigu(IndexedCheckbox box) {
+        int red = box.getIndex();
         if (knjige[red].isSelected()) {
             LOGGER.log(Level.FINER, "Prikazujem dugme za uzimanje br {0}", red);
             UzmiVratiButton button = new UzmiVratiButton(red, INVALID, 

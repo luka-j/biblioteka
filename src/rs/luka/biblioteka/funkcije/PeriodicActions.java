@@ -40,38 +40,47 @@ public class PeriodicActions {
      */
     private static int AUTOSAVE_PERIOD;
 
-    
-
     /**
-     * Zaustavlja trenutni Thread , zove metode koje moraju periodicno da se ponavljaju i ponavlja isti proces
-     * beskonacno. BLOKIRA TRENUTNI THREAD DO ZAUSTAVLJANJA PROGRAMA !!!
-     * @see #autosave() 
-     * @see #checkDate() 
+     * Radi inicijalizaciju klase (postavlja promenljive po default-u ili config-u
+     * i zove {@link #start(int)}. BLOKIRA THREAD JER RADI BESKONACNO.
+     *
+     * @see #start(int)
      */
     protected static void doPeriodicActions() {
         if (Config.get("savePeriod").equals("0")) {
             LOGGER.log(Level.FINE, "autosave isključen.");
-            PeriodicActions.setAutosave(false);
-            AUTOSAVE_PERIOD = 1_800_000;
-        }
-        try {
-            AUTOSAVE_PERIOD = (int) (Float.parseFloat(Config.get("savePeriod")) * 60_000);
-            LOGGER.log(Level.CONFIG, "autosave period: {0}", AUTOSAVE_PERIOD);
-        } catch (NumberFormatException ex) {
-            LOGGER.log(Level.SEVERE, "Greška pri parsiranju autosave perioda iz configa", ex);
+            AUTOSAVE = false;
+            AUTOSAVE_PERIOD = 3_600_000;
+        } else {
+            try {
+                AUTOSAVE_PERIOD = (int) (Float.parseFloat(Config.get("savePeriod")) * 60_000);
+                LOGGER.log(Level.CONFIG, "autosave period: {0}", AUTOSAVE_PERIOD);
+            } catch (NumberFormatException ex) {
+                LOGGER.log(Level.SEVERE, "Greška pri parsiranju autosave perioda iz configa", ex);
+            }
         }
         PeriodicActions.start(AUTOSAVE_PERIOD);
     }
-    
+
+    /**
+     * Startuje periodicne akcije. Koristi while(true) petlju (beskonacnu) unutar koje
+     * se nalazi Thread.sleep(period). Koristi reflekciju da pozove sve metode ove klase
+     * koje ne primaju parametre i ne pocinju sa "do" ili "set".
+     * BLOKIRA THREAD JER RADI BESKONACNO.
+     * 
+     * @param period period na koji se periodicne akcije ponavljaju
+     */
     private static void start(int period) {
-        setDateCheckPeriod(0);
+        setDateCheckPeriod(-1);
         Method[] methods = PeriodicActions.class.getDeclaredMethods();
 
         try {
             while (true) {
                 Thread.sleep(period);
+                LOGGER.log(Level.INFO, "Radim periodične akcije...");
                 for (Method method : methods) {
-                    if (method.getParameterCount() == 0) {
+                    if (method.getParameterCount() == 0 && !method.getName().startsWith("do")
+                                                        && !method.getName().startsWith("set")) {
                         method.invoke(null);
                     }
                 }
@@ -88,7 +97,7 @@ public class PeriodicActions {
      */
     private static void checkDate() {
         if (new Date().after(new Date(LAST_DATE_CHECK.getTime() + (int) (DATE_CHECK_PERIOD * MS_U_DANU)))) {
-            LOGGER.log(Level.INFO, "Automatski proveravam datum...");
+            LOGGER.log(Level.FINE, "Automatski proveravam datum...");
             Datumi.proveriDatum();
             LAST_DATE_CHECK = new Date();
         }
@@ -110,17 +119,21 @@ public class PeriodicActions {
         }
     }
 
-    protected static void setAutosave(boolean autosave) {
-        AUTOSAVE = autosave;
-    }
-    
+    /**
+     * Postavlja {@link #DATE_CHECK_PERIOD} prema config-u ako je parametar -1 ili
+     * prema prosledjenom floatu ako nije.
+     * 
+     * @param period period, u danima, na koji se proverava datum iznajmljivanja knjige za svakog ucenika
+     */
     protected static void setDateCheckPeriod(float period) {
-        if(period==0) {
-             if(Config.hasKey("datePeriod")) {
-                 DATE_CHECK_PERIOD = Float.parseFloat(Config.get("datePeriod"));
-             }
-             else DATE_CHECK_PERIOD = 1;
+        if (period == -1) {
+            if (Config.hasKey("datePeriod")) {
+                DATE_CHECK_PERIOD = Float.parseFloat(Config.get("datePeriod"));
+            } else {
+                DATE_CHECK_PERIOD = 1;
+            }
+        } else {
+            DATE_CHECK_PERIOD = period;
         }
-        else DATE_CHECK_PERIOD = period;
     }
 }

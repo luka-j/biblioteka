@@ -1,7 +1,7 @@
 /**
  * @lastmod 
  * 27.12.'14. 
- * ucSort & periodicna provera datuma
+ * bugfixing, sredjivanje PeriodicActions
  */
 /**
  * @curr 
@@ -46,14 +46,14 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
-//7255 linija, 28.12.'14. (trenutno, fontovi, ucSort, PeriodicActions, cleanup)
+//7312 linije, 30.12.'14. (trenutno, fontovi, ucSort, PeriodicActions, ICheckbox, cleanup)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
 //1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
-//1422 linija, 27.12.'14. (trenutno, auto)
+//1438 linija, 29.12.'14. (trenutno, auto)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -143,6 +143,8 @@ public class Init {
         Dijalozi.drawInfoWindow("Učitavanje podataka...", "Učitavanje podataka...");
         init();
         Dijalozi.disposeInfoWindow();
+        
+        doPeriodicActions();
     }
 
     /**
@@ -153,9 +155,8 @@ public class Init {
      * @see Utils#initWorkingDir
      * @see Config#loadConfig
      * @see Utils#setWorkingDir
-     * @see Logger#initLogger
-     * @see Grafika#loadLnF
-     * @see Grafika#glavniProzor
+     * @see rs.luka.biblioteka.funkcije.Logger#initLogger
+     * @see Grafika#initGrafika
      * @see rs.luka.biblioteka.data.Ucenik#setValidRazred
      * @see Podaci#loadData
      * @see rs.luka.biblioteka.data.Datumi#proveriDatum
@@ -175,8 +176,6 @@ public class Init {
         new rs.luka.biblioteka.grafika.Ucenici().pregledUcenika();
 
         LOGGER.log(Level.INFO, "Inicijalizacija programa gotova.");
-        
-        doPeriodicActions();
     }
 
     /**
