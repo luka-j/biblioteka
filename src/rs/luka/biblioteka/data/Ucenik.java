@@ -284,7 +284,7 @@ public class Ucenik implements Comparable<Ucenik> {
      * Ubacuje novu knjigu kod ucenika na sledece prazno mesto.
      *
      * @param naslov naslov knjige
-     * @throws PreviseKnjiga ako ucenik kod sebe vec ima maksimum knjiga
+     * @throws PreviseKnjiga ako ucenik kod sebe vec ima maksimum knjiga. U message se nalazi spisak naslova
      * @throws rs.luka.biblioteka.exceptions.Duplikat ako je Ucenik vec iznajmio
      * knjigu tog naslova
      */
@@ -300,7 +300,11 @@ public class Ucenik implements Comparable<Ucenik> {
                 return;
             }
         }
-        throw new PreviseKnjiga(ime);
+        StringBuilder knj = new StringBuilder(72);
+        for(UcenikKnjiga knjiga : knjige) {
+            knj.append(knjiga.toString()).append('\n');
+        }
+        throw new PreviseKnjiga(knj.toString());
     }
 
     /**

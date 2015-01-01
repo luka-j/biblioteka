@@ -94,30 +94,27 @@ public class Pretraga {
      *
      * @param pocetak prefix ucenika
      * @return ucenik koji pocinje prefix-om, ako ne postoji, sve ucenike koji
-     * sadrze pocetak
+     * sadrze pocetak. Аko takvi ne postoje, vraća praznu listu.
      */
     public static ArrayList<Integer> pretraziUcenike(String pocetak) {
         int brojUcenika = getBrojUcenika();
         ArrayList<Integer> inx = new ArrayList<>();
         inx.ensureCapacity(brojUcenika / 32);
-        Iterator<Ucenik> it = Podaci.iteratorUcenika();
+        Iterator<Ucenik> it;
         int i = 0;
-        while (it.hasNext()) {
+        for(i=0, it=Podaci.iteratorUcenika(); it.hasNext(); i++) {
             if (it.next().getIme().toLowerCase().startsWith(pocetak.toLowerCase())) {
                 inx.add(i);
             }
-            i++;
         }
         if (inx.isEmpty()) {
-            it = Podaci.iteratorUcenika();
-            i = 0;
-            while (it.hasNext()) {
+            for(it=Podaci.iteratorUcenika(), i=0; it.hasNext(); i++) {
                 if (it.next().getIme().toLowerCase().contains(pocetak.toLowerCase())) {
                     inx.add(i);
                 }
-                i++;
             }
         }
+        
         LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"",
                 new Object[]{inx.size(), pocetak});
         return inx;

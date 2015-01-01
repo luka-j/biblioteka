@@ -18,6 +18,7 @@
 /**
  * @todo 
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING) 
+ * Promeni količinu knjiga (dugme, umesto duplikata "Uzmi knjigu" u grafika.Knjige)
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception 
  * Bugfixing, optimizacija koda, cišenje koda 
  * Ubaciti kvačice (šđžčć) 
@@ -26,7 +27,10 @@
  */
 /**
  * @changelog 
- * Ubacio PeriodicActions (izbacio deo iz Init-a) 
+ * Dodao String konstante i Strings klasu + usput popravio bugove
+ * Dodao IndexedCheckbox, sada koristi samo jedan listener za uzimanje i jedan za vracanje 
+ * (moze da se napravi da sve radi u jednom, i da radi proveru unutar listenera, ali mislim da ne bi trebalo)
+ * Ubacio PeriodicActions (izbacio deo iz Init-a), koristi reflekciju 
  * Fodao datePeriod (period automatske provere datuma, float, u danima) u Config i Podesavanja
  * Proverava datum na 24h (ako je program ukljucen duze vreme), 
  * preimenovao autosave() u periodicActions() i dodao (razdvojio na) autosave() i checkDate()
@@ -46,14 +50,14 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
-//7312 linije, 30.12.'14. (trenutno, fontovi, ucSort, PeriodicActions, ICheckbox, cleanup)
+//7430 linije, 30.12.'14. (trenutno, fontovi, ucSort, PeriodicActions, ICheckbox, Strings, cleanup)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
 //1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
-//1438 linija, 29.12.'14. (trenutno, auto)
+//1441 linija, 29.12.'14. (trenutno, auto)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -80,6 +84,7 @@ import rs.luka.biblioteka.grafika.Dijalozi;
 import rs.luka.biblioteka.grafika.Grafika;
 import static rs.luka.biblioteka.grafika.Grafika.initGrafika;
 import static rs.luka.biblioteka.funkcije.PeriodicActions.doPeriodicActions;
+import static rs.luka.biblioteka.data.Strings.loadStrings;
 
 /**
  *
@@ -167,6 +172,7 @@ public class Init {
         loadConfig();
         setWorkingDir();
         initLogger();
+        loadStrings(); //??
         initGrafika();
         setValidRazred();
         loadData();

@@ -10,6 +10,7 @@ import static java.lang.Math.min;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -65,7 +66,7 @@ public class KnjigeUtils {
      */
     protected void novi() {
         //----------JFrame&JPanel-----------------------------------------------
-        final JFrame nnF = new JFrame("Unos novog naslova");
+        final JFrame nnF = new JFrame(NOVINASLOV_TITLE_STRING);
         nnF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         nnF.setSize(NOVI_SIZE);
         nnF.setLocationRelativeTo(null);
@@ -74,7 +75,7 @@ public class KnjigeUtils {
         nnPan.setBackground(Grafika.getBgColor());
         nnF.setContentPane(nnPan);
         //----------JLabels&JTextFields-----------------------------------------
-        JLabel naslov = new JLabel("Unesite naslov nove knjige:");
+        JLabel naslov = new JLabel(NOVINASLOV_NASLOV_STRING);
         naslov.setBounds(NOVI_NASLOV_BOUNDS);
         naslov.setFont(Grafika.getLabelFont());
         naslov.setForeground(Grafika.getFgColor());
@@ -86,7 +87,7 @@ public class KnjigeUtils {
         naslovTF.setForeground(Grafika.getFgColor());
         naslovTF.setCaretColor(Grafika.getFgColor());
         nnPan.add(naslovTF);
-        JLabel pisac = new JLabel("Unesite pisca knjige:");
+        JLabel pisac = new JLabel(NOVINASLOV_PISAC_STRING);
         pisac.setBounds(NOVI_PISAC_BOUNDS);
         pisac.setFont(Grafika.getLabelFont());
         pisac.setForeground(Grafika.getFgColor());
@@ -98,7 +99,7 @@ public class KnjigeUtils {
         pisacTF.setCaretColor(Grafika.getFgColor());
         pisacTF.setBackground(Grafika.getTFColor());
         nnPan.add(pisacTF);
-        JLabel kolicina = new JLabel("Unesite količinu:");
+        JLabel kolicina = new JLabel(NOVINASLOV_KOLICINA_STRING);
         kolicina.setBounds(NOVI_KOLICINA_BOUNDS);
         kolicina.setFont(Grafika.getLabelFont());
         kolicina.setForeground(Grafika.getFgColor());
@@ -112,28 +113,29 @@ public class KnjigeUtils {
 
         nnPan.add(kolicinaTF);
         //----------JButton-----------------------------------------------------
-        JButton unos = new JButton("Unesi podatke");
+        JButton unos = new JButton(NOVINASLOV_UNOS_STRING);
         unos.setFont(Grafika.getButtonFont());
         unos.setBounds(NOVI_UNOS_BOUNDS);
         ActionListener listener = (ActionEvent e) -> {
             try {
                 try {
                     Podaci.dodajKnjigu(naslovTF.getText(), parseInt(kolicinaTF.getText()), pisacTF.getText());
-                    showMessageDialog(null, "Knjiga dodata!", "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
+                    showMessageDialog(null, NOVINASLOV_SUCC_MSG_STRING, NOVINASLOV_SUCC_TITLE_STRING, 
+                            JOptionPane.INFORMATION_MESSAGE);
                     nnF.dispose();
                 } catch (VrednostNePostoji ex) {
                     LOGGER.log(Level.INFO, "Polje za unos naslova je prazno pri unosu novog naslova");
-                    showMessageDialog(null, "Polje za naslov je prazno.",
-                            "Prazno polje", JOptionPane.ERROR_MESSAGE);
+                    showMessageDialog(null, NOVINASLOV_VNPEX_MSG_STRING,
+                            NOVINASLOV_VNPEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
                 } catch (Duplikat ex) {
                     LOGGER.log(Level.INFO, "Naslov {0} već postoji", naslovTF.getText());
-                    showMessageDialog(null, "Knjiga tog naslova već postoji",
-                            "Duplikat", JOptionPane.ERROR_MESSAGE);
+                    showMessageDialog(null, NOVINASLOV_DEX_MSG_STRING,
+                            NOVINASLOV_DEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
                 LOGGER.log(Level.INFO, "{0} nije broj", naslovTF.getText());
-                showMessageDialog(null, "Uneta količina nije broj.",
-                        "Loš unos", JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, NOVINASLOV_NFEX_MSG_STRING,
+                        NOVINASLOV_NFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             }
         };
         unos.addActionListener(listener);
@@ -153,9 +155,8 @@ public class KnjigeUtils {
      * @since 25.6.'14.
      */
     protected void ucSearch(String ime, int visinaProzora) {
-        rs.luka.legacy.biblioteka.Knjige funk = new rs.luka.legacy.biblioteka.Knjige();
         //-----------JFrame&JPanel------------------------------
-        JFrame winS = new JFrame("Pretraga učenika po naslovu");
+        JFrame winS = new JFrame(UCSEARCH_TITLE_STRING);
         winS.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         winS.setSize(UCSEARCH_SIZE);
         winS.setLocationRelativeTo(null);
@@ -163,7 +164,7 @@ public class KnjigeUtils {
         panS.setBackground(Grafika.getBgColor());
         winS.setContentPane(panS);
         //------------JLabel-----------------------------------
-        JLabel naslov = new JLabel("Unesite naslov i pritisnite enter:");
+        JLabel naslov = new JLabel(UCSEARCH_NASLOV_STRING);
         naslov.setFont(Grafika.getLabelFont());
         naslov.setForeground(Grafika.getFgColor());
         naslov.setBounds(UCSEARCH_NASLOV_BOUNDS);
@@ -185,28 +186,29 @@ public class KnjigeUtils {
                 winS.setLocationRelativeTo(null);
                 StringBuilder ucBuild = new StringBuilder();
                 StringBuilder dateBuild = new StringBuilder();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd. MM. yyyy");
                 inx.stream().map((inx1) -> {
                     ucBuild.append(getUcenik(inx1.y).getIme()).append("<br>");
                     return inx1;
                 }).forEach((inx1) -> {
-                    dateBuild.append(dateFormat.format(getUcenik(inx1.y).
+                    dateBuild.append(dateFormat(getUcenik(inx1.y).
                             getDatumKnjige(inx1.x))).append("<br>");
                 });
                 JLabel ucenici = new JLabel();
                 ucenici.setSize(new Dimension(UCSEARCH_UCENICI_WIDTH, (inx.size() + 1) * UCSEARCH_UCENIK_HEIGHT));
                 ucenici.setLocation(UCSEARCH_UCENICI_X, UCSEARCH_LABELS_Y2);
                 ucenici.setFont(Grafika.getLabelFont());
-                ucenici.setText("<html>Učenici kod kojih je trenutno knjiga:<br>"
-                        + ucBuild.toString() + "</html>");
+                ucenici.setForeground(Grafika.getFgColor());
+                ucenici.setText(UCSEARCH_UCENICI_STRING
+                        + ucBuild.toString());
                 JLabel datumi = new JLabel();
                 datumi.setLocation(UCSEARCH_DATUMI_X, UCSEARCH_LABELS_Y2);
                 datumi.setSize(new Dimension(UCSEARCH_DATUMI_WIDTH, (inx.size() + 1) * UCSEARCH_UCENIK_HEIGHT));
                 datumi.setFont(Grafika.getLabelFont());
-                datumi.setText("<html>Datum kada je knjiga iznajmljena:<br>"
-                        + dateBuild.toString() + "</html>");
-
-                JButton ok = new JButton("OK");
+                datumi.setForeground(Grafika.getFgColor());
+                datumi.setText(UCSEARCH_DATUMI_STRING
+                        + dateBuild.toString());
+                
+                JButton ok = new JButton(UCSEARCH_OK_STRING);
                 ok.setFont(Grafika.getButtonFont());
                 ok.setLocation(UCSEARCH_OK_X, UCSEARCH_OK_FIXED_Y + inx.size() * UCSEARCH_UCENIK_HEIGHT);
                 ok.setSize(UCSEARCH_OK_WIDTH, UCSEARCH_OK_HEIGHT);
@@ -230,12 +232,11 @@ public class KnjigeUtils {
                 winS.repaint();
             } catch (VrednostNePostoji ex) {
                 LOGGER.log(Level.INFO, "Naslov {0} nije pronađen", naslovTF.getText());
-                showMessageDialog(null, "Knjiga nije pronađena.\n"
-                        + "Proverite unos i pokušajte ponovo", "Knjiga ne postoji",
+                showMessageDialog(null, UCSEARCH_VNPEX_MSG_STRING, UCSEARCH_VNPEX_TITLE_STRING,
                         JOptionPane.ERROR_MESSAGE);
             } catch (Prazno ex) {
-                showMessageDialog(null, "Trenutno se tražena knjiga ne nalazi ni kod koga.",
-                        "Niko nije iznajmio knjigu", JOptionPane.INFORMATION_MESSAGE);
+                showMessageDialog(null, UCSEARCH_PEX_MSG_STRING, UCSEARCH_PEX_TITLE_STRING, 
+                        JOptionPane.INFORMATION_MESSAGE);
             }
 
         };
@@ -255,5 +256,19 @@ public class KnjigeUtils {
         }
         //-----------setVisible----------------------------------
         winS.setVisible(true);
+    }
+    
+    /**
+     * Pretvara datum iz formata u kojem se cuva u format za prikazivanje. Koristi StringBuilder-e
+     * i {@link StringBuilder#insert(int, java.lang.String) insert} da ubaci tacke i pocetak godine.
+     * @param date datum u formatu ddMMyy
+     * @return datum u formatu dd. MM. yyyy.
+     */
+    private String dateFormat(String date) {
+        StringBuilder sb = new StringBuilder(date);
+        sb.insert(2, ". ");
+        sb.insert(6, ". 20");
+        sb.insert(12, '.');
+        return sb.toString();
     }
 }

@@ -44,7 +44,7 @@ public class Podesavanja {
      */
     public void podesavanja() {
         //----------JFrame&JPanel-----------------------------------------------
-        JFrame win = new JFrame("Podešavanja");
+        JFrame win = new JFrame(PODESAVANJA_TITLE_STRING);
         win.setResizable(false);
         win.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         win.addWindowListener(new WindowAdapter() {
@@ -52,39 +52,33 @@ public class Podesavanja {
             public void windowClosing(WindowEvent e) {
                 try {
                     sacuvaj();
-                    showMessageDialog(null, "Podešavanja su sačuvana i "
-                            + "postaće aktivna\n pri sledećem pokretanju programa.",
-                            "Podešavanja sačuvana", JOptionPane.INFORMATION_MESSAGE);
+                    showMessageDialog(null, PODESAVANJA_SUCC_MSG_STRING,
+                            PODESAVANJA_SUCC_TITLE_STRING, JOptionPane.INFORMATION_MESSAGE);
                     win.dispose();
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.WARNING, "Kod nekih učenika se nalazi više "
                             + "knjiga nego što novo podešavanje dozvoljava. "
                             + "Podešavanje za broj knjiga nije sačuvano");
-                    showMessageDialog(null, "Kod nekih učenika se nalazi "
-                            + "više knjiga nego sto\npodešavanje koje ste postavili dozvoljava.\n"
-                            + "Vratite knjige i pokusajte ponovo", "Previše knjiga",
+                    showMessageDialog(null, PODESAVANJA_PKEX_MSG_STRING, PODESAVANJA_PKEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                 } catch (NumberFormatException ex) {
                     LOGGER.log(Level.INFO, "Neka od unetih vrednosti podešavanja "
                             + "nije broj. Podešavanja ne izlaze.");
-                    showMessageDialog(pan, "Neka od unetih vrednosti nije broj."
-                            + "\nProverite unos i pokušajte ponovo", "Loš unos",
+                    showMessageDialog(pan, PODESAVANJA_NFEX_MSG_STRING, PODESAVANJA_NFEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                 } catch (FileNotFoundException ex) {
                     LOGGER.log(Level.WARNING, "Na datoj putanji nije napravljen folder."
                             + "IO greška ili loša putanja.");
-                    showMessageDialog(null, "Na datoj putanji radnog direktorijuma nije napravljen "
-                            + "novi folder.\nProverite da li je putanja ispravna i da li postoje "
-                            + "odgovarajuće dozvole i pokušajte ponovo.", "I/O greška", 
+                    showMessageDialog(null, PODESAVANJA_FNFEX_MSG_STRING, PODESAVANJA_FNFEX_TITLE_STRING, 
                             JOptionPane.ERROR_MESSAGE);
                 } catch (LosFormat ex) {
                     LOGGER.log(Level.INFO, "Postoje učenici sa razredom koji po novom podešavanju nije validan");
-                    showMessageDialog(null, "Neki učenici pohađaju razred koji nije određen kao validan\n"
-                            + "Proverite vrednosti i pokušajte ponovo.", "Loš razred",JOptionPane.ERROR_MESSAGE);
+                    showMessageDialog(null, PODESAVANJA_LFEX_MSG_STRING, PODESAVANJA_LFEX_TITLE_STRING,
+                            JOptionPane.ERROR_MESSAGE);
                 } catch(IllegalArgumentException ex) {
                     LOGGER.log(Level.WARNING, "Neka od vrednosti podešavanja nije validna\n");
-                    showMessageDialog(null, "Neka od unetih vrednosti nije validna. "
-                            + "Proverite sve i pokušajte ponovo", "Loša vrednost", JOptionPane.ERROR_MESSAGE);
+                    showMessageDialog(null, PODESAVANJA_IAEX_MSG_STRING, PODESAVANJA_IAEX_TITLE_STRING, 
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -115,7 +109,7 @@ public class Podesavanja {
             pan.add(textfields[i]);
         }
         //----------JButtons&JCheckBoxes----------------------------------------
-        JButton promeniBojuBut = new JButton("Pozadinska boja");
+        JButton promeniBojuBut = new JButton(PODESAVANJA_BGBOJA_STRING);
         promeniBojuBut.setFont(Grafika.getButtonFont());
         promeniBojuBut.addActionListener((ActionEvent e3) -> {
             promeniBoju("bg");
@@ -123,7 +117,7 @@ public class Podesavanja {
         promeniBojuBut.setBounds(PODESAVANJA_PROMENIBG_X, PODESAVANJA_BUTTONS_FIXED_Y + names.size() *
                 PODESAVANJA_HEIGHT_PER_LABEL, PODESAVANJA_PROMENIBG_WIDTH, PODESAVANJA_BUTTONS_HEIGHT);
         pan.add(promeniBojuBut);
-        JButton promeniFgBojuBut = new JButton("Boja fonta");
+        JButton promeniFgBojuBut = new JButton(PODESAVANJA_FGBOJA_STRING);
         promeniFgBojuBut.setFont(Grafika.getButtonFont());
         promeniFgBojuBut.addActionListener((ActionEvent e) -> {
             promeniBoju("fg");
@@ -131,7 +125,7 @@ public class Podesavanja {
         promeniFgBojuBut.setBounds(PODESAVANJA_PROMENIFG_X, PODESAVANJA_BUTTONS_FIXED_Y + names.size() *
                 PODESAVANJA_HEIGHT_PER_LABEL, PODESAVANJA_PROMENIFG_WIDTH, PODESAVANJA_BUTTONS_HEIGHT);
         pan.add(promeniFgBojuBut);
-        JButton promeniTFBojuBut = new JButton("Boja polja za unos");
+        JButton promeniTFBojuBut = new JButton(PODESAVANJA_TFBOJA_STRING);
         promeniTFBojuBut.setFont(Grafika.getButtonFont());
         promeniTFBojuBut.addActionListener((ActionEvent e) -> {
             promeniBoju("tf");
@@ -150,7 +144,7 @@ public class Podesavanja {
      */
     private void promeniBoju(String str) {
         //---------JFrameJColorChooser------------------------------------------
-        JFrame win = new JFrame("Promeni pozadinsku boju");
+        JFrame win = new JFrame(PODESAVANJA_PROMENIBOJU_TITLE_STRING);
         win.setSize(PODESAVANJA_PROMENIBOJU_WIDTH, PODESAVANJA_PROMENIBOJU_HEIGHT);
         win.setResizable(false);
         win.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);

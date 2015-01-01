@@ -80,7 +80,7 @@ public class Unos {
      * Iscrtava glavni prozor za unos i 2 dugmeta za unos ucenika i knjiga.
      */
     public void UnosGrafika() {
-        win = new JFrame("Unos");
+        win = new JFrame(UNOS_TITLE_STRING);
         win.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         win.setSize(UNOS_SIZE);
         win.setLocationRelativeTo(null);
@@ -90,7 +90,7 @@ public class Unos {
         pan.setBackground(Grafika.getBgColor());
         win.setContentPane(pan);
 
-        JButton knj = new JButton("Unos knjiga");
+        JButton knj = new JButton(UNOS_KNJIGE_STRING);
         knj.addActionListener((ActionEvent e1) -> {
             UnosKnjige();
         });
@@ -98,7 +98,7 @@ public class Unos {
         knj.setPreferredSize(BUTTON_SIZE);
         pan.add(knj);
 
-        JButton uc = new JButton("Unos učenika");
+        JButton uc = new JButton(UNOS_UCENICI_STRING);
         uc.addActionListener((ActionEvent e2) -> {
             UnosUcenici();
         });
@@ -114,7 +114,7 @@ public class Unos {
     public void UnosKnjige() {
         final rs.luka.biblioteka.funkcije.Unos unos = new rs.luka.biblioteka.funkcije.Unos();
         //---------JFrame&JPanel------------------------------------------------
-        final JFrame winKnj = new JFrame("Unos Knjiga");
+        final JFrame winKnj = new JFrame(UNOS_KNJIGE_STRING);
         winKnj.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         winKnj.addWindowListener(new WindowAdapter() {
             @Override
@@ -131,8 +131,7 @@ public class Unos {
         pan.setBackground(Grafika.getBgColor());
         winKnj.setContentPane(pan);
         //----------JLabels&JTextBoxes------------------------------------------
-        JLabel naslov = new JLabel("<html>Unesite naslov knjige<br /> "
-                + "Ostavite prazno ako nema više knjiga</html>");
+        JLabel naslov = new JLabel(UNOSKNJ_NASLOV_STRING);
         naslov.setBounds(NASLOV_BOUNDS);
         naslov.setFont(Grafika.getLabelFont());
         naslov.setForeground(Grafika.getFgColor());
@@ -144,7 +143,7 @@ public class Unos {
         nasText.setCaretColor(Grafika.getFgColor());
         nasText.setBackground(Grafika.getTFColor());
         pan.add(nasText);
-        JLabel pisac = new JLabel("Unesite pisca knjige:");
+        JLabel pisac = new JLabel(UNOSKNJ_PISAC_STRING);
         pisac.setBounds(PISAC_BOUNDS);
         pisac.setFont(Grafika.getLabelFont());
         pisac.setForeground(Grafika.getFgColor());
@@ -157,7 +156,7 @@ public class Unos {
         pisacText.setBackground(Grafika.getTFColor());
         pisacText.setFont(Grafika.getLabelFont());
         pan.add(pisacText);
-        JLabel kolicina = new JLabel("Unesite količinu:");
+        JLabel kolicina = new JLabel(UNOSKNJ_KOLICINA_STRING);
         kolicina.setBounds(KOLICINA_BOUNDS);
         kolicina.setFont(Grafika.getLabelFont());
         kolicina.setForeground(Grafika.getFgColor());
@@ -170,7 +169,7 @@ public class Unos {
         kolText.setBackground(Grafika.getTFColor());
         pan.add(kolText);
         //----------JButton&ActionListener--------------------------------------
-        JButton but = new JButton("Unesi podatke");
+        JButton but = new JButton(UNOSKNJ_UNESI_STRING);
         but.setFont(Grafika.getButtonFont());
         but.setBounds(KNJ_UNESI_BOUNDS);
         ActionListener ubaci = (ActionEvent ae) -> {
@@ -179,8 +178,8 @@ public class Unos {
                 winKnj.dispose();
             } else if ("".equals(kolText.getText())) {
                 LOGGER.log(Level.INFO, "Polje za količinu pri unosu je prazno");
-                showMessageDialog(null, "Polje za kolicinu je prazno.", 
-                        "Prazno polje", JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, UNOSKNJ_PRAZNO_MSG_STRING, UNOSKNJ_PRAZNO_TITLE_STRING, 
+                        JOptionPane.ERROR_MESSAGE);
             } else {
                 try {
                     int kol = parseInt(kolText.getText());
@@ -196,13 +195,14 @@ public class Unos {
                     winKnj.dispose();
                 } catch (NumberFormatException ex) {
                     LOGGER.log(Level.INFO, "Uneta količina {0} nije broj", kolText.getText());
-                    showMessageDialog(null, "Uneta kolicina nije broj.",
-                            "Loš unos", JOptionPane.ERROR_MESSAGE);
+                    showMessageDialog(null, UNOSKNJ_NFEX_MSG_STRING, UNOSKNJ_NFEX_TITLE_STRING, 
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
         but.addActionListener(ubaci);
-        kolText.addActionListener(ubaci);
+        nasText.addActionListener(ubaci);
+        pisacText.addActionListener(ubaci);
         pan.add(but);
         //----------setVisible()------------------------------------------------
         winKnj.setVisible(true);
@@ -217,7 +217,7 @@ public class Unos {
         }
         final rs.luka.biblioteka.funkcije.Unos unos = new rs.luka.biblioteka.funkcije.Unos();
         //---------JFrame&JPanel------------------------------------------------
-        final JFrame winU = new JFrame("Unos učenika");
+        final JFrame winU = new JFrame(UNOS_UCENICI_STRING);
         winU.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         winU.addWindowListener(new WindowAdapter() {
             @Override
@@ -234,7 +234,7 @@ public class Unos {
         pan.setBackground(Grafika.getBgColor());
         winU.setContentPane(pan);
         //----------JLabels&JTextBoxes------------------------------------------
-        JLabel ime = new JLabel("Unesite ime učenika");
+        JLabel ime = new JLabel(UNOSUC_IME_STRING);
         ime.setBounds(IME_BOUNDS);
         ime.setFont(Grafika.getLabelFont());
         ime.setForeground(Grafika.getFgColor());
@@ -245,7 +245,7 @@ public class Unos {
         imeText.setForeground(Grafika.getFgColor());
         imeText.setCaretColor(Grafika.getFgColor());
         imeText.setBackground(Grafika.getTFColor());
-        JLabel raz = new JLabel("Unesite razred u koji učenik ide(brojevima):");
+        JLabel raz = new JLabel(UNOSUC_RAZRED_STRING);
         raz.setBounds(RAZRED_BOUNDS);
         raz.setFont(Grafika.getLabelFont());
         raz.setForeground(Grafika.getFgColor());
@@ -257,8 +257,7 @@ public class Unos {
         razText.setCaretColor(Grafika.getFgColor());
         razText.setBackground(Grafika.getTFColor());
         pan.add(razText);
-        JLabel knj = new JLabel("<html>Unesite knjige koje se trenutno nalaze"
-                + " kod učenika, razdvojene zapetom:</html>");
+        JLabel knj = new JLabel(UNOSUC_KNJIGE_STRING);
         knj.setBounds(KNJIGE_BOUNDS);
         knj.setFont(Grafika.getLabelFont());
         knj.setForeground(Grafika.getFgColor());
@@ -285,14 +284,13 @@ public class Unos {
                     winU.repaint();
                 } catch (NumberFormatException ex) {
                     LOGGER.log(Level.INFO, "Loš razred: {0}", razText.getText());
-                    showMessageDialog(null, "Unet razred nije broj ili "
-                            + "nije validan", "Loš razred", JOptionPane.ERROR_MESSAGE);
+                    showMessageDialog(null, UNOSUC_NFEX_MSG_STRING, UNOSUC_NFEX_TITLE_STRING, 
+                            JOptionPane.ERROR_MESSAGE);
                 } catch(Prazno ex) {
                     winU.dispose();
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.WARNING, "Uneto previše knjiga: {0}", knjText.getText());
-                    JOptionPane.showMessageDialog(null, "Uneli ste više knjiga od "
-                            + "limita koji ste postavili na početku\nUčenik nije unesen", "Previše knjiga",
+                    JOptionPane.showMessageDialog(null, UNOSUC_PKEX_MSG_STRING, UNOSUC_PKEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     knjText.grabFocus();
                 }
@@ -303,7 +301,7 @@ public class Unos {
         imeText.addActionListener(unesi);
         pan.add(imeText);
         //----------JButton-----------------------------------------------------
-        JButton but = new JButton("Unesi podatke");
+        JButton but = new JButton(UNOSUC_UNESI_STRING);
         but.setBounds(UC_UNESI_BOUNDS);
         but.setFont(Grafika.getButtonFont());
         but.addActionListener(unesi);

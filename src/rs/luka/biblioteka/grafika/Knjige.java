@@ -49,7 +49,7 @@ public class Knjige implements FocusListener {
     /**
      * searchBox za pretrazivanje knjiga.
      */
-    private final JTextField searchBox = new JTextField(KNJIGE_SEARCH_TEXT);
+    private final JTextField searchBox = new JTextField(KNJIGE_SEARCH_STRING);
 
     private int sirina, visina;
     
@@ -73,13 +73,14 @@ public class Knjige implements FocusListener {
      * Konstruktuje komponente prozora i zove {@link #pregledKnjiga()}
      */
     public Knjige() {
+        win.setTitle(KNJIGE_TITLE_STRING);
         buttons = new LinkedList<>();
         pisac = new JLabel[Podaci.getBrojKnjiga()];
         kolicina = new JLabel[Podaci.getBrojKnjiga()];
         knjige = new IndexedCheckbox[Podaci.getBrojKnjiga()];
-        kolicinaTitle = new JLabel("Količina:");
-        pisacTitle = new JLabel("Pisac:");
-        selectAll = new JCheckBox("Naslovi:");
+        kolicinaTitle = new JLabel(KNJIGE_KOLICINA_STRING);
+        pisacTitle = new JLabel(KNJIGE_PISAC_STRING);
+        selectAll = new JCheckBox(KNJIGE_NASLOVI_STRING);
         butPan = new JPanel();
         sidePan = new JPanel(null);
         kolPan = new JPanel(null);
@@ -187,21 +188,21 @@ public class Knjige implements FocusListener {
      * Inicijalizuje dugmad koja se nalazi pri dnu i dodaje ih u {@link #butPan}.
      */
     private void initButtons() {
-        JButton novi = new JButton("Ubaci novi naslov");
+        JButton novi = new JButton(KNJIGE_NOVI_STRING);
         novi.setFont(Grafika.getButtonFont());
         novi.setPreferredSize(new Dimension(KNJIGE_NOVI_WIDTH, KNJIGE_BUTTON_HEIGHT));
         novi.addActionListener((ActionEvent e) -> {
             new KnjigeUtils().novi();
         });
         butPan.add(novi);
-        JButton obrisi = new JButton("Obriši naslov");
+        JButton obrisi = new JButton(KNJIGE_OBRISI_STRING);
         obrisi.setFont(Grafika.getButtonFont());
         obrisi.setPreferredSize(new Dimension(KNJIGE_OBRISI_WIDTH, KNJIGE_BUTTON_HEIGHT));
         obrisi.addActionListener((ActionEvent e) -> {
             obrisiNaslov();
         });
         butPan.add(obrisi);
-        JButton ucSearch = new JButton("Kod koga je naslov...");
+        JButton ucSearch = new JButton(KNJIGE_UCSEARCH_STRING);
         ucSearch.setFont(Grafika.getButtonFont());
         ucSearch.setPreferredSize(new Dimension(KNJIGE_UCSEARCH_WIDTH, KNJIGE_BUTTON_HEIGHT));
         ucSearch.addActionListener((ActionEvent e) -> {
@@ -255,27 +256,25 @@ public class Knjige implements FocusListener {
                     realI--;
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Knjiga zauzeta. Brisanja naslova nije obavljeno");
-                    JOptionPane.showMessageDialog(null, "Kod nekog učenika " + " se nalazi knjiga " 
-                            + knjige[i].getText()+ ".\nKada vrati knjigu, pokušajte ponovo.",
-                            "Zauzeta knjiga", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, KNJIGE_PKEX_MSG1_STRING
+                            + knjige[i].getText()+ KNJIGE_PKEX_MSG2_STRING,
+                            KNJIGE_PKEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
         if (!selected) {
-            String naslov = Dijalozi.showTextFieldDialog("Brisanje naslova",
-                    "Unesite naslov koji želite da obrišete i pritisnite enter:", "");
+            String naslov = Dijalozi.showTextFieldDialog(KNJIGE_BRISANJE_DIJALOG_TITLE_STRING,
+                    KNJIGE_BRISANJE_DIJALOG_MSG_STRING, "");
             try {
                 Podaci.obrisiKnjigu(Podaci.indexOfNaslov(naslov));
             } catch (VrednostNePostoji ex) {
                 LOGGER.log(Level.INFO, "Unet naslov {0} ne postoji", naslov);
-                JOptionPane.showMessageDialog(null, "Naslov koji ste uneli ne postoji.\n"
-                        + "Proverite unos i pokušajte ponovo", "Greška pri brisanju naslova",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, KNJIGE_BRISANJE_VNPEX_MSG_STRING, 
+                        KNJIGE_BRISANJE_VNPEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             } catch (PreviseKnjiga ex) {
                 LOGGER.log(Level.INFO, "Knjiga zauzeta. Brisanja naslova nije obavljeno");
-                JOptionPane.showMessageDialog(null, "Zauzeta knjiga", "Kod nekog ucenika "
-                        + " se nalazi ova knjiga\n"
-                        + "Kada vrati knjigu, pokusajte ponovo.", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, KNJIGE_BRISANJE_PKEX_TITLE_STRING, 
+                        KNJIGE_BRISANJE_PKEX_MSG_STRING, JOptionPane.ERROR_MESSAGE);
             }
         }
         win.dispose();
@@ -302,37 +301,34 @@ public class Knjige implements FocusListener {
             UzmiVratiButton button = new UzmiVratiButton(red, INVALID, 
                     knjige[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
             button.addActionListener((ActionEvent ae) -> {
-                String ucenik = Dijalozi.showTextFieldDialog("Iznajmljivanje knjige",
-                        "Unesite ime učenika koji iznajmljuje knjigu i pritisnite enter:", "");
+                String ucenik = Dijalozi.showTextFieldDialog(KNJIGE_UZMI_DIJALOG_TITLE_STRING,
+                        KNJIGE_UZMI_DIJALOG_MSG_STRING, "");
                 try {
                     Podaci.uzmiKnjigu(red, ucenik);
-                    JOptionPane.showMessageDialog(null, "Učenik je uspešno iznajmio knjigu", 
-                            "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, KNJIGE_UZMI_SUCC_MSG_STRING, 
+                            KNJIGE_UZMI_SUCC_TITLE_STRING, JOptionPane.INFORMATION_MESSAGE);
                     new Ucenici().pregledUcenika();
                     new Knjige().pregledKnjiga();
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Kod učenika {0} se "
                             + "trenutno nalazi previše knjiga", ucenik);
-                    JOptionPane.showMessageDialog(null, "Kod učenika se "
-                            + "trenutno nalazi previše knjiga",
-                            "Greška pri iznajmljivanju", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, KNJIGE_UZMI_PKEX_MSG_STRING,
+                            KNJIGE_UZMI_EX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
                 } catch (Duplikat ex) {
                     LOGGER.log(Level.INFO, "Kod učenika {0} se već nalazi "
                             + "knjiga naslova {1}", new Object[]{ucenik, Podaci.getKnjiga(red).getNaslov()});
-                    JOptionPane.showMessageDialog(null, "Kod učenika se "
-                            + "već nalazi knjiga tog naslova",
-                            "Greška pri iznajmljivanju", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, KNJIGE_UZMI_DEX_MSG_STRING,
+                            KNJIGE_UZMI_EX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
                 } catch (NemaViseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Nema više knjiga naslova {0} "
                             + "u biblioteci", Podaci.getKnjiga(red).getNaslov());
-                    JOptionPane.showMessageDialog(null, "Nema više knjiga"
-                            + " tog naslova", "Greška pri iznajmljivanju",
+                    JOptionPane.showMessageDialog(null, KNJIGE_UZMI_NVKEX_MSG_STRING, 
+                            KNJIGE_UZMI_EX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                 } catch (VrednostNePostoji ex) {
                     LOGGER.log(Level.INFO, "Učenik {0} nije pronađen", ucenik);
-                    JOptionPane.showMessageDialog(null, "Učenik nije pronađen.\n"
-                            + "Proverite unos i pokušajte ponovo",
-                            "Greška pri iznajmljivanju", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, KNJIGE_UZMI_VNPEX_MSG_STRING,
+                            KNJIGE_UZMI_EX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
                 }
             });
             button.uzmi();
@@ -401,7 +397,7 @@ public class Knjige implements FocusListener {
     
     @Override
     public void focusGained(FocusEvent e) {
-        if (searchBox.getText().equals(KNJIGE_SEARCH_TEXT)) {
+        if (searchBox.getText().equals(KNJIGE_SEARCH_STRING)) {
             searchBox.setText("");
         }
     }
@@ -409,7 +405,7 @@ public class Knjige implements FocusListener {
     @Override
     public void focusLost(FocusEvent e) {
         if(searchBox.getText().isEmpty()) {
-            searchBox.setText(KNJIGE_SEARCH_TEXT);
+            searchBox.setText(KNJIGE_SEARCH_STRING);
         }
     }
 }

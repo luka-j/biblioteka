@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import rs.luka.biblioteka.data.Podaci;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  * Opisuje dugme na sidePan-u. Može biti za uzimanje ili za vracanje.
@@ -28,7 +29,7 @@ class UzmiVratiButton extends JButton {
         this.setVisible(false);
         ucenikIndex = ucIndex;
         naslovi.add(naslov);
-        this.setBounds(Konstante.UVBUTTON_X, y, Konstante.UVBUTTON_WIDTH, Konstante.UVBUTTON_HEIGHT);
+        this.setBounds(UVBUTTON_X, y, UVBUTTON_WIDTH, UVBUTTON_HEIGHT);
         this.setFont(Grafika.getSmallButtonFont());
     }
 
@@ -36,7 +37,7 @@ class UzmiVratiButton extends JButton {
      * Postavlja akciju button-a na uzimanje i prikazuje ga.
      */
     public void uzmi() {
-        this.setText("Iznajmi knjigu");
+        this.setText(UVBUTTON_UZMI_STRING);
         this.addActionListener((ActionEvent e) -> {
             if(this.getActionListeners().length>1)
                 return;
@@ -44,7 +45,7 @@ class UzmiVratiButton extends JButton {
             Knjige.refresh();
             new Ucenici().pregledUcenika();
         });
-        LOG.log(Level.FINE, "Dodato dugme za uzimanje br {0}", ucenikIndex);
+        LOGGER.log(Level.FINE, "Dodato dugme za uzimanje br {0}", ucenikIndex);
         this.setVisible(true);
     }
 
@@ -52,13 +53,13 @@ class UzmiVratiButton extends JButton {
      * Postavlja akciju button-a na vracanje i prikazuje ga.
      */
     public void vrati() {
-        this.setText("Vrati knjigu");
+        this.setText(UVBUTTON_VRATI_STRING);
         this.addActionListener((ActionEvent e) -> {
             Podaci.vratiViseKnjigaSafe(ucenikIndex, naslovi);
             Knjige.refresh();
             new Ucenici().pregledUcenika();
         });
-        LOG.log(Level.FINE, "Dodato dugme za vraćanje br {0}", ucenikIndex);
+        LOGGER.log(Level.FINE, "Dodato dugme za vraćanje br {0}", ucenikIndex);
         this.setVisible(true);
     }
 
@@ -102,6 +103,5 @@ class UzmiVratiButton extends JButton {
         return hash;
     }
     
-    private static final Logger LOG = Logger.getLogger(UzmiVratiButton.class.getName());
-    
+    private static final Logger LOGGER = Logger.getLogger(UzmiVratiButton.class.getName());
 }

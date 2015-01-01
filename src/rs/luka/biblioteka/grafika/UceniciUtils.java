@@ -61,11 +61,10 @@ public class UceniciUtils {
      * @since 1.7.'13.
      */
     public void dodajNovogUcenika() {
-        final rs.luka.legacy.biblioteka.Ucenici ucenici = new rs.luka.legacy.biblioteka.Ucenici();
         //---------JFrame&JPanel------------------------------------------------
         JDialog win = new JDialog();
         win.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        win.setTitle("Dodavanje novog ucenika");
+        win.setTitle(DODAJUCENIKA_TITLE_STRING);
         win.setSize(DODAJUC_SIZE);
         win.setLocationRelativeTo(null);
         win.setResizable(false);
@@ -74,7 +73,7 @@ public class UceniciUtils {
         pan.setBackground(Grafika.getBgColor());
         win.setContentPane(pan);
         //---------JLabel&JTextField--------------------------------------------
-        JLabel ime = new JLabel("Unesite ime ucenika:");
+        JLabel ime = new JLabel(DODAJUCENIKA_IME_STRING);
         ime.setBounds(IME_BOUNDS);
         ime.setBackground(Grafika.getBgColor());
         ime.setForeground(Grafika.getFgColor());
@@ -87,7 +86,7 @@ public class UceniciUtils {
         ucTF.setForeground(Grafika.getFgColor());
         ucTF.setCaretColor(Grafika.getFgColor());
         pan.add(ucTF);
-        JLabel razred = new JLabel("Unesite razred koji ucenik trenutno pohadja:");
+        JLabel razred = new JLabel(DODAJUCENIKA_RAZRED_STRING);
         razred.setBounds(RAZRED_BOUNDS);
         razred.setBackground(Grafika.getBgColor());
         razred.setFont(Grafika.getLabelFont());
@@ -101,23 +100,25 @@ public class UceniciUtils {
         razTF.setBackground(Grafika.getTFColor());
         pan.add(razTF);
         //---------JButton------------------------------------------------------
-        JButton unesi = new JButton("Unesi podatke");
+        JButton unesi = new JButton(DODAJUCENIKA_UNESI_STRING);
         unesi.setFont(Grafika.getButtonFont());
         unesi.setBounds(UNESI_BOUNDS);
         unesi.addActionListener((ActionEvent e) -> {
             try {
                 Podaci.dodajUcenika(ucTF.getText(), parseUnsignedInt(razTF.getText()));
-                showMessageDialog(null, "Ucenik dodat!", "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
+                showMessageDialog(null, DODAJUCENIKA_SUCC_MSG_STRING, DODAJUCENIKA_SUCC_TITLE_STRING, 
+                        JOptionPane.INFORMATION_MESSAGE);
                 win.dispose();
             } catch (NumberFormatException ex) {
                 LOGGER.log(Level.INFO, "Razred novog učenika ({0}) je prevelik "
                         + "ili nije broj", razTF.getText());
-                showMessageDialog(null, "Razred ucenika je prevelik.", "Los razred", JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, DODAJUCENIKA_NFEX_MSG_STRING, DODAJUCENIKA_NFEX_TITLE_STRING, 
+                        JOptionPane.ERROR_MESSAGE);
             } catch (Duplikat ex) {
                 LOGGER.log(Level.INFO, "Već postoji učenik sa istim imenom i prezimenom i razredom {0} i {1}"
                         + "Novi učenik nije dodat.", new Object[]{ucTF.getText(), razTF.getText()});
-                showMessageDialog(null, "Već postoji učenik koji ide u isti razred sa istim imenom i prezimenom"
-                        + "Novi učenik ne može biti dodat", "Duplikat", JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, DODAJUCENIKA_DEX_MSG_STRING, DODAJUCENIKA_DEX_TITLE_STRING, 
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
         pan.add(unesi);
@@ -133,16 +134,14 @@ public class UceniciUtils {
     public void obrisiUcenika() {
         final rs.luka.legacy.biblioteka.Ucenici ucenici = new rs.luka.legacy.biblioteka.Ucenici();
         //---------JFrame&JPanel------------------------------------------------
-        String ucenik = Dijalozi.showTextFieldDialog("Brisanje ucenika", "Unesite ime ucenika "
-                + "i pritisnite enter:", "");
+        String ucenik = Dijalozi.showTextFieldDialog(OBRISIUCENIKA_TITLE_STRING, OBRISIUCENIKA_MSG_STRING, "");
         if (ucenik == null || ucenik.equals("null")) {
             return;
         }
         List<Integer> inx = indexOfUcenik(ucenik);
         if (inx.isEmpty()) {
             LOGGER.log(Level.INFO, "Učenik {0} nije pronađen", ucenik);
-            showMessageDialog(null, "Ucenik " + ucenik + " nije pronadjen\n"
-                    + "Proverite unos  i pokusajte ponovo.", "Ucenik ne postoji.",
+            showMessageDialog(null, OBRISIUCENIKA_EMPTY_MSG_STRING, OBRISIUCENIKA_EMPTY_TITLE_STRING,
                     JOptionPane.ERROR_MESSAGE);
         } else {
             int num = 0;
@@ -151,14 +150,15 @@ public class UceniciUtils {
             }
             try {
                 ucenici.obrisiUcenika(inx.get(num));
-                showMessageDialog(null, "Ucenik obrisan!", "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
+                showMessageDialog(null, OBRISIUCENIKA_SUCC_MSG_STRING, OBRISIUCENIKA_SUCC_TITLE_STRING, 
+                        JOptionPane.INFORMATION_MESSAGE);
             } catch (VrednostNePostoji ex) {
                 throw new RuntimeException("VrednostNePostoji prilikom obrisiUcenika za index "
                         + inx.get(num), ex);
             } catch (PreviseKnjiga ex) {
                 LOGGER.log(Level.INFO, "Učenik {0} nije obrisan jer ima preostalih knjiga.", inx.get(num));
-                showMessageDialog(null, "Ucenik ima preostalih knjiga.\n"
-                        + "Kada vrati, pokusajte ponovo.", "Preostale knjige", JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, OBRISIUCENIKA_PKEX_MSG_STRING, OBRISIUCENIKA_PKEX_TITLE_STRING, 
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -172,7 +172,7 @@ public class UceniciUtils {
         //---------JFrame&JPanel------------------------------------------------
         JDialog win = new JDialog();
         win.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        win.setTitle("Unos nove generacije.");
+        win.setTitle(DODAJGENERACIJU_TITLE_STRING);
         win.setSize(DODAJGEN_SIZE);
         win.setLocationRelativeTo(null);
         win.setResizable(false);
@@ -181,9 +181,7 @@ public class UceniciUtils {
         pan.setBackground(Grafika.getBgColor());
         win.setContentPane(pan);
         //---------JLabel&JTextPane---------------------------------------------
-        JLabel imena = new JLabel("<html>Unesite ucenike nove generacije, odvojene zapetama <br />"
-                + "<strong>Nakon dodavanja nove generacije, svi učenici "
-                + "najstarije generacije će biti obrisani!!!</strong></html>");
+        JLabel imena = new JLabel(DODAJGENERACIJU_IMENA_STRING);
         imena.setBounds(IMENA_BOUNDS);
         imena.setBackground(Grafika.getBgColor());
         imena.setForeground(Grafika.getFgColor());
@@ -198,13 +196,13 @@ public class UceniciUtils {
         genTF.setBackground(Grafika.getTFColor());
         pan.add(jsp);
         //----------JButton-----------------------------------------------------
-        JButton but = new JButton("Unesi novu generaciju");
+        JButton but = new JButton();
         but.setFont(Grafika.getButtonFont());
         but.setBounds(UNESIGEN_BOUNDS);
         but.addActionListener((ActionEvent e) -> {
             Podaci.dodajNovuGen(genTF.getText());
-            showMessageDialog(null, "Nova generacija dodata.",
-                    "Uspeh!", JOptionPane.INFORMATION_MESSAGE);
+            showMessageDialog(null, DODAJGENERACIJU_SUCC_MSG_STRING,
+                    DODAJGENERACIJU_SUCC_TITLE_STRING, JOptionPane.INFORMATION_MESSAGE);
         });
         pan.add(but);
         //---------setVisible---------------------------------------------------

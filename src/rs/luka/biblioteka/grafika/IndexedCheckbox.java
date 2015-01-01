@@ -32,10 +32,10 @@ public class IndexedCheckbox extends JCheckBox {
         super(text);
         this.index = index;
         this.kol = kol;
-        super.setFont(Grafika.getLabelFont());
-        super.setForeground(Grafika.getFgColor());
-        super.setBackground(Grafika.getBgColor());
-        super.setBorder(new EmptyBorder(INSET));
+        this.setFont(Grafika.getLabelFont());
+        this.setForeground(Grafika.getFgColor());
+        this.setBackground(Grafika.getBgColor());
+        this.setBorder(new EmptyBorder(INSET));
     }
     
     /**

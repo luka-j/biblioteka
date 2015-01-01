@@ -34,9 +34,8 @@ public class Dijalozi {
         for (int i = 0; i < inx.size(); i++) {
             razredi[i] = valueOf(getUcenik(inx.get(i)).getRazred());
         }
-        num = showOptionDialog(null, "Postoji vise ucenika sa tim imenom.\n"
-                + "Odaberite razred:", "Odaberite razred", JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE, null, razredi, razredi[0]);
+        num = showOptionDialog(null, DIJALOZI_VISERAZREDA_MSG_STRING, DIJALOZI_VISERAZREDA_TITLE_STRING, 
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, razredi, razredi[0]);
         return num;
     }
 
@@ -47,15 +46,13 @@ public class Dijalozi {
      * @return int vrednost unete vrednosti.
      */
     public static int brojKnjiga() {
-        /*String brKnjigaStr = JOptionPane.showInputDialog("Unesite maksimalan broj "
-                + "knjiga koje ucenik\nmoze da ima kod sebe:");*/
-        String brKnjigaStr = showTextFieldDialog("Broj knjiga", "Unesite maksimalan broj " +
-                 "knjiga koje\nučenik može da ima kod sebe", "");
+        String brKnjigaStr = showTextFieldDialog(DIJALOZI_BROJKNJIGA_TITLE_STRING, 
+                DIJALOZI_BROJKNJIGA_MSG_STRING, "");
         try {
             return Integer.parseInt(brKnjigaStr);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Uneta količina nije broj.",
-                    "Los format", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, DIJALOZI_BROJKNJIGA_NFEX_MSG_STRING,
+                    DIJALOZI_BROJKNJIGA_NFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             return brojKnjiga();
         }
     }
