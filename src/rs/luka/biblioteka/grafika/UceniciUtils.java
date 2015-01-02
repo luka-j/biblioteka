@@ -196,7 +196,7 @@ public class UceniciUtils {
         genTF.setBackground(Grafika.getTFColor());
         pan.add(jsp);
         //----------JButton-----------------------------------------------------
-        JButton but = new JButton();
+        JButton but = new JButton(DODAJGENERACIJU_UNESI_STRING);
         but.setFont(Grafika.getButtonFont());
         but.setBounds(UNESIGEN_BOUNDS);
         but.addActionListener((ActionEvent e) -> {

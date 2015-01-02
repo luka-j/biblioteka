@@ -27,6 +27,7 @@
  */
 /**
  * @changelog 
+ * String konstante za Config (_DESC), testing&bugfixing
  * Dodao String konstante i Strings klasu + usput popravio bugove
  * Dodao IndexedCheckbox, sada koristi samo jedan listener za uzimanje i jedan za vracanje 
  * (moze da se napravi da sve radi u jednom, i da radi proveru unutar listenera, ali mislim da ne bi trebalo)
@@ -50,14 +51,14 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
-//7430 linije, 30.12.'14. (trenutno, fontovi, ucSort, PeriodicActions, ICheckbox, Strings, cleanup)
+//7480 linije, 2.1.'15. (trenutno, fontovi, ucSort, PeriodicActions, ICheckbox, Strings, cleanup)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
 //1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
-//1441 linija, 29.12.'14. (trenutno, auto)
+//1442 linija, 2.1.'15. (trenutno, auto)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -169,10 +170,10 @@ public class Init {
      */
     public static void init() {
         initWorkingDir();
-        loadConfig();
+        loadConfig(); //radi i loadStrings()
         setWorkingDir();
         initLogger();
-        loadStrings(); //??
+        //loadStrings();
         initGrafika();
         setValidRazred();
         loadData();

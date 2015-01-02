@@ -129,7 +129,7 @@ public class Ucenici implements FocusListener {
         //uzmiBut = new JButton[Podaci.getBrojUcenika()];
         //vratiBut = new JButton[Podaci.getBrojUcenika()];
         searchBox = new JTextField(UCENICI_SEARCH_STRING);
-        selectAllUc = new JCheckBox(UCENICI_SELECTALL_STRING);
+        selectAllUc = new JCheckBox(UCENICI_UCENICI_STRING);
     }
 
     /**
@@ -242,7 +242,7 @@ public class Ucenici implements FocusListener {
         }
 
         for (int i = 0; i < maxKnjiga; i++) {
-            knjige[i][0] = new IndexedCheckbox(UCENICI_KNJIGE0_STRING, 1, i);
+            knjige[i][0] = new IndexedCheckbox(UCENICI_KNJIGE_STRING, 1, i);
             it = Podaci.iteratorUcenika();
             for (int j = 1; j < Podaci.getBrojUcenika() + 1; j++) {
                 uc = it.next();

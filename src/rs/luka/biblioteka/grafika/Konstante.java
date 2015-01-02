@@ -10,14 +10,17 @@ public class Konstante {
     private static final Logger LOG = Logger.getLogger(Konstante.class.getName());
 
     /**
-     * Postavlja konstantu sa datim imenom na datu vrednost
+     * Postavlja konstantu sa datim imenom na datu vrednost. Ako nije reč o _STRING-u,
+     * zamenjuje tačke donjim crtama i prebacuje podesavanje u velika slova. U suprotnom
+     * shvata argumente doslovno (napravljeno pošto se iste promene moraju izvršiti i u 
+     * {@link rs.luka.biblioteka.data.Strings}, pa da se ne radi ista operacija dvaput).
      *
      * @param podesavanje ime konstante, dozvoljava tačke umesto donjih crta
      * @param vrednost vrednost konstante, parsuje se u int
      * @since 29.11.'14.
      */
     public static void set(String podesavanje, String vrednost) {
-        if (!podesavanje.endsWith("STRING")) {
+        if (!podesavanje.endsWith("STRING") && !podesavanje.endsWith("DESC")) {
             if (!Utils.isInteger(vrednost)) {
                 LOG.log(Level.WARNING,
                         "set() nije uspeo, vrednost {0} nije ceo broj", vrednost);
@@ -46,6 +49,21 @@ public class Konstante {
     }
 
     static final int INVALID = -1;
+    /*----------Config.java---------------------------------------------------*/
+    public static String CONFIG_DATELIMIT_DESC = "Broj dana koji učenik sme da zadrži knjigu kod sebe";
+    public static String CONFIG_LOOKANDFEEL_DESC = "Izgled aplikacije (system, ocean, nimbus ili motif)";
+    public static String CONFIG_BRKNJIGA_DESC = "Najveći broj knjiga koji učenik može da ima kod sebe";
+    public static String CONFIG_LOGLEVEL_DESC = "Minimalni nivo logovanja akcija u aplikaciji";
+    public static String CONFIG_SAVEPERIOD_DESC = "Interval automatskog čuvanja podataka u minutima";
+    public static String CONFIG_MAXUNDO_DESC = "Broj akcija koje se čuvaju za undo";
+    public static String CONFIG_RAZREDI_DESC = "Mogući razredi učenika (razdvojeni zapetom)";
+    public static String CONFIG_WORKINGDIR_DESC = "Folder u kojem se čuvaju podaci";
+    public static String CONFIG_LOGSIZELIMIT_DESC = "Maksimalna veličina log fajla u bajtovima";
+    public static String CONFIG_LOGFILECOUNT_DESC = "Maksimalan broj log fajlova";
+    public static String CONFIG_LABELFONTNAME_DESC = "Font korišćen za labele";
+    public static String CONFIG_BUTFONTNAME_DESC = "Font korišćen za veliku dugmad";
+    public static String CONFIG_SMALLBUTFONTNAME_DESC = "Font korišćen za malu dugmad";
+    public static String CONFIG_DATEPERIOD_DESC = "Period proveravanja datuma (u danima)";
     /*----------Dijalozi.java-------------------------------------------------*/
     static int DIJALOZI_LINE_HEIGHT = 40;
     static int DIJALOZI_SIRINA = 350;
@@ -245,10 +263,10 @@ public class Konstante {
     static int UCENICI_SEARCHBOX_HEIGHT = 27;
     static String UCENICI_SEARCH_STRING = "Pretraži učenike...";
     static String UCENICI_TITLE_STRING = "Pregled učenika";
-    static String UCENICI_SELECTALL_STRING = "<html>Učenici:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+    static String UCENICI_UCENICI_STRING = "<html>Učenici:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
             + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
             + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br></html>";
-    static String UCENICI_KNJIGE0_STRING = "<html>Knjige:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+    static String UCENICI_KNJIGE_STRING = "<html>Knjige:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
             + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br></html>";
     static String UCENICI_NOVIUC_STRING = "Dodati novog učenika";
     static String UCENICI_DELUC_STRING = "Obrisati učenika";

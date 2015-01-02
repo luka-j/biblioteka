@@ -21,6 +21,8 @@ import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
 import rs.luka.biblioteka.exceptions.ConfigException;
 import rs.luka.biblioteka.funkcije.Utils;
 import rs.luka.biblioteka.grafika.Konstante;
+import static rs.luka.biblioteka.data.Strings.loadStrings;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 
 public class Config {
@@ -97,6 +99,7 @@ public class Config {
      */
     public static void loadConfig() {
         setDefaults();
+        loadStrings();
         defineSynonyms();
         setLimits();
         configFile = new File(Utils.getWorkingDir() + "config.properties");
@@ -144,50 +147,47 @@ public class Config {
         vrednosti.put("ucSize", "ucSize", "brojUcenika");
         vrednosti.put("knjSize", "knjSize", "brojKnjiga");
         vrednosti.put("firstRun", "firstRun", "prvoPokretanje");
-        vrednosti.put("dateLimit", "dateLimit", "maxDana", "zadrzavanje", "zadrzavanjeKnjige",
-                "Broj dana koji učenik sme da zadrži knjigu kod sebe");
-        vrednosti.put("lookAndFeel", "lookAndFeel", "LaF", "LnF", "izgled",
-                "Izgled aplikacije (system, ocean, nimbus ili motif)");
+        vrednosti.put("dateLimit", "dateLimit", "maxDana", "zadrzavanje", "zadrzavanjeKnjige", 
+                CONFIG_DATELIMIT_DESC);
+        vrednosti.put("lookAndFeel", "lookAndFeel", "LaF", "LnF", "izgled", CONFIG_LOOKANDFEEL_DESC);
         vrednosti.put("knjigeS", "knjigeS", "knjigeW", "knjigeSirina", "knjSirina", "sirinaKnjProzora");
         vrednosti.put("knjigeV", "knjigeV", "knjigeH", "knjigeVisina", "knjVisina", "visinaKnjProzora");
         vrednosti.put("uceniciS", "uceniciS", "uceniciW", "uceniciSirina", "ucSirina", "sirinaUcProzora");
         vrednosti.put("uceniciV", "uceniciV", "uceniciH", "uceniciVisina", "ucVisina", "visinaUcProzora");
         vrednosti.put("brKnjiga", "brKnjiga", "maxBrojKnjigaPoUceniku", "maxKnjiga", "maxUcenikKnjiga",
-                "Najveći broj knjiga koji učenik može da ima kod sebe");
+                CONFIG_BRKNJIGA_DESC);
         vrednosti.put("bgBoja", "bgBoja", "bojaPozadine", "pozadinskaBoja", "bgColor");
         vrednosti.put("fgBoja", "fgBoja", "bojaTeksta", "fgColor");
         vrednosti.put("TFBoja", "TFBoja", "bojitiPoljaZaUnosTeksta");
         vrednosti.put("TFColor", "TFColor", "bojaPolja", "bojaPoljaZaUnosTeksta");
-        vrednosti.put("logLevel", "logLevel", "nivoLogovanja", "Minimalni nivo logovanja akcija u aplikaciji");
+        vrednosti.put("logLevel", "logLevel", "nivoLogovanja", CONFIG_LOGLEVEL_DESC);
         vrednosti.put("savePeriod", "savePeriod", "autosavePeriod", "saveInterval", "autosaveInterval", "intervalCuvanja",
-                "Interval automatskog čuvanja podataka u minutima");
-        vrednosti.put("maxUndo", "maxUndo", "undoStackDepth", "velicinaUndoStacka",
-                "Broj akcija koje se čuvaju za undo");
-        vrednosti.put("razredi", "razredi", "razrediUcenika", "validniRazredi",
-                "Mogući razredi učenika (razdvojeni zapetom)");
+                CONFIG_SAVEPERIOD_DESC);
+        vrednosti.put("maxUndo", "maxUndo", "undoStackDepth", "velicinaUndoStacka", CONFIG_MAXUNDO_DESC);
+        vrednosti.put("razredi", "razredi", "razrediUcenika", "validniRazredi", CONFIG_RAZREDI_DESC);
         vrednosti.put("workingDir", "workingDir", "workingDirectory", "Radni direktorijum", "dataDir",
-                "Folder u kojem se čuvaju podaci");
+                CONFIG_WORKINGDIR_DESC);
         vrednosti.put("logSizeLimit", "logSizeLimit", "logSize", "logLimit", "logFileSizeLimit", "velicinaLogFajla",
-                "Maksimalna veličina log fajla u bajtovima");
+                CONFIG_LOGSIZELIMIT_DESC);
         vrednosti.put("logFileCount", "logFileCount", "logCount", "logFileNumber", "brojLogFajlova",
-                "Maksimalan broj log fajlova");
+                CONFIG_LOGFILECOUNT_DESC);
         vrednosti.put("labelFontName", "labelFontName", "labelName", "fontName", "font", 
-                "Font korišćen za labele");
+                CONFIG_LABELFONTNAME_DESC);
         vrednosti.put("labelFontSize", "labelFontSize", "labelSize", "fontSize");
         vrednosti.put("labelFontWeight", "labelFontWeight", "labelWeight", "fontWeight");
         vrednosti.put("butFontName", "butFontName", "buttonFontName", "butName", "buttonName",
-                "Font korišćen za veliku dugmad");
+                CONFIG_BUTFONTNAME_DESC);
         vrednosti.put("butFontSize", "butFontSize", "buttonFontSize", "butSize", "buttonSize");
         vrednosti.put("butFontWeight", "butFontWeight", "buttonFontWeight", "butWeight", "buttonWeight");
         vrednosti.put("smallButFontName", "smallButFontName", "sButFontName", "sButName", "smallButtonName",
-                "UzmiVratiFontName", "UzmiVratiName", "UVFont", "Font korišćen za malu dugmad");
+                "UzmiVratiFontName", "UzmiVratiName", "UVFont", CONFIG_SMALLBUTFONTNAME_DESC);
         vrednosti.put("smallButFontSize", "smallButFontSize", "sButFontSize", "sButSize", "smallButtonSize",
                 "UzmiVratiFontSize", "UzmiVratiSize", "UVSize");
         vrednosti.put("smallButWeight", "smallButWeight", "smallButtonWeight", "sButW", "sButWeight",
                 "UzmiVratiFontWeight", "UzmiVratiWeight", "UVWeight");
         vrednosti.put("kPrefix", "kPrefix", "konstantePrefix", "PrefixZaKonstante");
         vrednosti.put("ucSort", "ucSort", "uceniciSort", "sortiratiUcenikePo", "uceniciSortKriterijum");
-        vrednosti.put("datePeriod", "datePeriod", "dateCheckPeriod", "Period proveravanja datuma (u danima)");
+        vrednosti.put("datePeriod", "datePeriod", "dateCheckPeriod", CONFIG_DATEPERIOD_DESC);
     }
 
     /**
