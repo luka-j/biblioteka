@@ -1,7 +1,6 @@
 /**
- * @lastmod 
- * 27.12.'14. 
- * bugfixing, sredjivanje PeriodicActions
+ * @lastmod 27.12.'14. 
+ * setKol, sređivanje grafike
  */
 /**
  * @curr 
@@ -27,6 +26,9 @@
  */
 /**
  * @changelog 
+ * bugfixing&cleanup, grafika.Knjige sad koristi listu checkboxa umesto niza
+ * Dodao mogućnost da korisnik promeni količinu knjige, odgovarajuće metode u data.Podaci i grafika.KnjigeUtils
+ * Preimenovao UzmiVratiButton u SmallButton i dodao setKol za podešavanje količine knjige
  * String konstante za Config (_DESC), testing&bugfixing
  * Dodao String konstante i Strings klasu + usput popravio bugove
  * Dodao IndexedCheckbox, sada koristi samo jedan listener za uzimanje i jedan za vracanje 
@@ -51,7 +53,7 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
-//7480 linije, 2.1.'15. (trenutno, fontovi, ucSort, PeriodicActions, ICheckbox, Strings, cleanup)
+//7570 linije, 2.1.'15. (trenutno, fontovi, ucSort, PeriodicActions, ICheckbox, Strings, setKol)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.

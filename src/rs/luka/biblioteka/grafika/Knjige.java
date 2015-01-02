@@ -12,6 +12,7 @@ import static java.lang.Integer.parseInt;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -28,8 +29,6 @@ import javax.swing.border.EmptyBorder;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.data.Knjiga;
 import rs.luka.biblioteka.data.Podaci;
-import rs.luka.biblioteka.exceptions.Duplikat;
-import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import static rs.luka.biblioteka.grafika.Konstante.*;
@@ -41,7 +40,7 @@ public class Knjige implements FocusListener {
 
     private static final java.util.logging.Logger LOGGER
             = java.util.logging.Logger.getLogger(Knjige.class.getName());
-    private static final JFrame win = new JFrame("Pregled knjiga");
+    private static final JFrame win = new JFrame(KNJIGE_TITLE_STRING);
 
     private final Insets INSET = new Insets
         (CHECKBOX_TOP_INSET, CHECKBOX_LEFT_INSET, CHECKBOX_BOTTOM_INSET, CHECKBOX_RIGHT_INSET);
@@ -53,10 +52,10 @@ public class Knjige implements FocusListener {
 
     private int sirina, visina;
     
-    private final LinkedList<UzmiVratiButton> buttons;
+    private final LinkedList<SmallButton> buttons;
     private final JLabel[] pisac;
     private final JLabel[] kolicina;
-    private final IndexedCheckbox[] knjige;
+    private final List<IndexedCheckbox> knjige;
     private final JLabel kolicinaTitle;
     private final JLabel pisacTitle;
     private final JCheckBox selectAll;
@@ -77,7 +76,7 @@ public class Knjige implements FocusListener {
         buttons = new LinkedList<>();
         pisac = new JLabel[Podaci.getBrojKnjiga()];
         kolicina = new JLabel[Podaci.getBrojKnjiga()];
-        knjige = new IndexedCheckbox[Podaci.getBrojKnjiga()];
+        knjige = new ArrayList<>(Podaci.getBrojKnjiga());
         kolicinaTitle = new JLabel(KNJIGE_KOLICINA_STRING);
         pisacTitle = new JLabel(KNJIGE_PISAC_STRING);
         selectAll = new JCheckBox(KNJIGE_NASLOVI_STRING);
@@ -162,12 +161,18 @@ public class Knjige implements FocusListener {
         kolPan.add(kolicinaTitle);
         //----------------------------------------------------------------------
         Iterator<Knjiga> it = Podaci.iteratorKnjiga();
+        IndexedCheckbox box;
         Knjiga knj;
-        for (int i = 0; i < knjige.length; i++) {
+        for (int i = 0; i < kolicina.length; i++) {
             knj = it.next();
-            knjige[i] = new IndexedCheckbox(knj.getNaslov(), i, INVALID);
-            knjige[i].setMinimumSize(new Dimension(300, 30));
-            knjPan.add(knjige[i]);
+            box = new IndexedCheckbox(knj.getNaslov(), i, INVALID);
+            box.setMinimumSize(new Dimension(300, 30));
+            box.setFont(Grafika.getLabelFont());
+            box.setForeground(Grafika.getFgColor());
+            box.setBackground(Grafika.getBgColor());
+            box.setBorder(new EmptyBorder(INSET));
+            knjPan.add(box);
+            knjige.add(box);
 
             pisac[i] = new JLabel(knj.getPisac());
             pisac[i].setBorder(new EmptyBorder(INSET));
@@ -218,12 +223,12 @@ public class Knjige implements FocusListener {
         selectAll.addItemListener((ItemEvent e) -> {
             selectAll();
         });
-        ItemListener uzimanjeListener = (ItemEvent e) -> {
-            uzmiKnjigu((IndexedCheckbox)e.getItem());
+        ItemListener listener = (ItemEvent e) -> {
+            setKolicina((IndexedCheckbox)e.getItem());
         };
-        for (int i = 0; i < Podaci.getBrojKnjiga(); i++) {
-            knjige[i].addItemListener(uzimanjeListener);
-        }
+        knjige.forEach((IndexedCheckbox box) -> {
+            box.addItemListener(listener);
+        });
     }
 
     /**
@@ -248,8 +253,8 @@ public class Knjige implements FocusListener {
      */
     private void obrisiNaslov() {
         boolean selected = false;
-        for (int i = 0, realI = 0; i < knjige.length; i++, realI++) {
-            if (knjige[i].isSelected()) {
+        for (int i = 0, realI = 0; i < knjige.size(); i++, realI++) {
+            if (knjige.get(i).isSelected()) {
                 selected = true;
                 try {
                     Podaci.obrisiKnjigu(realI);
@@ -257,7 +262,7 @@ public class Knjige implements FocusListener {
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Knjiga zauzeta. Brisanja naslova nije obavljeno");
                     JOptionPane.showMessageDialog(null, KNJIGE_PKEX_MSG1_STRING
-                            + knjige[i].getText()+ KNJIGE_PKEX_MSG2_STRING,
+                            + knjige.get(i).getText()+ KNJIGE_PKEX_MSG2_STRING,
                             KNJIGE_PKEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -289,16 +294,34 @@ public class Knjige implements FocusListener {
             knjiga.setSelected(knjiga.isVisible() && selectAll.isSelected() && knjiga.isEnabled());
         }
     }
+    
+    private void setKolicina(IndexedCheckbox box) {
+        if(box.isSelected()) {
+            SmallButton but = new SmallButton(box.getIndex(), 
+                    INVALID, box.getLocationOnScreen().y - sidePan.getLocationOnScreen().y + CHECKBOX_TOP_INSET);
+            but.setKol();
+            buttons.add(but);
+            sidePan.add(but);
+        }
+        else {
+            int index = buttons.indexOf(new SmallButton(box.getIndex(), INVALID, INVALID));
+            if(index<0)
+                throw new IndexOutOfBoundsException("indexOf vratio nepostojeci index");
+            buttons.remove(index);
+            sidePan.remove(index + 1); //+1 zato sto je na nultom mestu searchBox
+        }
+        sidePan.repaint();
+    }
 
     /**
      * Uzima datu knjigu od ucenika i vraca biblioteci. Ucenik se unosi preko dijaloga.
      * @param red red u kome se nalazi knjiga za iznajmljivanje
      */
-    private void uzmiKnjigu(IndexedCheckbox box) {
+    /*private void uzmiKnjigu(IndexedCheckbox box) {
         int red = box.getIndex();
         if (knjige[red].isSelected()) {
             LOGGER.log(Level.FINER, "Prikazujem dugme za uzimanje br {0}", red);
-            UzmiVratiButton button = new UzmiVratiButton(red, INVALID, 
+            SmallButton button = new SmallButton(red, INVALID, 
                     knjige[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
             button.addActionListener((ActionEvent ae) -> {
                 String ucenik = Dijalozi.showTextFieldDialog(KNJIGE_UZMI_DIJALOG_TITLE_STRING,
@@ -337,13 +360,13 @@ public class Knjige implements FocusListener {
             sidePan.repaint();
             LOGGER.log(Level.FINE, "Dugme za uzimanje br. {0} prikazano.", red);
         } else {
-            int delIndex = buttons.indexOf(new UzmiVratiButton(red, INVALID, INVALID));
+            int delIndex = buttons.indexOf(new SmallButton(red, INVALID, INVALID));
             sidePan.remove(delIndex + 1);
             buttons.remove(delIndex);
             sidePan.repaint();
             LOGGER.log(Level.FINE, "Dugme za uzimanje br. {0} obrisano", red);
         }
-    }
+    }*/
 
     /**
      * Pretrazuje knjige i prikazuje nadjene.
@@ -354,15 +377,15 @@ public class Knjige implements FocusListener {
         for (int i = 0; i < Podaci.getBrojKnjiga(); i++) {
             if (nasIndexes.contains(i)) {
                 Knjiga knjiga = Podaci.getKnjiga(i);
-                knjige[i].setText(knjiga.getNaslov());
-                knjige[i].setVisible(true);
+                knjige.get(i).setText(knjiga.getNaslov());
+                knjige.get(i).setVisible(true);
                 kolicina[i].setText(String.valueOf(knjiga.getKolicina()));
                 kolicina[i].setVisible(true);
                 pisac[i].setText(knjiga.getPisac());
                 pisac[i].setVisible(true);
             } else {
-                knjige[i].setSelected(false);
-                knjige[i].setVisible(false);
+                knjige.get(i).setSelected(false);
+                knjige.get(i).setVisible(false);
                 kolicina[i].setVisible(false);
                 pisac[i].setVisible(false);
             }

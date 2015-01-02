@@ -13,9 +13,9 @@ import static rs.luka.biblioteka.grafika.Konstante.*;
  * Opisuje dugme na sidePan-u. Može biti za uzimanje ili za vracanje.
  * @since 29.11.'14.
  */
-class UzmiVratiButton extends JButton {
+class SmallButton extends JButton {
     private static final long serialVersionUID = 1L;
-    private final int ucenikIndex;
+    private final int index;
     private final List<Integer> naslovi = new ArrayList<>();
 
     /**
@@ -24,12 +24,12 @@ class UzmiVratiButton extends JButton {
      * @param naslovi naslovi selektovanih knjiga
      * @param y
      */
-    UzmiVratiButton(int ucIndex, int naslov, int y) {
+    SmallButton(int ucIndex, int naslov, int y) {
         super();
         this.setVisible(false);
-        ucenikIndex = ucIndex;
+        index = ucIndex;
         naslovi.add(naslov);
-        this.setBounds(UVBUTTON_X, y, UVBUTTON_WIDTH, UVBUTTON_HEIGHT);
+        this.setBounds(SMALLBUT_X, y, SMALLBUT_WIDTH, SMALLBUT_HEIGHT);
         this.setFont(Grafika.getSmallButtonFont());
     }
 
@@ -37,15 +37,15 @@ class UzmiVratiButton extends JButton {
      * Postavlja akciju button-a na uzimanje i prikazuje ga.
      */
     public void uzmi() {
-        this.setText(UVBUTTON_UZMI_STRING);
+        this.setText(SMALLBUT_UZMI_STRING);
         this.addActionListener((ActionEvent e) -> {
             if(this.getActionListeners().length>1)
                 return;
-            new Uzimanje().uzmi(ucenikIndex);
+            new Uzimanje().uzmi(index);
             Knjige.refresh();
             new Ucenici().pregledUcenika();
         });
-        LOGGER.log(Level.FINE, "Dodato dugme za uzimanje br {0}", ucenikIndex);
+        LOGGER.log(Level.FINE, "Dodato dugme za uzimanje br {0}", index);
         this.setVisible(true);
     }
 
@@ -53,13 +53,23 @@ class UzmiVratiButton extends JButton {
      * Postavlja akciju button-a na vracanje i prikazuje ga.
      */
     public void vrati() {
-        this.setText(UVBUTTON_VRATI_STRING);
+        this.setText(SMALLBUT_VRATI_STRING);
         this.addActionListener((ActionEvent e) -> {
-            Podaci.vratiViseKnjigaSafe(ucenikIndex, naslovi);
+            Podaci.vratiViseKnjigaSafe(index, naslovi);
             Knjige.refresh();
             new Ucenici().pregledUcenika();
         });
-        LOGGER.log(Level.FINE, "Dodato dugme za vraćanje br {0}", ucenikIndex);
+        LOGGER.log(Level.FINE, "Dodato dugme za vraćanje br {0}", index);
+        this.setVisible(true);
+    }
+    
+    public void setKol() {
+        this.setText(SMALLBUT_SETKOL_STRING);
+        this.addActionListener((ActionEvent e) -> {
+            new KnjigeUtils().promeniKolicinu(index);
+            Podaci.sortKnjige();
+            Knjige.refresh();
+        });
         this.setVisible(true);
     }
 
@@ -68,7 +78,7 @@ class UzmiVratiButton extends JButton {
      * @return ucenikIndex
      */
     public int getIndex() {
-        return ucenikIndex;
+        return index;
     }
 
     /**
@@ -81,10 +91,10 @@ class UzmiVratiButton extends JButton {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof UzmiVratiButton && ((UzmiVratiButton) obj).getIndex() == ucenikIndex) {
+        if (obj instanceof SmallButton && ((SmallButton) obj).getIndex() == index) {
             return true;
         }
-        if (obj instanceof Integer && (Integer)obj == ucenikIndex) {
+        if (obj instanceof Integer && (Integer)obj == index) {
             return true;
         }
         /*if(obj instanceof JTextField) {
@@ -99,9 +109,9 @@ class UzmiVratiButton extends JButton {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 41 * hash + this.ucenikIndex;
+        hash = 41 * hash + this.index;
         return hash;
     }
     
-    private static final Logger LOGGER = Logger.getLogger(UzmiVratiButton.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SmallButton.class.getName());
 }

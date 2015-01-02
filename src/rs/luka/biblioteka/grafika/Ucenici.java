@@ -93,7 +93,7 @@ public class Ucenici implements FocusListener {
     private final JCheckBox selectAllUc;
     //private final JButton[] vratiBut;
     //private final JButton[] uzmiBut;
-    private final LinkedList<UzmiVratiButton> buttons;
+    private final LinkedList<SmallButton> buttons;
     private final JPanel sidePan;
 
     /**
@@ -533,7 +533,7 @@ public class Ucenici implements FocusListener {
         if (ucenici[red].isSelected()) {
             selected = true;
         }
-        int index = buttons.indexOf(new UzmiVratiButton(red, INVALID, INVALID));
+        int index = buttons.indexOf(new SmallButton(red, INVALID, INVALID));
         if (index!=INVALID) { //contains radi argument.equals(element)
             if (!selected) { //ako nema selektovanih boxova, a dugme postoji
                 sidePan.remove(index + 1); //ukloni dugme, +1 zato sto se na prvom mestu nalazi searchBox
@@ -549,7 +549,7 @@ public class Ucenici implements FocusListener {
                 return;
             }
         }
-        UzmiVratiButton button = new UzmiVratiButton(red, INVALID,
+        SmallButton button = new SmallButton(red, INVALID,
                 ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
         setSidePanSize(red);
         button.uzmi();
@@ -586,8 +586,8 @@ public class Ucenici implements FocusListener {
             }
         }
         if (!selected) { //ako nema selektovanih boxova
-            int index = buttons.indexOf(new UzmiVratiButton(red, INVALID, INVALID));
-            //contains radi argument.equals(element), pa argument mora da bude UzmiVratiButton
+            int index = buttons.indexOf(new SmallButton(red, INVALID, INVALID));
+            //contains radi argument.equals(element), pa argument mora da bude SmallButton
             sidePan.remove(index + 1); //ukloni dugme
             buttons.remove(index);
             ucenici[red].setEnabled(true); //ponovo omogucuje checkboxove za uzimanje
@@ -598,13 +598,13 @@ public class Ucenici implements FocusListener {
             }
             return; //izadji iz listenera
         }
-        for(UzmiVratiButton btn : buttons) { //ako je dugme vec tu
+        for(SmallButton btn : buttons) { //ako je dugme vec tu
             if(btn.equals(red)) {
                 btn.addNaslovZaVracanje(knjIndex);
                 return; //izadji
             }
         }
-        UzmiVratiButton button = new UzmiVratiButton(red, knjIndex,
+        SmallButton button = new SmallButton(red, knjIndex,
                 ucenici[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
         button.vrati();
         setSidePanSize(red);

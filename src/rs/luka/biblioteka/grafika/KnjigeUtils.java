@@ -22,6 +22,7 @@ import javax.swing.JTextField;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import rs.luka.biblioteka.funkcije.Pretraga;
@@ -270,5 +271,31 @@ public class KnjigeUtils {
         sb.insert(6, ". 20");
         sb.insert(12, '.');
         return sb.toString();
+    }
+    
+    protected void promeniKolicinu(int knjIndex) {
+        String kol = Dijalozi.showTextFieldDialog(PROMENIKOL_TITLE_STRING, PROMENIKOL_MSG_STRING, "");
+        try {
+            int kolInt = Integer.parseInt(kol);
+            if(kol.charAt(0)=='+' || kol.charAt(0)=='-') {
+                Podaci.setKolicina(knjIndex, Podaci.getKnjiga(knjIndex).getKolicina()+kolInt);
+            }
+            else {
+                Podaci.setKolicina(knjIndex, kolInt);
+            }
+        }
+        catch(NumberFormatException ex) {
+            if(kol == null  || kol.isEmpty())
+                return;
+            LOGGER.log(Level.INFO, "Uneta količina {0} nije broj", kol);
+            JOptionPane.showMessageDialog(null, PROMENIKOL_NFEX_MSG_STRING, PROMENIKOL_NFEX_TITLE_STRING, 
+                    JOptionPane.ERROR_MESSAGE);
+            promeniKolicinu(knjIndex);
+        }
+        catch(NemaViseKnjiga ex) {
+            LOGGER.log(Level.INFO, "Nema dovoljno knjiga {0}", ex.getMessage());
+            JOptionPane.showMessageDialog(null, PROMENIKOL_NVKEX_MSG_STRING, PROMENIKOL_NVKEX_TITLE_STRING, 
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

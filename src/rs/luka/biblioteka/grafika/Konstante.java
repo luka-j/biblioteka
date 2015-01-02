@@ -65,7 +65,7 @@ public class Konstante {
     public static String CONFIG_SMALLBUTFONTNAME_DESC = "Font korišćen za malu dugmad";
     public static String CONFIG_DATEPERIOD_DESC = "Period proveravanja datuma (u danima)";
     /*----------Dijalozi.java-------------------------------------------------*/
-    static int DIJALOZI_LINE_HEIGHT = 40;
+    static int DIJALOZI_LINE_HEIGHT = Grafika.getLabelFont().getSize()+6;
     static int DIJALOZI_SIRINA = 350;
     static int DIJALOZI_FIXED_VISINA = 110;
     static int DIJALOZI_TEXT_X = 10;
@@ -106,7 +106,7 @@ public class Konstante {
     static int KNJIGE_SEARCHBOX_WIDTH = 135;
     static int KNJIGE_SEARCHBOX_HEIGHT = 30;
     static String KNJIGE_SEARCH_STRING = "Pretraži knjige...";
-    static String KNJIGE_TITLE_STRING = "";
+    static String KNJIGE_TITLE_STRING = "Pregled knjiga";
     static String KNJIGE_NASLOVI_STRING = "Naslovi:";
     static String KNJIGE_KOLICINA_STRING = "Količina:";
     static String KNJIGE_PISAC_STRING = "Pisac:";
@@ -198,6 +198,14 @@ public class Konstante {
     static String UCSEARCH_VNPEX_TITLE_STRING = "Knjiga ne postoji";
     static String UCSEARCH_PEX_MSG_STRING = "Trenutno se tražena knjiga ne nalazi ni kod koga.";
     static String UCSEARCH_PEX_TITLE_STRING = "Niko nije iznajmio knjigu";
+    static String PROMENIKOL_TITLE_STRING = "Promeni količinu naslova";
+    static String PROMENIKOL_MSG_STRING = "Unesite novu količinu i pritisnite enter.\nUnesite znakove + ili -"
+            + "ako želite da izvršite\npromenu u odnosu na sadašnji broj knjiga:";
+    static String PROMENIKOL_NFEX_MSG_STRING = "Uneta količina nije broj.";
+    static String PROMENIKOL_NFEX_TITLE_STRING = "Greška pri unosu";
+    static String PROMENIKOL_NVKEX_MSG_STRING = "Nema dovoljno knjiga za traženu promenu.\nProverite knjige"
+            + "koje se nalaze kod učenika, pa pokušajte ponovo";
+    static String PROMENIKOL_NVKEX_TITLE_STRING = "Nema dovoljno knjiga";
     /*----------Podesavanja.java----------------------------------------------*/
     static int PODESAVANJA_WIDTH = 600;
     static int PODESAVANJA_FIXED_HEIGHT = 100;
@@ -411,9 +419,10 @@ public class Konstante {
     static String UZIMANJE_PKEX_MSG_STRING = "Učenik trenutno ima previše knjiga kod sebe: \n";
     static String UZIMANJE_PKEX_TITLE_STRING = "Previše knjiga";
     /*----------UzmiVratiButton.java------------------------------------------*/
-    static int UVBUTTON_WIDTH = 140;
-    static int UVBUTTON_HEIGHT = 23;
-    static int UVBUTTON_X = 0;
-    static String UVBUTTON_UZMI_STRING = "Iznajmi knjigu";
-    static String UVBUTTON_VRATI_STRING = "Vrati knjigu";
+    static int SMALLBUT_WIDTH = 140;
+    static int SMALLBUT_HEIGHT = 23;
+    static int SMALLBUT_X = 0;
+    static String SMALLBUT_UZMI_STRING = "Iznajmi knjigu";
+    static String SMALLBUT_VRATI_STRING = "Vrati knjigu";
+    static String SMALLBUT_SETKOL_STRING = "Promeni količinu";
 }

@@ -3,7 +3,7 @@
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
 //2400 linija, 24.12.'14.
-//2523 linija, 27.12.'14. (trenutno, auto, Strings)
+//2544 linija, 27.12.'14. (trenutno, auto, Strings)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import rs.luka.biblioteka.debugging.Test;
@@ -708,6 +709,26 @@ public class Podaci {
         catch(NemaViseKnjiga ex) { //ako ne može da smanji količinu, moram da vratim kako je bilo
             uc.clearKnjiga(knj.getNaslov());
             throw ex;
+        }
+    }
+    
+    /**
+     * Postavlja količinu knjige na datom indexu. Zapravo briše tu knjigu iz liste i
+     * pravi novu, sa datom količinom, pošto su metode u klasi Knjiga ograničene na +/-1.
+     * @param knjIndex index knjige čija se količina menja
+     * @param kol nova količina
+     */
+    public static void setKolicina(int knjIndex, int kol) throws NemaViseKnjiga {
+        if(kol<0)
+            throw new NemaViseKnjiga(knjige.get(knjIndex));
+        Knjiga knj = knjige.get(knjIndex);
+        try {
+            knjige.add(new Knjiga(knj.getNaslov(), kol, knj.getPisac()));
+            LOGGER.log(Level.INFO, "Promenio količinu knjige {0} sa {1} na {2}", 
+                    new Object[]{knj.getNaslov(), knj.getKolicina(), kol});
+            knjige.remove(knjIndex);
+        } catch (Prazno ex) { //pravi kopiju - isti podaci - ne bi trebalo da bude grešaka
+            throw new RuntimeException(ex);
         }
     }
     
