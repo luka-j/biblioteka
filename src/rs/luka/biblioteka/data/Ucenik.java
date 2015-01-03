@@ -404,8 +404,8 @@ public class Ucenik implements Comparable<Ucenik> {
             return false;
         }
         Ucenik ucenik = (Ucenik) uc;
-        return ucenik.getIme().equals(ime) && ucenik.getRazred() == razred
-                && Arrays.equals(ucenik.getKnjige(), knjige);
+        return ucenik.getIme().equals(this.ime) && ucenik.getRazred() == this.razred;
+        //izbacio Arrays.equals, proveriti da li je OK
     }
 
     @Override
@@ -413,7 +413,6 @@ public class Ucenik implements Comparable<Ucenik> {
         int hash = 5;
         hash = 97 * hash + Objects.hashCode(this.ime);
         hash = 97 * hash + this.razred;
-        hash = 97 * hash + Arrays.deepHashCode(this.knjige);
         return hash;
     }
 

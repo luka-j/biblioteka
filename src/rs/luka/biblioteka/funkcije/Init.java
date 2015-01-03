@@ -17,7 +17,6 @@
 /**
  * @todo 
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING) 
- * Promeni količinu knjiga (dugme, umesto duplikata "Uzmi knjigu" u grafika.Knjige)
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception 
  * Bugfixing, optimizacija koda, cišenje koda 
  * Ubaciti kvačice (šđžčć) 
@@ -26,6 +25,7 @@
  */
 /**
  * @changelog 
+ * UniqueList za glavne liste (Ucenika i Knjiga)
  * bugfixing&cleanup, grafika.Knjige sad koristi listu checkboxa umesto niza
  * Dodao mogućnost da korisnik promeni količinu knjige, odgovarajuće metode u data.Podaci i grafika.KnjigeUtils
  * Preimenovao UzmiVratiButton u SmallButton i dodao setKol za podešavanje količine knjige
@@ -53,7 +53,7 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
-//7570 linije, 2.1.'15. (trenutno, fontovi, ucSort, PeriodicActions, ICheckbox, Strings, setKol)
+//7565 linije, 3.1.'15. (trenutno, config opcije&Strings, PeriodicActions, ICheckbox, setKol, UniqueList)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.

@@ -3,7 +3,7 @@
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
 //2400 linija, 24.12.'14.
-//2544 linija, 27.12.'14. (trenutno, auto, Strings)
+//2610 linija, 3.1.'15. (trenutno, auto, Strings)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import rs.luka.biblioteka.debugging.Test;
@@ -49,11 +48,11 @@ public class Podaci {
     /**
      * Lista sa Ucenicima.
      */
-    private static final ArrayList<Ucenik> ucenici = new ArrayList<>();
+    private static final ArrayList<Ucenik> ucenici = new UniqueList<>();
     /**
      * Lista sa Knjigama.
      */
-    private static final ArrayList<Knjiga> knjige = new ArrayList<>();
+    private static final ArrayList<Knjiga> knjige = new UniqueList<>();
 
     /**
      * default broj ucenika, ako ne postoji u config-u
@@ -179,8 +178,8 @@ public class Podaci {
             }
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "I/O greška pri kreiranju backup-a", ex);
-            showMessageDialog(null, "Doslo je do greske pri kreiranju backupa.",
-                    "I/O greska", JOptionPane.ERROR_MESSAGE);
+            showMessageDialog(null, "Doslo je do greške pri kreiranju backupa.",
+                    "I/O greška", JOptionPane.ERROR_MESSAGE);
         }
         LOGGER.log(Level.FINE, "Završio backup podataka pri učitavanju");
     }
@@ -400,10 +399,7 @@ public class Podaci {
      * @since 28.9.'14.
      */
     public static void dodajKnjigu(Knjiga knj) throws Duplikat {
-        if(naslovExists(knj.getNaslov())) {
-            throw new Duplikat(vrednost.Knjiga);
-        }
-        knjige.add(knj);
+        if(knjige.add(knj)) {
         LOGGER.log(Level.INFO, "Naslov dodat: {0}", knj);
         Undo.push(Akcija.DODAVANJE_KNJIGE, new Object[]{knj});
         String knjSize = Config.get("knjSize", "0");
@@ -411,6 +407,9 @@ public class Podaci {
         knjSizeInt++;
         try {Config.set("knjSize", valueOf(knjSizeInt));}
         catch(Exception e) { throw new RuntimeException(e);} //workaround za uncompilable source code
+        }
+        else 
+            throw new Duplikat(vrednost.Knjiga);
     }
     
     /**
@@ -419,7 +418,7 @@ public class Podaci {
      * @throws Duplikat ako {@link #dodajUcenika(java.lang.String, int)} throwuje Duplikat.
      */
     public static void dodajUcenika(String ime) throws Duplikat {
-        Podaci.dodajUcenika(ime, Ucenik.getPrviRazred());
+        dodajUcenika(ime, Ucenik.getPrviRazred());
     }
     
     /**
@@ -434,7 +433,7 @@ public class Podaci {
         for (int i = 0; i < knjige.length; i++) {
             knjige[i] = "";
         }
-        Podaci.dodajUcenika(ime, raz, knjige);
+        dodajUcenika(ime, raz, knjige);
     }
 
     /**
@@ -461,10 +460,7 @@ public class Podaci {
      * @since 28.9.'14.
      */
     public static void dodajUcenika(Ucenik ucenik) throws Duplikat {
-        if(ucenici.contains(ucenik)) {
-            throw new Duplikat(ucenik.toString() + "već postoji");
-        }
-        ucenici.add(ucenik);
+        if(ucenici.add(ucenik)) {
         
         LOGGER.log(Level.INFO, "Učenik dodat: ", new Object[]{ucenik.toString()});
         Undo.push(Akcija.DODAVANJE_UCENIKA, new Object[]{ucenik});
@@ -472,6 +468,9 @@ public class Podaci {
         int ucSizeInt = parseInt(ucSize);
         ucSizeInt++;
         Config.set("ucSize", valueOf(ucSizeInt));
+        }
+        else
+            throw new Duplikat(vrednost.Ucenik);
     }
     
     /**

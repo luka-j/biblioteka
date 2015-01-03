@@ -109,13 +109,14 @@ public class UceniciUtils {
                 showMessageDialog(null, DODAJUCENIKA_SUCC_MSG_STRING, DODAJUCENIKA_SUCC_TITLE_STRING, 
                         JOptionPane.INFORMATION_MESSAGE);
                 win.dispose();
+                new Ucenici().pregledUcenika();
             } catch (NumberFormatException ex) {
                 LOGGER.log(Level.INFO, "Razred novog učenika ({0}) je prevelik "
                         + "ili nije broj", razTF.getText());
                 showMessageDialog(null, DODAJUCENIKA_NFEX_MSG_STRING, DODAJUCENIKA_NFEX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
             } catch (Duplikat ex) {
-                LOGGER.log(Level.INFO, "Već postoji učenik sa istim imenom i prezimenom i razredom {0} i {1}"
+                LOGGER.log(Level.INFO, "Već postoji učenik sa istim imenom i prezimenom i razredom {0} i {1}\n"
                         + "Novi učenik nije dodat.", new Object[]{ucTF.getText(), razTF.getText()});
                 showMessageDialog(null, DODAJUCENIKA_DEX_MSG_STRING, DODAJUCENIKA_DEX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
