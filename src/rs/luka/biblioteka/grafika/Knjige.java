@@ -40,7 +40,8 @@ public class Knjige implements FocusListener {
 
     private static final java.util.logging.Logger LOGGER
             = java.util.logging.Logger.getLogger(Knjige.class.getName());
-    private static final JFrame win = new JFrame(KNJIGE_TITLE_STRING);
+    private static final JFrame win = new JFrame();
+    private final int maxKnjiga;
 
     private final Insets INSET = new Insets
         (CHECKBOX_TOP_INSET, CHECKBOX_LEFT_INSET, CHECKBOX_BOTTOM_INSET, CHECKBOX_RIGHT_INSET);
@@ -72,11 +73,12 @@ public class Knjige implements FocusListener {
      * Konstruktuje komponente prozora i zove {@link #pregledKnjiga()}
      */
     public Knjige() {
+        this.maxKnjiga = Podaci.getBrojKnjiga();
         win.setTitle(KNJIGE_TITLE_STRING);
         buttons = new LinkedList<>();
-        pisac = new JLabel[Podaci.getBrojKnjiga()];
-        kolicina = new JLabel[Podaci.getBrojKnjiga()];
-        knjige = new ArrayList<>(Podaci.getBrojKnjiga());
+        pisac = new JLabel[maxKnjiga];
+        kolicina = new JLabel[maxKnjiga];
+        knjige = new ArrayList<>(maxKnjiga);
         kolicinaTitle = new JLabel(KNJIGE_KOLICINA_STRING);
         pisacTitle = new JLabel(KNJIGE_PISAC_STRING);
         selectAll = new JCheckBox(KNJIGE_NASLOVI_STRING);
@@ -130,7 +132,7 @@ public class Knjige implements FocusListener {
         mainPan.add(kolPan);
         sidePan.setBackground(Grafika.getBgColor());
         sidePan.setPreferredSize(new Dimension(KNJIGE_SIDEPAN_WIDTH, 
-                (Podaci.getBrojKnjiga() + 1) * KNJIGE_SIDEPAN_UCENIK_HEIGHT));
+                (maxKnjiga + 1) * KNJIGE_SIDEPAN_UCENIK_HEIGHT));
         sidePan.setAlignmentY(KNJIGE_PANELS_ALIGNMENT_Y);
         mainPan.add(sidePan);
         scroll.add(scroll.createVerticalScrollBar());
@@ -314,67 +316,12 @@ public class Knjige implements FocusListener {
     }
 
     /**
-     * Uzima datu knjigu od ucenika i vraca biblioteci. Ucenik se unosi preko dijaloga.
-     * @param red red u kome se nalazi knjiga za iznajmljivanje
-     */
-    /*private void uzmiKnjigu(IndexedCheckbox box) {
-        int red = box.getIndex();
-        if (knjige[red].isSelected()) {
-            LOGGER.log(Level.FINER, "Prikazujem dugme za uzimanje br {0}", red);
-            SmallButton button = new SmallButton(red, INVALID, 
-                    knjige[red].getLocationOnScreen().y - sidePan.getLocationOnScreen().y);
-            button.addActionListener((ActionEvent ae) -> {
-                String ucenik = Dijalozi.showTextFieldDialog(KNJIGE_UZMI_DIJALOG_TITLE_STRING,
-                        KNJIGE_UZMI_DIJALOG_MSG_STRING, "");
-                try {
-                    Podaci.uzmiKnjigu(red, ucenik);
-                    JOptionPane.showMessageDialog(null, KNJIGE_UZMI_SUCC_MSG_STRING, 
-                            KNJIGE_UZMI_SUCC_TITLE_STRING, JOptionPane.INFORMATION_MESSAGE);
-                    new Ucenici().pregledUcenika();
-                    new Knjige().pregledKnjiga();
-                } catch (PreviseKnjiga ex) {
-                    LOGGER.log(Level.INFO, "Kod učenika {0} se "
-                            + "trenutno nalazi previše knjiga", ucenik);
-                    JOptionPane.showMessageDialog(null, KNJIGE_UZMI_PKEX_MSG_STRING,
-                            KNJIGE_UZMI_EX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
-                } catch (Duplikat ex) {
-                    LOGGER.log(Level.INFO, "Kod učenika {0} se već nalazi "
-                            + "knjiga naslova {1}", new Object[]{ucenik, Podaci.getKnjiga(red).getNaslov()});
-                    JOptionPane.showMessageDialog(null, KNJIGE_UZMI_DEX_MSG_STRING,
-                            KNJIGE_UZMI_EX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
-                } catch (NemaViseKnjiga ex) {
-                    LOGGER.log(Level.INFO, "Nema više knjiga naslova {0} "
-                            + "u biblioteci", Podaci.getKnjiga(red).getNaslov());
-                    JOptionPane.showMessageDialog(null, KNJIGE_UZMI_NVKEX_MSG_STRING, 
-                            KNJIGE_UZMI_EX_TITLE_STRING,
-                            JOptionPane.ERROR_MESSAGE);
-                } catch (VrednostNePostoji ex) {
-                    LOGGER.log(Level.INFO, "Učenik {0} nije pronađen", ucenik);
-                    JOptionPane.showMessageDialog(null, KNJIGE_UZMI_VNPEX_MSG_STRING,
-                            KNJIGE_UZMI_EX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
-                }
-            });
-            button.uzmi();
-            sidePan.add(button);
-            buttons.add(button);
-            sidePan.repaint();
-            LOGGER.log(Level.FINE, "Dugme za uzimanje br. {0} prikazano.", red);
-        } else {
-            int delIndex = buttons.indexOf(new SmallButton(red, INVALID, INVALID));
-            sidePan.remove(delIndex + 1);
-            buttons.remove(delIndex);
-            sidePan.repaint();
-            LOGGER.log(Level.FINE, "Dugme za uzimanje br. {0} obrisano", red);
-        }
-    }*/
-
-    /**
      * Pretrazuje knjige i prikazuje nadjene.
      */
     private void search() {
         rs.luka.legacy.biblioteka.Knjige funkcije = new rs.luka.legacy.biblioteka.Knjige();
         ArrayList<Integer> nasIndexes = funkcije.pretraziKnjige(searchBox.getText());
-        for (int i = 0; i < Podaci.getBrojKnjiga(); i++) {
+        for (int i = 0; i < maxKnjiga; i++) {
             if (nasIndexes.contains(i)) {
                 Knjiga knjiga = Podaci.getKnjiga(i);
                 knjige.get(i).setText(knjiga.getNaslov());

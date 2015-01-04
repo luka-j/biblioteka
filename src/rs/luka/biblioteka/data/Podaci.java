@@ -3,7 +3,7 @@
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
 //2400 linija, 24.12.'14.
-//2610 linija, 3.1.'15. (trenutno, auto, Strings)
+//2576 linija, 4.1.'15. (trenutno, auto, Strings, cleanup)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -30,7 +30,7 @@ import rs.luka.biblioteka.exceptions.*;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji.vrednost;
 import rs.luka.biblioteka.funkcije.Undo;
 import rs.luka.biblioteka.funkcije.Utils;
-import rs.luka.biblioteka.grafika.Dijalozi;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  * Klasa sa podacima. Sadrzi sve liste, default vrednosti i flagove i metode za
@@ -97,11 +97,11 @@ public class Podaci {
         } else {
             if (knjigeF.length() == 0) {
                 LOGGER.log(Level.FINE, "Lista sa knjigama je prazna. Zovem prozor za unos.");
-                new rs.luka.biblioteka.grafika.Unos().UnosKnjige();
+                new rs.luka.biblioteka.grafika.Unos().UnosKnjiga();
             }
             if (uceniciF.length() == 0) {
                 LOGGER.log(Level.FINE, "Lista sa učenicima je prazna. Zovem prozor za unos.");
-                new rs.luka.biblioteka.grafika.Unos().UnosUcenici();
+                new rs.luka.biblioteka.grafika.Unos().UnosUcenika();
             }
             try (final Scanner inN = new Scanner(new BufferedReader(new FileReader(knjigeF)));
                     final Scanner inU = new Scanner(new BufferedReader(new FileReader(uceniciF)))) {
@@ -113,28 +113,31 @@ public class Podaci {
                 knjige.ensureCapacity(parseUnsignedInt(Config.get("knjSize", valueOf(defKnjSize))));
                 try {
                     while (inN.hasNextLine()) {
-                        knjige.add(new Knjiga(inN.nextLine()));
+                        if(!knjige.add(new Knjiga(inN.nextLine())))
+                            throw new NotUnique("Greška pri učitavanju knjiga: postoji duplikat");
                     }
                     while (inU.hasNextLine()) {
-                        ucenici.add(new Ucenik(inU.nextLine()));
+                        if(!ucenici.add(new Ucenik(inU.nextLine()))) 
+                            throw new NotUnique("Greška pri učitavanju učenika: postoji duplikat");
                     }
                 } catch (NoSuchElementException ex) {
                     LOGGER.log(Level.SEVERE, "Greška pri učitavanju: premalo linija", ex);
-                    showMessageDialog(null, "Greška pri učitavanju:\n"
-                            + "Premalo linija.", "Greška pri učitavanju.", 0);
+                    showMessageDialog(null, LOADDATA_NSEEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
+                            JOptionPane.ERROR_MESSAGE);
                 } catch (ParseException ex) {
                     LOGGER.log(Level.SEVERE, "Greška pri učitavanju: loš format", ex);
-                    showMessageDialog(null, "Greška pri parsiranju datuma ili loš format fajla sa podacima.",
-                            "Greška pri učitavanju", JOptionPane.ERROR_MESSAGE);
-                } catch (UnsupportedOperationException | ClassCastException | 
-                        NullPointerException | IllegalArgumentException RTex) {
+                    showMessageDialog(null, LOADDATA_PEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
+                            JOptionPane.ERROR_MESSAGE);
+                } catch (UnsupportedOperationException | ClassCastException |   //unchecked,
+                        NullPointerException | IllegalArgumentException RTex) { //runtime exceptions
                     LOGGER.log(Level.SEVERE, "Greška pri učitavanju", RTex);
-                    showMessageDialog(null, "Greška pri učitavanju podataka: loš format",
-                            "Greška pri učitavanju", JOptionPane.ERROR_MESSAGE);
+                    showMessageDialog(null, LOADDATA_RTEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "I/O greška pri učitavanju podataka", ex);
-                showMessageDialog(null, "Greška pri učitavanju podataka", "I/O greška", 0);
+                showMessageDialog(null, LOADDATA_IOEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
         LOGGER.log(Level.FINE, "Završio učitavanje podataka");
@@ -487,8 +490,9 @@ public class Podaci {
             try {
                 Podaci.dodajUcenika(ucenik, Ucenik.getPrviRazred());
             } catch (Duplikat ex) {
-                JOptionPane.showMessageDialog(null, "Uneli ste dva učenika sa istim imenom i prezimenom. "
-                        + "Jedan od njih neće biti unet.", "Duplikat", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, DODAJGENERACIJU_DEX_MSG_STRING, 
+                        DODAJGENERACIJU_DEX_TITLE_STRING, JOptionPane.WARNING_MESSAGE);
+                //ne zelim da prekidam unos, umesto toga izbacujem gresku i nastavljam
             }
         });
         povecajRazred();
@@ -591,7 +595,6 @@ public class Podaci {
                 throw new PreviseKnjiga(knj.getNaslov());
             }
         }
-        
         if(knjige.remove(knj)) {
             LOGGER.log(Level.INFO, "Naslov {0} obrisan.", knj);
             Undo.push(Akcija.BRISANJE_KNJIGE, new Object[]{knj});
@@ -603,9 +606,9 @@ public class Podaci {
     /**
      * Vraca knjigu
      *
-     * @param ucIndex
-     * @param knjIndex
-     * @throws VrednostNePostoji 
+     * @param ucIndex index ucenika
+     * @param knjIndex index knjige
+     * @throws VrednostNePostoji ako se kod ucenika ne nalazi data knjiga
      * @since 8.'14.
      */
     public static void vratiKnjigu(int ucIndex, int knjIndex) throws VrednostNePostoji {
@@ -624,8 +627,8 @@ public class Podaci {
      *
      * @param indexUcenika index ucenika
      * @param indexKnjiga lista sa indexima knjiga za vracanje
-     * @see Podaci#indexOfNaslov(java.lang.String)
      * @see Podaci#vratiKnjigu(int, int)
+     * @throws RuntimeException ako dodje do VrednostNePostoji (osigurati da se to ne desi)
      * @since 9.'14.
      */
     public static void vratiViseKnjigaSafe(int indexUcenika, List<Integer> indexKnjiga) {
@@ -675,59 +678,27 @@ public class Podaci {
     }
     
     /**
-     * Uzima knjigu od biblioteke i daje je uceniku.
-     * 
-     * @param knjIndex index knjige koja se iznajmljuje
-     * @param ucenik ime ucenika koji uzima knjigu
-     * @throws PreviseKnjiga ako se kod ucenika nalazi previse knjiga
-     * @throws Duplikat ako se kod ucenika vec nalazi knjiga tog naslova
-     * @throws NemaViseKnjiga ako vise nema knjige tog naslova u biblioteci
-     * @throws VrednostNePostoji ako ucenik sa tim imenom ne postoji
-     */
-    public static void uzmiKnjigu(int knjIndex, String ucenik) 
-            throws PreviseKnjiga, Duplikat, NemaViseKnjiga, VrednostNePostoji {
-        List<Integer> indexes = indexOfUcenik(ucenik);
-        int ucIndex;
-        if(indexes.isEmpty()) {
-            throw new VrednostNePostoji(vrednost.Ucenik);
-        }
-        if(indexes.size() > 1) {
-            ucIndex = indexes.get(Dijalozi.viseRazreda(indexes));
-        } else {
-            ucIndex = indexes.get(0);
-        }
-        Ucenik uc = ucenici.get(ucIndex);
-        Knjiga knj = knjige.get(knjIndex);
-        try {
-            uc.setKnjiga(knjige.get(knjIndex).getNaslov());
-            knj.smanjiKolicinu();
-            LOGGER.log(Level.INFO, "Učenik {0} je iznajmio knjigu {1}", 
-                    new Object[]{ucenik, knjige.get(knjIndex).getNaslov()});
-            Undo.push(Akcija.UZIMANJE, new Object[]{ucenici.get(ucIndex), knjige.get(knjIndex)});
-        }
-        catch(NemaViseKnjiga ex) { //ako ne može da smanji količinu, moram da vratim kako je bilo
-            uc.clearKnjiga(knj.getNaslov());
-            throw ex;
-        }
-    }
-    
-    /**
      * Postavlja količinu knjige na datom indexu. Zapravo briše tu knjigu iz liste i
      * pravi novu, sa datom količinom, pošto su metode u klasi Knjiga ograničene na +/-1.
      * @param knjIndex index knjige čija se količina menja
      * @param kol nova količina
+     * @since 2.1.'15.
+     * @throws rs.luka.biblioteka.exceptions.NemaViseKnjiga ako je kol negativan
      */
     public static void setKolicina(int knjIndex, int kol) throws NemaViseKnjiga {
         if(kol<0)
             throw new NemaViseKnjiga(knjige.get(knjIndex));
         Knjiga knj = knjige.get(knjIndex);
         try {
+            knjige.remove(knjIndex);
             knjige.add(new Knjiga(knj.getNaslov(), kol, knj.getPisac()));
             LOGGER.log(Level.INFO, "Promenio količinu knjige {0} sa {1} na {2}", 
                     new Object[]{knj.getNaslov(), knj.getKolicina(), kol});
-            knjige.remove(knjIndex);
         } catch (Prazno ex) { //pravi kopiju - isti podaci - ne bi trebalo da bude grešaka
             throw new RuntimeException(ex);
+        } catch(Exception ex) { //ako nesto krene naopako, da ne izgubim podatke
+            knjige.add(knj); //vracam kako je bilo
+            throw new RuntimeException(ex); //signalizujem da nesto nije u redu
         }
     }
     

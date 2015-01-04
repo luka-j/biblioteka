@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.SimpleFormatter;
 import javax.swing.JOptionPane;
 import rs.luka.biblioteka.data.Config;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  * Sadrži root logger za aplikaciju i metode za inicijalizaciju i gašenje istog.
@@ -19,7 +20,8 @@ public class Logger {
     /**
      * Root logger aplikacije, rs.luka.biblioteka.
      */
-    public static final java.util.logging.Logger ROOT_LOGGER = java.util.logging.Logger.getLogger("rs.luka.biblioteka");
+    public static final java.util.logging.Logger ROOT_LOGGER = 
+            java.util.logging.Logger.getLogger("rs.luka.biblioteka");
     /**
      * handler namenjen za root logger, trebalo bi da koristi UTF-8 i
      * simpleformat.
@@ -64,12 +66,11 @@ public class Logger {
                 //        System.out.println("found");}
             }
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Greška pri inicijalizaciji loggera.\n"
-                    + "Neke funkcije logovanja neće raditi", "I/O Greska",
+            JOptionPane.showMessageDialog(null, LOGGER_IOEX_MSG_STRING, LOGGER_IOEX_TITLE_STRING,
                     JOptionPane.ERROR_MESSAGE);
         } catch (SecurityException ex) {
-            JOptionPane.showMessageDialog(null, "Sigurnosna greška pri inicijalizaciji loggera.\n"
-                    + "Neke funkcije logovanja neće raditi", "Sigurnosna greška", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, LOGGER_SECEX_MSG_STRING, LOGGER_SECEX_TITLE_STRING, 
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 

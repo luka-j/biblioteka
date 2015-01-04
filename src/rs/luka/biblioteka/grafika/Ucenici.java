@@ -65,6 +65,7 @@ public class Ucenici implements FocusListener {
     private static final java.util.logging.Logger LOGGER
             = java.util.logging.Logger.getLogger(Ucenici.class.getName());
     private static final int maxKnjiga = getMaxBrojUcenikKnjiga();
+    private final int maxUcenika;
     private static final JFrame win = new JFrame();
 
     /**
@@ -100,6 +101,7 @@ public class Ucenici implements FocusListener {
      * Konstruktuje sve komponenta prozora i zove {@link #pregledUcenika()}
      */
     public Ucenici() {
+        this.maxUcenika = Podaci.getBrojUcenika();
         win.setTitle(UCENICI_TITLE_STRING);
         butPan = new JPanel();
         sidePan = new JPanel(null);
@@ -229,22 +231,22 @@ public class Ucenici implements FocusListener {
     private void initText() {
         Podaci.sortUcenike();
         Ucenik uc;
-        knjige = new IndexedCheckbox[maxKnjiga][Podaci.getBrojUcenika() + 1];
+        knjige = new IndexedCheckbox[maxKnjiga][maxUcenika + 1];
         selectAllUc.setFont(Grafika.getLabelFont());
         selectAllUc.setForeground(Grafika.getFgColor());
         selectAllUc.setBackground(Grafika.getBgColor());
         selectAllUc.setBorder(new EmptyBorder(INSET));
 
-        ucenici = new IndexedCheckbox[Podaci.getBrojUcenika()];
+        ucenici = new IndexedCheckbox[maxUcenika];
         Iterator<Ucenik> it = Podaci.iteratorUcenika();
-        for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
+        for (int i = 0; i < maxUcenika; i++) {
             ucenici[i] = new IndexedCheckbox(it.next().getIme(), i, INVALID);
         }
 
         for (int i = 0; i < maxKnjiga; i++) {
             knjige[i][0] = new IndexedCheckbox(UCENICI_KNJIGE_STRING, 1, i);
             it = Podaci.iteratorUcenika();
-            for (int j = 1; j < Podaci.getBrojUcenika() + 1; j++) {
+            for (int j = 1; j < maxUcenika + 1; j++) {
                 uc = it.next();
                 knjige[i][j] = new IndexedCheckbox(" ", j-1, i);
                 if (!uc.isKnjigaEmpty(i) && i < uc.getMaxBrojKnjiga()) {
@@ -267,9 +269,9 @@ public class Ucenici implements FocusListener {
             }
         int[] razredi = Podaci.getGraniceRazreda();
         int razredIterator = 0;
-        for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
+        for (int i = 0; i < maxUcenika; i++) {
             uceniciPan.add(ucenici[i]);
-            if (ucSeparatori != null && i == razredi[razredIterator] && i != Podaci.getBrojUcenika()-1) {
+            if (ucSeparatori != null && i == razredi[razredIterator] && i != maxUcenika-1) {
                 uceniciPan.add(ucSeparatori[razredIterator]);
                 razredIterator++;
             }
@@ -282,9 +284,9 @@ public class Ucenici implements FocusListener {
             }
         for (int i = 0; i < maxKnjiga; i++) {
             razredIterator = 0;
-            for (int j = 0; j < Podaci.getBrojUcenika() + 1; j++) {
+            for (int j = 0; j < maxUcenika + 1; j++) {
                 knjigePan[i].add(knjige[i][j]);
-                if (knjSeparatori != null && j - 1 == razredi[razredIterator] && j != Podaci.getBrojUcenika()) {
+                if (knjSeparatori != null && j - 1 == razredi[razredIterator] && j != maxUcenika) {
                     knjigePan[i].add(knjSeparatori[i][razredIterator]);
                     razredIterator++;
                 }
@@ -405,7 +407,7 @@ public class Ucenici implements FocusListener {
             vracanjeKnjige((IndexedCheckbox)e.getItem());
             sidePan.repaint();
         };
-        for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
+        for (int i = 0; i < maxUcenika; i++) {
             ucenici[i].addItemListener(uzimanjeListener);
 
             //knjige
@@ -434,9 +436,9 @@ public class Ucenici implements FocusListener {
         searchBox.setForeground(Grafika.getFgColor());
         searchBox.setCaretColor(Grafika.getFgColor());
         sidePan.add(searchBox);
-        if(Podaci.getBrojUcenika()>0)
+        if(maxUcenika>0)
             sidePan.setPreferredSize(new Dimension(UCENICI_SIDEPAN_WIDTH,
-                    ucenici[Podaci.getBrojUcenika() - 1].getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL));
+                    ucenici[maxUcenika - 1].getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL));
         //NE RADI
         pan.add(sidePan);
     }
@@ -479,7 +481,7 @@ public class Ucenici implements FocusListener {
      * @param red 
      */
     private void selectAllKnj(int red) {
-        for (int j = 1; j < Podaci.getBrojUcenika() + 1; j++) {
+        for (int j = 1; j < maxUcenika + 1; j++) {
             if (knjige[red][j].isVisible() && knjige[red][j].isEnabled()) {
                 knjige[red][j].setSelected(knjige[red][0].isSelected());
             }
@@ -491,7 +493,7 @@ public class Ucenici implements FocusListener {
      */
     private void obrisiUcenika() {
         List<Integer> imena = new LinkedList<>();
-        for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
+        for (int i = 0; i < maxUcenika; i++) {
             if (ucenici[i].isSelected()) {
                 imena.add(i);
             }
@@ -655,7 +657,7 @@ public class Ucenici implements FocusListener {
         }
 
         Ucenik uc;
-        for (int i = 0; i < Podaci.getBrojUcenika(); i++) {
+        for (int i = 0; i < maxUcenika; i++) {
             uc = getUcenik(i);
             if (ucIndexes.contains(i)) {
                 ucenici[i].setText(uc.getIme());
@@ -665,7 +667,7 @@ public class Ucenici implements FocusListener {
                         knjige[j][i + 1].setText(" "); //workaround
                         knjige[j][i + 1].setVisible(true);
                     } else {
-                        knjige[j][i + 1].setText(uc.getNaslovKnjige(i));
+                        knjige[j][i + 1].setText(uc.getNaslovKnjige(j));
                         knjige[j][i + 1].setVisible(true);
                     }
                 }

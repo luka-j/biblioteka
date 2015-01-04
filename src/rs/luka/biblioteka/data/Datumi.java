@@ -10,9 +10,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.logging.Level;
-import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import rs.luka.biblioteka.funkcije.Utils;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  *
@@ -55,23 +57,18 @@ public class Datumi {
             String predugoStr = predugo.toString();
             if (!predugoStr.isEmpty()) {
                 LOGGER.log(Level.FINE, "Provera datuma gotova. Neki učenici imaju knjige predugo kod sebe.");
-                showMessageDialog(null, "Učenici koji predugo imaju knjige kod sebe:\n"
-                        + predugoStr + "Imena su sačuvana u fajl predugo.txt",
-                        "Neki učenici nisu vratili knjige na vreme!", JOptionPane.INFORMATION_MESSAGE);
                 predugoFW.write("Učenici koji drze knjige predugo kod sebe:\n" + predugoStr);
+                showMessageDialog(null, DATUMI_INFO_MSG1_STRING + predugoStr + DATUMI_INFO_MSG2_STRING,
+                        DATUMI_INFO_TITLE_STRING, INFORMATION_MESSAGE);
             }
         } catch (FileNotFoundException ex) {
             LOGGER.log(Level.SEVERE, "Konfiguracijski ili fajl sa listom učenika koji"
                     + " imaju knjige predugo kod sebe nije prodađen!", ex);
-            showMessageDialog(null, "Konfiguracijski ili fajl sa listom učenika "
-                    + "koji drže knjige predugo kod sebe nije pronađen.\nProvera "
-                    + "datuma je neuspešno obavljena.", "Greška", JOptionPane.ERROR_MESSAGE);
+            showMessageDialog(null, DATUMI_FNFEX_MSG_STRING, DATUMI_FNFEX_TITLE_STRING, ERROR_MESSAGE);
             
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Greška pri čitanju fajla", ex);
-            showMessageDialog(null, "Doslo je do greške pri čitanju konfiguracijskog"
-                    + " ili fajla sa listom učenika koji imaju knjige predugo kod sebe\n"
-                    + "Provera datuma nije uradjena", "I/O Greška", JOptionPane.ERROR_MESSAGE);
+            showMessageDialog(null, DATUMI_IOEX_MSG_STRING, DATUMI_IOEX_TITLE_STRING, ERROR_MESSAGE);
         }
     }
 

@@ -3,7 +3,7 @@
 //2141 linija, 25.10.'14.
 //2570 linija, 29.11.'14.
 //3000 linija, 25.12.'14. (dodavanje UVButton)
-//3305 linija, 3.11.'15. (trenutno, auto. Strings)
+//3320 linija, 3.11.'15. (trenutno, auto. Strings, cleanup)
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Color;
@@ -295,7 +295,8 @@ public class Grafika {
             Init.exit(!Utils.parseBoolean(sacuvaj)); //0 oznacava false (sacuvati), a 1 true (brisati)
             //drugim recima, cuva samo ako je odabrana prva opcija
         }
-        LOGGER.log(Level.FINE, "Izlaz otkazan. Ostajem u aplikaciji.");
+        else
+            LOGGER.log(Level.FINE, "Izlaz otkazan. Ostajem u aplikaciji.");
     }
 
     private Grafika() {

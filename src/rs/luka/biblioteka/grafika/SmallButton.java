@@ -39,8 +39,6 @@ class SmallButton extends JButton {
     public void uzmi() {
         this.setText(SMALLBUT_UZMI_STRING);
         this.addActionListener((ActionEvent e) -> {
-            if(this.getActionListeners().length>1)
-                return;
             new Uzimanje().uzmi(index);
             Knjige.refresh();
             new Ucenici().pregledUcenika();
@@ -108,9 +106,7 @@ class SmallButton extends JButton {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 41 * hash + this.index;
-        return hash;
+        return this.index;
     }
     
     private static final Logger LOGGER = Logger.getLogger(SmallButton.class.getName());

@@ -8,6 +8,8 @@
  */
 /**
  * @bugs 
+ * Unos ne proverava duplikate (upoređuje naspram prazne liste)
+ * Undo ne dolazi do fokusa u Ucenici
  * Ucenici sidePan.setPreferredSize ne radi, postoji workaround koji se resetuje pri scroll-u 
  * ^^^ Samo u netbeans okruzenju, setPreferredSize radi normalno kada se pokrene posebno kao aplikacija !!! 
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije
@@ -25,22 +27,7 @@
  */
 /**
  * @changelog 
- * UniqueList za glavne liste (Ucenika i Knjiga)
- * bugfixing&cleanup, grafika.Knjige sad koristi listu checkboxa umesto niza
- * Dodao mogućnost da korisnik promeni količinu knjige, odgovarajuće metode u data.Podaci i grafika.KnjigeUtils
- * Preimenovao UzmiVratiButton u SmallButton i dodao setKol za podešavanje količine knjige
- * String konstante za Config (_DESC), testing&bugfixing
- * Dodao String konstante i Strings klasu + usput popravio bugove
- * Dodao IndexedCheckbox, sada koristi samo jedan listener za uzimanje i jedan za vracanje 
- * (moze da se napravi da sve radi u jednom, i da radi proveru unutar listenera, ali mislim da ne bi trebalo)
- * Ubacio PeriodicActions (izbacio deo iz Init-a), koristi reflekciju 
- * Fodao datePeriod (period automatske provere datuma, float, u danima) u Config i Podesavanja
- * Proverava datum na 24h (ako je program ukljucen duze vreme), 
- * preimenovao autosave() u periodicActions() i dodao (razdvojio na) autosave() i checkDate()
- * ucSort - korisnik (preko configa) bira kako ce ucenici biti
- * sortirani, po imenu ili razredu bugfixing, grafika uglavnom, UVButton default
- * listener se ne aktivira ako vec postoji neki dodao font weight i popravio
- * verovatni bug u Config-u Pomerio changelog u fajl.
+ * Pomerio changelog u fajl.
  */
  
 //2771 linija, sa svim klasama osim onih iz legacy package-a. 24.11.'13.
@@ -53,14 +40,14 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
-//7565 linije, 3.1.'15. (trenutno, config opcije&Strings, PeriodicActions, ICheckbox, setKol, UniqueList)
+//7523 linije, 3.1.'15. (trenutno, config opcije&Strings, PeriodicActions, ICheckbox, setKol, UniqueList, cleanup)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
 //1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
-//1442 linija, 2.1.'15. (trenutno, auto)
+//1409 linija, 2.1.'15. (trenutno, auto, cleanup)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -87,7 +74,7 @@ import rs.luka.biblioteka.grafika.Dijalozi;
 import rs.luka.biblioteka.grafika.Grafika;
 import static rs.luka.biblioteka.grafika.Grafika.initGrafika;
 import static rs.luka.biblioteka.funkcije.PeriodicActions.doPeriodicActions;
-import static rs.luka.biblioteka.data.Strings.loadStrings;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  *
@@ -110,8 +97,8 @@ class Handler implements Thread.UncaughtExceptionHandler {
         String stackTrace = sw.toString();
 
         LOG.log(Level.SEVERE, "Uncaught exception", e);
-        showMessageDialog(null, "Došlo je do neočekivane greške. Detalji:\n" + stackTrace
-                + "\novi podaci su sačuvani u log.", "Nepoznata greška", JOptionPane.ERROR_MESSAGE);
+        showMessageDialog(null, HANDLER_MSG1_STRING + stackTrace + HANDLER_MSG2_STRING, HANDLER_TITLE_STRING, 
+                JOptionPane.ERROR_MESSAGE);
     }
 
     private void handleX11Ex() {
@@ -210,11 +197,8 @@ public class Init {
                 } catch (Throwable ex1) {
                     ex1.printStackTrace(); //nikad?
                 }
-                int zatvori = showOptionDialog(null, "Došlo je do greške "
-                        + "pri čuvanju na disk. Podaci nisu sačuvani u celosti.\n"
-                        + "Pogledajte log za više informacija. Zatvoriti?",
-                        "Greška", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE,
-                        null, opcije, opcije[1]);
+                int zatvori = showOptionDialog(null, EXIT_IOEX_MSG_STRING, EXIT_IOEX_TITLE_STRING, 
+                        JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, opcije, opcije[1]);
                 if (zatvori == 0) {
                     finalizeLogger();
                     System.exit(1);
@@ -227,9 +211,8 @@ public class Init {
                 } catch (Exception | Error ex2) {
                     ex2.printStackTrace(); //nikad?
                 }
-                int zatvori = showOptionDialog(null, "Došlo je do nepoznate greške pri čuvanju podataka."
-                        + "\n Pogledajte log za više informacija. Zatvoriti?",
-                        "Greška", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE,
+                int zatvori = showOptionDialog(null, EXIT_TWBL_MSG_STRING,
+                        EXIT_TWBL_TITLE_STRING, JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE,
                         null, opcije, opcije[1]);
                 if (zatvori == 0) {
                     finalizeLogger();

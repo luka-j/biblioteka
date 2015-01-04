@@ -1,3 +1,22 @@
+
+ * Dodao String konstante za sve (van pakovanja grafika)
+ * Uradio profiling, eliminisao pozive funkcijama koje se pozivaju hiljadama puta, hashCode za SmallButton
+ * Zamenio neke pogresne indexe (bugfixing) unutar grafike
+ * UniqueList za glavne liste (Ucenika i Knjiga)
+ * bugfixing&cleanup, grafika. Knjige sad koristi listu checkboxa umesto niza
+ * Dodao mogu?nost da korisnik promeni koli?inu knjige, odgovaraju?e metode u data.Podaci i grafika.KnjigeUtils
+ * Preimenovao UzmiVratiButton u SmallButton i dodao setKol za podešavanje koli?ine knjige
+ * String konstante za Config (_DESC), testing&bugfixing
+ * Dodao String konstante i Strings klasu + usput popravio bugove
+ * Dodao IndexedCheckbox, sada koristi samo jedan listener za uzimanje i jedan za vracanje 
+ * (moze da se napravi da sve radi u jednom, i da radi proveru unutar listenera, ali mislim da ne bi trebalo)
+ * Ubacio PeriodicActions (izbacio deo iz Init-a), koristi reflekciju 
+ * Dodao datePeriod (period automatske provere datuma, float, u danima) u Config i Podesavanja
+ * Proverava datum na 24h (ako je program ukljucen duze vreme), 
+ * preimenovao autosave() u periodicActions() i dodao (razdvojio na) autosave() i checkDate()
+ * ucSort - korisnik (preko configa) bira kako ce ucenici biti sortirani, po imenu ili razredu 
+ * Bugfixing, grafika uglavnom, UVButton default listener se ne aktivira ako vec postoji neki 
+ * Dodao font weight i popravio verovatni bug u Config-u 
  * Fontovi se podesavaju iz config-a, postoji largeButtonFont i smallButtonFont; bugfixes
  * BeanShell konzola, ctrl+shift+t ili BeanShell desktop ctrl+alt+T (dodao)
  * Obrisao funkcije#Knjige i funkcije#Ucenici, premestio sve u data#Podaci i funkcije#Pretraga
@@ -8,7 +27,7 @@
  * Napravio uzimanje da radi preko dijaloga
  * Popravio uzimanje knjiga
  * Popravio brisanje knjiga 
-* pretraga ucenika po knjigama iz searchBoxa za ucenike
+ * pretraga ucenika po knjigama iz searchBoxa za ucenike
  * searchBox bug popravljen
  * EmptyBorders i Insets za sve komponente, regulisani iz fieldova
  * BETA faza
@@ -48,8 +67,10 @@
  * Poceo checkboxove za knjige 
  * Prebacio sve JFrameove iz Ucenika u modalne JDialoge
  * Popravio i istestirao sve vezano za checkboxove
- * Uradio funkcionalnost checkboxova za Ucenike Promenio grafiku za ucenike;
- * svaki ucenik i knjiga imaju svoj checkbox Pocistio kod, dodao dokumentaciju 
+ * Uradio funkcionalnost checkboxova za Ucenike 
+ * Promenio grafiku za ucenike;
+ * svaki ucenik i knjiga imaju svoj checkbox 
+ * Pocistio kod, dodao dokumentaciju 
  * popravio logger, sada koristi Files.copy ako se ne poklapa sa backupom
  * promenio redosled ucitavanja i pokretanja grafike
  * fgColor za svu grafiku 

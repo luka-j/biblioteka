@@ -17,7 +17,7 @@ public class IndexedCheckbox extends JCheckBox {
      */
     private final int index;
     /**
-     * Kolona u kojoj se knjiga nalazi (moze biti -1 ako se radi o uceniku).
+     * Kolona u kojoj se knjiga ucenika (UcenikKnjiga) nalazi, moze biti -1 ako se radi o Uceniku ili Knjizi.
      */
     private final int kol;
     

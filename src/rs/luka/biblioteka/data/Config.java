@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
-import javax.swing.JOptionPane;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static rs.luka.biblioteka.data.Podaci.getBrojKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
 import rs.luka.biblioteka.exceptions.ConfigException;
@@ -23,6 +21,8 @@ import rs.luka.biblioteka.funkcije.Utils;
 import rs.luka.biblioteka.grafika.Konstante;
 import static rs.luka.biblioteka.data.Strings.loadStrings;
 import static rs.luka.biblioteka.grafika.Konstante.*;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 
 public class Config {
@@ -112,11 +112,12 @@ public class Config {
             Config.config.load(configFR);
             setKPrefix();
             resolveKeys();
-        } catch (FileNotFoundException FNFex) {
-            showMessageDialog(null, "Konfiguracijski fajl nije pronadjen. Lokacija: " + path);
+        } catch (FileNotFoundException ex) {
+            showMessageDialog(null, LOADCONFIG_FNFEX_MSG_STRING + path, LOADCONFIG_FNFEX_TITLE_STRING, 
+                    ERROR_MESSAGE);
         } catch (IOException ex) {
-            showMessageDialog(null, "Došlo je do greške pri čitanju konfiguracijskog fajla"
-                    + "ili postavljanju trenutnog direktorijuma", "I/O Greška", JOptionPane.ERROR_MESSAGE);
+            showMessageDialog(null, LOADCONFIG_IOEX_MSG_STRING, LOADCONFIG_IOEX_TITLE_STRING, 
+                    ERROR_MESSAGE);
         }
     }
 
@@ -247,10 +248,8 @@ public class Config {
             config.store(new FileWriter(configFile), configMsg);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "I/O greška pri čuvanju konfiguracijskog fajla", ex);
-            showMessageDialog(null, "Greška pri čuvanju konfiguracijskog fajla",
-                    "I/O greška", JOptionPane.ERROR_MESSAGE);
-            JOptionPane.showMessageDialog(null, "Greška pri čuvanji konfiguracijskog fajla.\n"
-                    + "Najnovije promene podešavanja nisu sačuvane.", "I/O greška", JOptionPane.ERROR_MESSAGE);
+            showMessageDialog(null, STORECONFIG_IOEX_MSG_STRING, STORECONFIG_IOEX_TITLE_STRING, 
+                    ERROR_MESSAGE);
         }
     }
 

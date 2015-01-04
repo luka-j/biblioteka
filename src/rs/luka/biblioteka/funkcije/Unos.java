@@ -15,9 +15,12 @@ import rs.luka.biblioteka.data.Knjiga;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.indexOfUcenik;
 import rs.luka.biblioteka.data.Ucenik;
+import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
+import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import rs.luka.biblioteka.grafika.Grafika;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  *
@@ -35,21 +38,19 @@ public class Unos {
      * @param nas naslov knjige
      * @param kol kolicina knjige
      * @param pisac pisac knjige
-     * @return 0 ako je sve OK, 1 ako naslov vec postoji
-     * @throws rs.luka.biblioteka.exceptions.Prazno
+     * @throws rs.luka.biblioteka.exceptions.Prazno ako je naslov "" ili null
+     * @throws rs.luka.biblioteka.exceptions.Duplikat ako naslov već postoji
+     * @throws java.io.IOException ako dodje do IOExceptiona pri 
+     * {@link #KnjToDisk(java.lang.String, int, java.lang.String)}
      */
-    public int UnosKnj(String nas, int kol, String pisac) throws Prazno {
+    public void UnosKnj(String nas, int kol, String pisac) throws Prazno, Duplikat, IOException {
         if(nas==null || nas.isEmpty()) {
             throw new Prazno("String naslova knjige je \"\" ili null");
         }
         if (Podaci.naslovExists(nas)) {
-            LOGGER.log(Level.WARNING, "Naslov {0} već postoji", nas);
-            showMessageDialog(null, "Naslov već postoji.", "Dupli unos",
-                    JOptionPane.ERROR_MESSAGE);
-            return 1;
+            throw new Duplikat(VrednostNePostoji.vrednost.Knjiga);
         }
         KnjToDisk(nas, kol, pisac);
-        return 0;
     }
 
     /**
@@ -59,11 +60,13 @@ public class Unos {
      * @param uc ime ucenika
      * @param knjige knjige koje su trenutno kod ucenika
      * @param raz razred u koji ucenik trenutno ide
-     * @return 0 ako je sve OK, 1 ako ucenik vec postoji, 2 ako je ucenik null
      * @throws rs.luka.biblioteka.exceptions.PreviseKnjiga ako se unosi previse knjiga (prema configu)
-     * @throws rs.luka.biblioteka.exceptions.Prazno
+     * @throws rs.luka.biblioteka.exceptions.Prazno ako je ucenik "" ili null
+     * @throws rs.luka.biblioteka.exceptions.Duplikat ako ucenik vec postoji
+     * @throws java.io.IOException ako dodje do IOExceptiona pri
+     * {@link #UcToDisk(java.lang.String, int, java.lang.String[])}
      */
-    public int UnosUc(String uc, String[] knjige, int raz) throws PreviseKnjiga, Prazno {
+    public void UnosUc(String uc, String[] knjige, int raz) throws PreviseKnjiga, Prazno, Duplikat, IOException {
         if (uc == null || uc.isEmpty()) {
             throw new Prazno("String imena ucenika je \"\" ili null");
         }
@@ -73,12 +76,8 @@ public class Unos {
                 throw new PreviseKnjiga("Previše knjiga pri unosu");
             }
             UcToDisk(uc, raz, knjige);
-            return 0;
         }
-        LOGGER.log(Level.WARNING, "Učenik {0} već postoji", uc);
-        showMessageDialog(null, "Učenik već postoji.", "Dupli unos",
-                JOptionPane.ERROR_MESSAGE);
-        return 1;
+        else throw new Duplikat(VrednostNePostoji.vrednost.Ucenik);
     }
 
     //
@@ -90,11 +89,11 @@ public class Unos {
      * @param knj knjiga
      * @param kol kolicina
      * @param pisac pisac knjige
-     * @return 0 ako je sve OK
-     * @throws rs.luka.biblioteka.exceptions.Prazno
+     * @throws rs.luka.biblioteka.exceptions.Prazno ako je Knjiga prazna
+     * @throws java.io.IOException ako dodje do IOException-a pri pisanju
      * @since 10.11.'13.
      */
-    public int KnjToDisk(String knj, int kol, String pisac) throws Prazno {
+    public void KnjToDisk(String knj, int kol, String pisac) throws Prazno, IOException {
         LOGGER.log(Level.FINER, "Počinjem pisanje knjige {0} ({1} komada)na disk...", 
                 new Object[]{knj, kol});
         File dataFolder = new File(Utils.getWorkingDir() + "Data");
@@ -106,22 +105,13 @@ public class Unos {
             LOGGER.log(Level.WARNING, "Poslata knjiga za upis je null."); //exception?
             knj = "";
         }
-        try {
             knjige.createNewFile();
             try (FileWriter fwN = new FileWriter(knjige, true)) {
                 fwN.append(new Knjiga(knj, kol, pisac).getAsIOString());
                 fwN.append('\n');
             }
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "I/O greška pri unosu knjiga u fajl", ex);
-            showMessageDialog(null, "Doslo je do greske pri pisanju na disk.",
-                    "Greska", JOptionPane.ERROR_MESSAGE);
-
-            return 1;
-        }
         LOGGER.log(Level.FINE, "Knjiga {0} ({1} komada) unesena na disk.", 
                 new Object[]{knj, kol});
-        return 0;
     }
 
     /**
@@ -130,10 +120,10 @@ public class Unos {
      * @param ime ucenik
      * @param razred
      * @param knjige knjige koje se nalaze kod ucenika
-     * @return 0 ako je sve OK
+     * @throws java.io.IOException ako dodje do IOException-a pri pisanju
      * @since 10.11.'13.
      */
-    public int UcToDisk(String ime, int razred, String[] knjige) {
+    public void UcToDisk(String ime, int razred, String[] knjige) throws IOException {
         LOGGER.log(Level.FINER, "Počinjem pisanje učenika {0} na disk...", ime);
         File dataFolder = new File(Utils.getWorkingDir() + "Data");
         if (!dataFolder.isDirectory()) {
@@ -141,20 +131,12 @@ public class Unos {
         }
         File ucenici = new File(dataFolder + File.separator + "Ucenici.dat");
 
-        try {
             ucenici.createNewFile();
             try (FileWriter fwU = new FileWriter(ucenici, true)) {
                 fwU.append(new Ucenik(ime, razred, knjige).getAsIOString());
                 fwU.append('\n');
             }
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Došlo je do I/O greške pri unosu učenika na disk", ex);
-            showMessageDialog(null, "Došlo je do greške pri pisanju na disk.",
-                    "I/O greška pri unosu", JOptionPane.ERROR_MESSAGE);
-            return 1;
-        }
         LOGGER.log(Level.FINE, "Učenik {0}({1}. razred) unesen na disk", new Object[]{ime, razred});
-        return 0;
     }
 
     /**
@@ -179,8 +161,8 @@ public class Unos {
             LOGGER.log(Level.CONFIG, "Prebrojao knjige. postavljam knjSize na {0}", i);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Greška pri čitanju fajla sa knjigama za prebrojavanje", ex);
-            showMessageDialog(null, "Došlo je do greške pri čitanju fajla sa podacima o knjigama",
-                    "Greška pri unosu.", JOptionPane.ERROR_MESSAGE);
+            showMessageDialog(null, FINALIZEKNJ_IOEX_MSG_STRING, FINALIZE_IOEX_TITLE_STRING, 
+                    JOptionPane.ERROR_MESSAGE);
         }
 
         try {
@@ -197,9 +179,8 @@ public class Unos {
 
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Greška pri čitanju fajla sa učenicima za prebrojavanje", ex);
-            showMessageDialog(null, "Doslo je do greške pri čitanju fajla sa podacima o učenicima",
-                    "Greška pri unosu.", JOptionPane.ERROR_MESSAGE);
-
+            showMessageDialog(null, FINALIZEUC_IOEX_MSG_STRING, FINALIZE_IOEX_TITLE_STRING, 
+                    JOptionPane.ERROR_MESSAGE);
         }
         Grafika.reset();
     }

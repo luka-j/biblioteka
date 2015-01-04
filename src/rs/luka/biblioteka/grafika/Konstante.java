@@ -64,6 +64,54 @@ public class Konstante {
     public static String CONFIG_BUTFONTNAME_DESC = "Font korišćen za veliku dugmad";
     public static String CONFIG_SMALLBUTFONTNAME_DESC = "Font korišćen za malu dugmad";
     public static String CONFIG_DATEPERIOD_DESC = "Period proveravanja datuma (u danima)";
+    public static String LOADCONFIG_FNFEX_MSG_STRING = "Konfiguracijski fajl nije pronađen. Lokacija: ";
+    public static String LOADCONFIG_FNFEX_TITLE_STRING = "Greška pri učitavanju konfiguracije";
+    public static String LOADCONFIG_IOEX_MSG_STRING = "Došlo je do greške pri čitanju konfiguracijskog fajla "
+            + "ili postavljanju trenutnog direktorijuma";
+    public static String LOADCONFIG_IOEX_TITLE_STRING = "I/O Greška";
+    public static String STORECONFIG_IOEX_MSG_STRING = "Greška pri čuvanju konfiguracijskog fajla.\n"
+            + "Najnovije promene podešavanja nisu sačuvane.";
+    public static String STORECONFIG_IOEX_TITLE_STRING = "I/O Greška";
+    /*----------Datumi.java---------------------------------------------------*/
+    public static String DATUMI_INFO_MSG1_STRING = "Učenici koji predugo imaju knjige kod sebe:\n";
+    public static String DATUMI_INFO_MSG2_STRING = "Imena su sačuvana u fajl predugo.txt";
+    public static String DATUMI_INFO_TITLE_STRING = "Neki učenici nisu vratili knjige na vreme!";
+    public static String DATUMI_FNFEX_MSG_STRING = "Konfiguracijski ili fajl sa listom učenika "
+            + "koji drže knjige predugo kod sebe nije pronađen.\nProvera datuma je neuspešno obavljena.";
+    public static String DATUMI_FNFEX_TITLE_STRING = "Greška pri proveri datuma";
+    public static String DATUMI_IOEX_MSG_STRING = "Došlo je do greške pri čitanju konfiguracijskog ili fajla "
+            + "sa listom učenika koji imaju knjige predugo kod sebe\nProvera datuma nije urađena";
+    public static String DATUMI_IOEX_TITLE_STRING = "I/O greška pri proveri datuma";
+    /*----------Podaci.java---------------------------------------------------*/
+    public static String LOADDATA_NSEEX_MSG_STRING = "Greška pri učitavanju:\nPremalo linija.";
+    public static String LOADDATA_PEX_MSG_STRING = "Greška pri parsiranju datuma ili loš format fajla sa podacima.";
+    public static String LOADDATA_RTEX_MSG_STRING = "Greška pri učitavanju podataka: loš format";
+    public static String LOADDATA_IOEX_MSG_STRING = "I/O greška pri čitanju podataka.";
+    public static String LOADDATA_EX_TITLE_STRING = "Greška pri učitavanju";
+    public static String DODAJGENERACIJU_DEX_MSG_STRING = "Uneli ste dva učenika sa istim imenom i prezimenom. "
+            + "Jedan od njih neće biti unet.";
+    public static String DODAJGENERACIJU_DEX_TITLE_STRING = "Duplikat";
+    /*----------Init.java-----------------------------------------------------*/
+    public static String HANDLER_MSG1_STRING = "Došlo je do neočekivane greške. Detalji:\n";
+    public static String HANDLER_MSG2_STRING = "\novi podaci su sačuvani u log.";
+    public static String HANDLER_TITLE_STRING = "Nepoznata greška";
+    public static String EXIT_IOEX_MSG_STRING = "Došlo je do greške pri čuvanju na disk. "
+            + "Podaci nisu sačuvani u celosti.\nPogledajte log za više informacija. Zatvoriti?";
+    public static String EXIT_IOEX_TITLE_STRING = "I/O Greška";
+    public static String EXIT_TWBL_MSG_STRING = "Došlo je do nepoznate greške pri čuvanju podataka."
+            + "\n Pogledajte log za više informacija. Zatvoriti?";
+    public static String EXIT_TWBL_TITLE_STRING = "Nepoznata greška";
+    /*----------Logger.java---------------------------------------------------*/
+    public static String LOGGER_IOEX_MSG_STRING = "I/O greška pri inicijalizaciji loggera.\n"
+            + "Neke funkcije logovanja neće raditi";
+    public static String LOGGER_IOEX_TITLE_STRING = "I/O Greška";
+    public static String LOGGER_SECEX_MSG_STRING = "Sigurnosna greška pri inicijalizaciji loggera.\n"
+            + "Neke funkcije logovanja neće raditi";
+    public static String LOGGER_SECEX_TITLE_STRING = "Sigurnosna greška";
+    /*----------funkcije.Unos.java--------------------------------------------*/
+    public static String FINALIZEKNJ_IOEX_MSG_STRING = "Došlo je do greške pri čitanju fajla sa podacima o knjigama";
+    public static String FINALIZEUC_IOEX_MSG_STRING = "Došlo je do greške pri čitanju fajla sa podacima o učenicima";
+    public static String FINALIZE_IOEX_TITLE_STRING = "I/O greška pri unosu";
     /*----------Dijalozi.java-------------------------------------------------*/
     static int DIJALOZI_LINE_HEIGHT = Grafika.getLabelFont().getSize()+6;
     static int DIJALOZI_SIRINA = 350;
@@ -354,6 +402,8 @@ public class Konstante {
     static String UNOS_TITLE_STRING = "Unos";
     static String UNOS_UCENICI_STRING = "Unos učenika";
     static String UNOS_KNJIGE_STRING = "Unos knjiga";
+    static String UNOS_IOEX_MSG_STRING = "Došlo je do greške pri pisanju na disk.";
+    static String UNOS_IOEX_TITLE_STRING = "I/O greška pri unosu";
     static int UNOSKNJ_WIDTH = 400;
     static int UNOSKNJ_HEIGHT = 340;
     static int UNOSKNJ_TEXT_X = 20;
@@ -379,6 +429,8 @@ public class Konstante {
     static String UNOSKNJ_PRAZNO_TITLE_STRING = "Prazno polje";
     static String UNOSKNJ_NFEX_MSG_STRING = "Uneta količina nije broj.";
     static String UNOSKNJ_NFEX_TITLE_STRING = "Loš unos";
+    static String UNOSKNJ_DEX_MSG_STRING = "Naslov već postoji.";
+    static String UNOSKNJ_DEX_TITLE_STRING = "Dupli unos";
     static int UNOSUC_WIDTH = 400;
     static int UNOSUC_HEIGHT = 360;
     static int UNOSUC_TEXT_X = 20;
@@ -406,6 +458,8 @@ public class Konstante {
     static String UNOSUC_PKEX_MSG_STRING = "Uneli ste više knjiga od limita koji ste postavili na početku"
             + "\nUčenik nije unesen";
     static String UNOSUC_PKEX_TITLE_STRING = "Previše knjiga";
+    static String UNOSUC_DEX_MSG_STRING = "Učenik već postoji.";
+    static String UNOSUC_DEX_TITLE_STRING = "Dupli unos";
     /*----------Uzimanje.java-------------------------------------------------*/
     static String UZIMANJE_TITLE_STRING = "Iznajmljivanje knjige";
     static String UZIMANJE_MSG_STRING = "Unesite naslov knjige koju učenik iznajmljuje:";
