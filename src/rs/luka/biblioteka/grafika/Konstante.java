@@ -109,8 +109,7 @@ public class Konstante {
             + "Neke funkcije logovanja neće raditi";
     public static String LOGGER_SECEX_TITLE_STRING = "Sigurnosna greška";
     /*----------funkcije.Unos.java--------------------------------------------*/
-    public static String FINALIZEKNJ_IOEX_MSG_STRING = "Došlo je do greške pri čitanju fajla sa podacima o knjigama";
-    public static String FINALIZEUC_IOEX_MSG_STRING = "Došlo je do greške pri čitanju fajla sa podacima o učenicima";
+    public static String FINALIZE_IOEX_MSG_STRING = "Došlo je do greške pri čuvanju podataka";
     public static String FINALIZE_IOEX_TITLE_STRING = "I/O greška pri unosu";
     /*----------Dijalozi.java-------------------------------------------------*/
     static int DIJALOZI_LINE_HEIGHT = Grafika.getLabelFont().getSize()+6;
@@ -127,6 +126,9 @@ public class Konstante {
     static String DIJALOZI_VISERAZREDA_MSG_STRING = "Postoji vise učenika sa tim imenom.\n"
             + "Odaberite razred:";
     static String DIJALOZI_VISERAZREDA_TITLE_STRING = "Odaberite razred";
+    static String DIJALOZI_VISEKNJIGA_MSG1_STRING = "Postoji vise knjiga sa imenom ";
+    static String DIJALOZI_VISEKNJIGA_MSG2_STRING = "\nOdaberite autora:";
+    static String DIJALOZI_VISEKNJIGA_TITLE_STRING = "Odaberite autora";
     static String DIJALOZI_BROJKNJIGA_TITLE_STRING = "Broj knjiga";
     static String DIJALOZI_BROJKNJIGA_MSG_STRING = "Unesite maksimalan broj "
             + "knjiga koje\nučenik može da ima kod sebe";
@@ -460,6 +462,9 @@ public class Konstante {
     static String UNOSUC_PKEX_TITLE_STRING = "Previše knjiga";
     static String UNOSUC_DEX_MSG_STRING = "Učenik već postoji.";
     static String UNOSUC_DEX_TITLE_STRING = "Dupli unos";
+    static String UNOSUC_VNPEX_MSG_STRING = "Jedna od knjiga nije prethodno uneta. Možete koristiti\t"
+            + "\"Ubaci novi naslov\" iz pregleda knjiga da je naknadno dodate.";
+    static String UNOSUC_VNPEX_TITLE_STRING = "Knjiga ne postoji";
     /*----------Uzimanje.java-------------------------------------------------*/
     static String UZIMANJE_TITLE_STRING = "Iznajmljivanje knjige";
     static String UZIMANJE_MSG_STRING = "Unesite naslov knjige koju učenik iznajmljuje:";

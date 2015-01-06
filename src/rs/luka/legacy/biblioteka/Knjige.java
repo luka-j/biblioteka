@@ -130,7 +130,7 @@ public class Knjige {
     public ArrayList<Point> pretraziUcenike(String knj) throws VrednostNePostoji {
         final ArrayList<Point> inx = new ArrayList<>();
         try {
-            inx.ensureCapacity(getKnjiga(indexOfNaslov(knj)).getKolicina() / 8);
+       //     inx.ensureCapacity(getKnjiga(indexOfNaslov(knj)).getKolicina() / 8);
         } catch (IndexOutOfBoundsException ex) {
             throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga, ex);
         }

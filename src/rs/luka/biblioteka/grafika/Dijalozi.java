@@ -14,6 +14,7 @@ import static javax.swing.JOptionPane.showOptionDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import rs.luka.biblioteka.data.Knjiga;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.funkcije.Utils;
 import static rs.luka.biblioteka.grafika.Konstante.*;
@@ -36,6 +37,24 @@ public class Dijalozi {
         }
         num = showOptionDialog(null, DIJALOZI_VISERAZREDA_MSG_STRING, DIJALOZI_VISERAZREDA_TITLE_STRING, 
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, razredi, razredi[0]);
+        return num;
+    }
+    
+    /**
+     * Prikazuje dijalog za odabir autora knjige.
+     * @param knjige knjige s istim imenom
+     * @return index liste koji je odabran
+     * @since 1.6.'15.
+     */
+    public static int viseKnjiga(final List<Knjiga> knjige) {
+        int num;
+        String[] pisci = new String[knjige.size()];
+        for(int i=0; i<knjige.size(); i++) {
+            pisci[i] = knjige.get(i).getPisac();
+        }
+        num = showOptionDialog(null, DIJALOZI_VISEKNJIGA_MSG1_STRING + knjige.get(0).getNaslov() + 
+                DIJALOZI_VISEKNJIGA_MSG2_STRING, DIJALOZI_VISEKNJIGA_TITLE_STRING, JOptionPane.YES_NO_OPTION, 
+                JOptionPane.QUESTION_MESSAGE, null, pisci, pisci[0]);
         return num;
     }
 

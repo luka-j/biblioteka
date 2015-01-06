@@ -36,12 +36,12 @@ class SmallButton extends JButton {
     /**
      * Postavlja akciju button-a na uzimanje i prikazuje ga.
      */
-    public void uzmi() {
+    public void uzmi(Ucenici grafika) {
         this.setText(SMALLBUT_UZMI_STRING);
         this.addActionListener((ActionEvent e) -> {
             new Uzimanje().uzmi(index);
             Knjige.refresh();
-            new Ucenici().pregledUcenika();
+            grafika.refreshUcenik(index, this);
         });
         LOGGER.log(Level.FINE, "Dodato dugme za uzimanje br {0}", index);
         this.setVisible(true);
@@ -50,12 +50,12 @@ class SmallButton extends JButton {
     /**
      * Postavlja akciju button-a na vracanje i prikazuje ga.
      */
-    public void vrati() {
+    public void vrati(Ucenici grafika) {
         this.setText(SMALLBUT_VRATI_STRING);
         this.addActionListener((ActionEvent e) -> {
             Podaci.vratiViseKnjigaSafe(index, naslovi);
             Knjige.refresh();
-            new Ucenici().pregledUcenika();
+            grafika.refreshUcenik(index, this);
         });
         LOGGER.log(Level.FINE, "Dodato dugme za vraćanje br {0}", index);
         this.setVisible(true);

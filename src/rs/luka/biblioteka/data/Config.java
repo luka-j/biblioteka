@@ -89,7 +89,7 @@ public class Config {
     private static final Limit SAVE_PERIOD = new Limit(0, 1440); //1 dan
     private static final Limit UNDO = new Limit();
     private static final Limit LOG_SIZE = new Limit(0, 100_000_000);
-    private static final Limit LOG_COUNT = new Limit(0, 1_000);
+    private static final Limit LOG_COUNT = new Limit(0, 10_000);
     private static final Limit LABEL_FONT = new Limit(1, 50);
     private static final Limit BUTTON_FONT = new Limit(1, 30);
     private static final Limit DATE_CHECK_LIMIT = new Limit(0, 30); //1 mesec
@@ -135,8 +135,8 @@ public class Config {
         defaults.setProperty("logLevel", "INFO");
         defaults.setProperty("savePeriod", "5");
         defaults.setProperty("maxUndo", "50");
-        defaults.setProperty("logSizeLimit", "1000000");
-        defaults.setProperty("logFileCount", "10");
+        defaults.setProperty("logSizeLimit", "10000000");
+        defaults.setProperty("logFileCount", "15");
     }
 
     /**

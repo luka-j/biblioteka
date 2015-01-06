@@ -1,6 +1,6 @@
 /**
- * @lastmod 27.12.'14. 
- * setKol, sređivanje grafike
+ * @lastmod 6.1.'15. 
+ * optimizacija, viseKnjiga
  */
 /**
  * @curr 
@@ -8,7 +8,6 @@
  */
 /**
  * @bugs 
- * Unos ne proverava duplikate (upoređuje naspram prazne liste)
  * Undo ne dolazi do fokusa u Ucenici
  * Ucenici sidePan.setPreferredSize ne radi, postoji workaround koji se resetuje pri scroll-u 
  * ^^^ Samo u netbeans okruzenju, setPreferredSize radi normalno kada se pokrene posebno kao aplikacija !!! 
@@ -19,14 +18,18 @@
 /**
  * @todo 
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING) 
+ * Knjiga unutar UcenikKnjiga - moze se bolje iskoristiti
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception 
  * Bugfixing, optimizacija koda, cišenje koda 
- * Ubaciti kvačice (šđžčć) 
  * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e) 
  * Izbaciti sve preostale workaround-ove
  */
 /**
  * @changelog 
+ * Napokon puna podrska za naslove s razlicitim imenom, a istim piscem, drugaciji format cuvanja
+ * Promenio UcenikKnjiga da se sastoji od objekta Knjiga i Date
+ * Ubrzao uzimanje/vracanje uvodjenjem Ucenici#refreshUcenik umesto ponovnog iscrtavanja celog prozora
+ * Počistio unos, obrisao ~100ak linija, sad ubacuje direktno u memoriju. Neka ostane u posebnoj klasi za sada.
  * Pomerio changelog u fajl.
  */
  
@@ -40,14 +43,15 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
-//7523 linije, 3.1.'15. (trenutno, config opcije&Strings, PeriodicActions, ICheckbox, setKol, UniqueList, cleanup)
+//7580 linije, 3.1.'15. (trenutno, config opcije&Strings, PeriodicActions, ICheckbox, setKol, UniqueList, 
+//                       viseKnjiga, optimizacija, cleanup)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
 //1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
-//1409 linija, 2.1.'15. (trenutno, auto, cleanup)
+//1327 linija, 2.1.'15. (trenutno, auto, cleanup)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -121,7 +125,7 @@ public class Init {
     /**
      * Maksimalan broj izlazenja (ili pokusaja izlazenja).
      */
-    private static final int MAX_EXITS = 3;
+    private static final int MAX_EXITS = 5;
     /**
      * Oznacava broj izlaza do sada.
      */
@@ -166,7 +170,6 @@ public class Init {
         initGrafika();
         setValidRazred();
         loadData();
-        //new Test().testUnos();
         proveriDatum();
         initUndo();
         new rs.luka.biblioteka.grafika.Ucenici().pregledUcenika();

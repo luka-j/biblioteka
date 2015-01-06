@@ -3,6 +3,8 @@ package rs.luka.biblioteka.grafika;
 import java.awt.Insets;
 import javax.swing.JCheckBox;
 import javax.swing.border.EmptyBorder;
+import rs.luka.biblioteka.data.Knjiga;
+import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
@@ -20,6 +22,10 @@ public class IndexedCheckbox extends JCheckBox {
      * Kolona u kojoj se knjiga ucenika (UcenikKnjiga) nalazi, moze biti -1 ako se radi o Uceniku ili Knjizi.
      */
     private final int kol;
+    /**
+     * Ako se koristi za knjigu, index knjige (zbog uzimanja/vracanja, knjige sa istim imenom)
+     */
+    private int knjIndex;
     
     /**
      * Konstruktuje novi objekat prema datim parametrima. Ako je u pitanju JCheckBox
@@ -32,10 +38,25 @@ public class IndexedCheckbox extends JCheckBox {
         super(text);
         this.index = index;
         this.kol = kol;
+        knjIndex = -1;
         this.setFont(Grafika.getLabelFont());
         this.setForeground(Grafika.getFgColor());
         this.setBackground(Grafika.getBgColor());
         this.setBorder(new EmptyBorder(INSET));
+    }
+    
+    public IndexedCheckbox(Knjiga knj, int red, int kol) {
+        super(" ");
+        if(knj != null) {
+            super.setText(knj.getNaslov());
+        }
+        this.index = red;
+        this.kol = kol;
+        this.setFont(Grafika.getLabelFont());
+        this.setForeground(Grafika.getFgColor());
+        this.setBackground(Grafika.getBgColor());
+        this.setBorder(new EmptyBorder(INSET));
+        knjIndex = Podaci.indexOfNaslov(knj);
     }
     
     /**
@@ -53,5 +74,22 @@ public class IndexedCheckbox extends JCheckBox {
      */
     public int getKol() {
         return kol;
+    }
+    
+    /**
+     * Vraca index knjige na koju se ovaj checkbox odnosi.
+     * @return {@link #knjIndex}
+     */
+    public int getKnjIndex() {
+        return knjIndex;
+    }
+    
+    /**
+     * Postavlja text checkboxa na naslov ove knjige i index na index ove knjige u listi.
+     * @param knj knjiga na koju se ovaj checkbox odnosi
+     */
+    public void setKnjiga(Knjiga knj) {
+        this.setText(knj.getNaslov());
+        this.knjIndex = Podaci.indexOfNaslov(knj);
     }
 }

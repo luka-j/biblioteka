@@ -67,10 +67,8 @@ public class Pretraga {
      */
     public static ArrayList<Point> pretraziUcenikePoNaslovu(String knj) throws VrednostNePostoji {
         final ArrayList<Point> inx = new ArrayList<>();
-        try {
-            inx.ensureCapacity(getKnjiga(indexOfNaslov(knj)).getKolicina() / 8);
-        } catch (IndexOutOfBoundsException ex) {
-            throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga, ex);
+        if(!Podaci.naslovExists(knj)) {
+            throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga);
         }
         int i=0;
         Iterator<Ucenik> it= Podaci.iteratorUcenika(); Ucenik uc;

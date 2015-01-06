@@ -273,7 +273,7 @@ public class Knjige implements FocusListener {
             String naslov = Dijalozi.showTextFieldDialog(KNJIGE_BRISANJE_DIJALOG_TITLE_STRING,
                     KNJIGE_BRISANJE_DIJALOG_MSG_STRING, "");
             try {
-                Podaci.obrisiKnjigu(Podaci.indexOfNaslov(naslov));
+                Podaci.obrisiKnjigu(Podaci.getKnjiga(naslov));
             } catch (VrednostNePostoji ex) {
                 LOGGER.log(Level.INFO, "Unet naslov {0} ne postoji", naslov);
                 JOptionPane.showMessageDialog(null, KNJIGE_BRISANJE_VNPEX_MSG_STRING, 

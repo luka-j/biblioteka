@@ -34,7 +34,7 @@ public class Ucenik implements Comparable<Ucenik> {
      *
      * @since 23.9.'14.
      */
-    private static final String splitString = new String(new char[]{splitChar});
+    private static final String splitString = String.valueOf(splitChar);
 
     //STATIC:
     /**
@@ -113,7 +113,7 @@ public class Ucenik implements Comparable<Ucenik> {
     private final UcenikKnjiga[] knjige;
 
     //KONSTRUKTORI:
-    public Ucenik(String ime, int razred, String[] knjige) {
+    public Ucenik(String ime, int razred, Knjiga[] knjige) {
         this.ime = ime;
         /*if(razred < 1) {
          this.razred = validRazred[0];
@@ -124,10 +124,13 @@ public class Ucenik implements Comparable<Ucenik> {
         }
         this.knjige = new UcenikKnjiga[Podaci.getMaxBrojUcenikKnjiga()];
         for (int i = 0; i < knjige.length; i++) {
-            this.knjige[i] = new UcenikKnjiga(knjige[i], new java.util.Date());
+            if(knjige[i] == null)
+                this.knjige[i] = new UcenikKnjiga();
+            else
+                this.knjige[i] = new UcenikKnjiga(knjige[i], new java.util.Date()); //throwuje IndexOutOfBounds
         }
         for (int i = knjige.length; i < this.knjige.length; i++) {
-            this.knjige[i] = new UcenikKnjiga("", null);
+            this.knjige[i] = new UcenikKnjiga();
         }
     }
 
@@ -161,7 +164,7 @@ public class Ucenik implements Comparable<Ucenik> {
         knjige = new UcenikKnjiga[ucenik.getMaxBrojKnjiga()];
         for (int i = 0; i < ucenik.getMaxBrojKnjiga(); i++) //ovo je deepcopy, ne koristiti System.arraycopy
         {
-            knjige[i] = new UcenikKnjiga(ucenik.getKnjiga(i));
+            knjige[i] = new UcenikKnjiga(ucenik.getUcenikKnjiga(i));
         }
     }
 
@@ -175,22 +178,22 @@ public class Ucenik implements Comparable<Ucenik> {
     }
 
     public String getNaslovKnjige(int i) {
-        return getKnjiga(i).getNaslov();
+        return getUcenikKnjiga(i).getNaslov();
     }
 
     public String getDatumKnjige(int i) {
-        return getKnjiga(i).getDatumAsString();
+        return getUcenikKnjiga(i).getDatumAsString();
     }
 
     public long getTimeKnjige(int i) {
-        return getKnjiga(i).getDatum().getTime();
+        return getUcenikKnjiga(i).getDatum().getTime();
     }
 
-    private UcenikKnjiga[] getKnjige() {
-        return knjige;
+    public Knjiga getKnjiga(int i) {
+        return getUcenikKnjiga(i).getKnjiga();
     }
 
-    private UcenikKnjiga getKnjiga(int i) {
+    private UcenikKnjiga getUcenikKnjiga(int i) {
         if (knjige.length > i) {
             return knjige[i];
         } else {
@@ -282,26 +285,26 @@ public class Ucenik implements Comparable<Ucenik> {
     /**
      * Ubacuje novu knjigu kod ucenika na sledece prazno mesto.
      *
-     * @param naslov naslov knjige
+     * @param knjiga knjiga koja se iznajmljuje
      * @throws PreviseKnjiga ako ucenik kod sebe vec ima maksimum knjiga. U message se nalazi spisak naslova
      * @throws rs.luka.biblioteka.exceptions.Duplikat ako je Ucenik vec iznajmio
      * knjigu tog naslova
      */
-    public void setKnjiga(String naslov) throws PreviseKnjiga, Duplikat {
-        for (UcenikKnjiga knjiga : knjige) {
-            if (knjiga.getNaslov().equals(naslov)) {
+    public void setKnjiga(Knjiga knjiga) throws PreviseKnjiga, Duplikat {
+        for (UcenikKnjiga UKnjiga : knjige) {
+            if (!UKnjiga.isEmpty() && UKnjiga.getKnjiga().equals(knjiga)) {
                 throw new Duplikat("UcenikKnjiga");
             }
         }
         for (UcenikKnjiga knjige1 : knjige) {
             if (knjige1.isEmpty()) {
-                knjige1.setNaslov(naslov);
+                knjige1.setNaslov(knjiga);
                 return;
             }
         }
         StringBuilder knj = new StringBuilder(72);
-        for(UcenikKnjiga knjiga : knjige) {
-            knj.append(knjiga.toString()).append('\n');
+        for(UcenikKnjiga UKnjiga : knjige) {
+            knj.append(UKnjiga.toString()).append('\n');
         }
         throw new PreviseKnjiga(knj.toString());
     }
@@ -318,7 +321,7 @@ public class Ucenik implements Comparable<Ucenik> {
     public void clearKnjiga(int mesto) {
         knjige[mesto].clear();
         for (int j = mesto + 1; j < knjige.length; j++) {
-            knjige[j - 1].setNaslov(knjige[j].getNaslov());
+            knjige[j - 1].setNaslov(knjige[j].getKnjiga());
             knjige[j - 1].setDatum(knjige[j].getDatum());
             knjige[j].clear();
         }
@@ -423,11 +426,12 @@ public class Ucenik implements Comparable<Ucenik> {
      * @since 7. 17. 2014.
      */
     static class UcenikKnjiga {
-
         /**
          * Naslov knjige koja je izdata uceniku.
          */
-        private String naslov;
+        private Knjiga knjiga;
+
+        private final int indexKnjige;
         /**
          * Datum kada je data knjiga izdata.
          */
@@ -444,10 +448,11 @@ public class Ucenik implements Comparable<Ucenik> {
          *
          * @since 23.9.'14.
          */
-        private final String splitString = new String(new char[]{splitChar});
+        private final String splitString = String.valueOf(splitChar);
 
-        UcenikKnjiga(String naslov, Date datum) {
-            this.naslov = naslov;
+        UcenikKnjiga(Knjiga knjiga, Date datum) {
+            this.knjiga = knjiga;
+            this.indexKnjige = Podaci.indexOfNaslov(knjiga);
             this.datum = datum;
         }
 
@@ -461,11 +466,13 @@ public class Ucenik implements Comparable<Ucenik> {
          */
         UcenikKnjiga(String IOString) throws ParseException {
             String[] fields = IOString.split(splitString);
-            if (fields.length == 0) {
-                naslov = "";
+            if (fields.length == 0 || fields[0].equals("-1")) {
+                knjiga = null;
                 datum = null;
+                indexKnjige = -1;
             } else {
-                naslov = fields[0];
+                indexKnjige = Integer.parseInt((fields[0]));
+                knjiga = Podaci.getKnjiga(Integer.parseInt(fields[0]));
                 datum = Datumi.df.parse(fields[1]);
             }
         }
@@ -477,7 +484,8 @@ public class Ucenik implements Comparable<Ucenik> {
          * @since 3.10.'14.
          */
         UcenikKnjiga(UcenikKnjiga uk) {
-            naslov = uk.getNaslov();
+            knjiga = uk.getKnjiga();
+            indexKnjige = uk.getIndexKnjige();
             if (uk.isEmpty()) {
                 datum = null;
             } else {
@@ -489,13 +497,22 @@ public class Ucenik implements Comparable<Ucenik> {
          * Konstruise praznu UcenikKnjiga (sa "" naslovom i null datumom)
          */
         UcenikKnjiga() {
-            naslov = "";
+            knjiga = null;
+            indexKnjige = -1;
             datum = null;
         }
 
         //GETTERI
+        /**
+         * @deprecated 
+         * @return 
+         */
         public String getNaslov() {
-            return naslov;
+            return knjiga.getNaslov();
+        }
+        
+        public Knjiga getKnjiga() {
+            return knjiga;
         }
 
         /**
@@ -503,6 +520,10 @@ public class Ucenik implements Comparable<Ucenik> {
          */
         private Date getDatum() {
             return datum;
+        }
+        
+        private int getIndexKnjige() {
+            return indexKnjige;
         }
 
         /**
@@ -523,7 +544,7 @@ public class Ucenik implements Comparable<Ucenik> {
          * @since 23.9.'14.
          */
         protected String getAsIOString() {
-            return naslov + splitString + getDatumAsString();
+            return Podaci.indexOfNaslov(knjiga) + splitString + getDatumAsString();
         }
 
         //SETTERI
@@ -531,7 +552,7 @@ public class Ucenik implements Comparable<Ucenik> {
          * Brise UcenikKnjiga, tj postavlja naslov na "" i datum na null.
          */
         protected void clear() {
-            naslov = "";
+            knjiga = null;
             datum = null;
         }
 
@@ -540,8 +561,8 @@ public class Ucenik implements Comparable<Ucenik> {
          *
          * @param naslov
          */
-        protected void setNaslov(String naslov) {
-            this.naslov = naslov;
+        protected void setNaslov(Knjiga knjiga) {
+            this.knjiga = knjiga;
             datum = new Date();
         }
 
@@ -556,16 +577,16 @@ public class Ucenik implements Comparable<Ucenik> {
          * @return
          */
         public boolean isEmpty() {
-            return naslov.isEmpty();
+            return knjiga == null;
         }
 
         //OVERRIDES
         @Override
         public String toString() {
             DateFormat df = new SimpleDateFormat("dd. MM. yyyy");
-            if (datum != null && naslov != null) {
-                return naslov + ", iznajmljena " + df.format(datum);
-            } else if (datum == null && naslov.isEmpty()) {
+            if (datum != null && knjiga != null) {
+                return knjiga.getNaslov() + " (autora " + knjiga.getPisac() + "), iznajmljena " + df.format(datum);
+            } else if (datum == null && knjiga == null) {
                 return "Prazno";
             } else {
                 throw new ClassFormatError("Ucenik knjiga nije u redu :s");
@@ -585,15 +606,15 @@ public class Ucenik implements Comparable<Ucenik> {
             if (!(uk instanceof UcenikKnjiga)) {
                 return false;
             }
-            UcenikKnjiga knjiga = (UcenikKnjiga) uk;
-            return knjiga.isEmpty() && this.isEmpty()
-                    || (knjiga.getNaslov().equals(naslov) && knjiga.getDatum().equals(datum));
+            UcenikKnjiga UKnjiga = (UcenikKnjiga) uk;
+            return UKnjiga.isEmpty() && this.isEmpty()
+                    || (UKnjiga.getKnjiga().equals(knjiga) && UKnjiga.getDatum().equals(datum));
         }
 
         @Override
         public int hashCode() {
             int hash = 5;
-            hash = 53 * hash + Objects.hashCode(this.naslov);
+            hash = 53 * hash + Objects.hashCode(this.knjiga);
             hash = 53 * hash + Objects.hashCode(this.datum);
             return hash;
         }

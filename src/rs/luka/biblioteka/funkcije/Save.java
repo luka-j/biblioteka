@@ -31,9 +31,10 @@ public class Save {
      * @since 24.9.'14.(new)
      */
     public static void save() throws IOException {
-        File data = new File("Data");
+        File data = new File(Utils.getWorkingDir() + "Data");
         if (!data.isDirectory()) {
-            data.mkdir();
+            if(!data.mkdir())
+                throw new RuntimeException("Folder data nije napravljen");
         }
         saveUcenike();
         saveKnjige();
@@ -48,6 +49,7 @@ public class Save {
      * @since 24.9.'14.(new)
      */
     public static void saveUcenike() throws IOException {
+        Podaci.sortKnjige();
         LOGGER.log(Level.FINE, "Počinjem čuvanje učenika");
         File ucenici = new File(Utils.getWorkingDir() + "Data" + File.separator + "Ucenici.dat");
         if (getBrojUcenika() == 0) {
@@ -77,7 +79,7 @@ public class Save {
         LOGGER.log(Level.FINE, "Počinjem čuvanje knjiga");
         File knjige = new File(Utils.getWorkingDir() + "Data" + File.separator + "Knjige.dat");
         if (getBrojKnjiga() == 0) {
-            LOGGER.log(Level.FINE, "Lista sa knjigama je prazna. Preskačem čuvanje knjiga.");
+            LOGGER.log(Level.INFO, "Lista sa knjigama je prazna. Preskačem čuvanje knjiga.");
             return;
         }
         knjige.delete();

@@ -3,7 +3,7 @@
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
 //2400 linija, 24.12.'14.
-//2576 linija, 4.1.'15. (trenutno, auto, Strings, cleanup)
+//2639 linija, 4.1.'15. (trenutno, auto, Strings, viseKnjiga, cleanup)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -30,6 +30,7 @@ import rs.luka.biblioteka.exceptions.*;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji.vrednost;
 import rs.luka.biblioteka.funkcije.Undo;
 import rs.luka.biblioteka.funkcije.Utils;
+import rs.luka.biblioteka.grafika.Dijalozi;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
@@ -65,7 +66,7 @@ public class Podaci {
     /**
      * Oznacava da li se testira. Ako da, unosi test podatke
      */
-    private static final boolean TEST=false;
+    private static final boolean TEST=true;
 
     /**
      * Zove metodu za backup i potom ucitava sve podatke. 
@@ -93,20 +94,27 @@ public class Podaci {
                 (knjigeF.length() == 0 && uceniciF.length() == 0)) {
             LOGGER.log(Level.FINE, "Prvo pokretanje ili su liste prazne. "
                     + "Zovem prozor za unos i obustavljam učitavanje podataka.");
-            new rs.luka.biblioteka.grafika.Unos().UnosGrafika();
+            new rs.luka.biblioteka.grafika.Unos().unesiKnjige(true);
         } else {
             if (knjigeF.length() == 0) {
                 LOGGER.log(Level.FINE, "Lista sa knjigama je prazna. Zovem prozor za unos.");
-                new rs.luka.biblioteka.grafika.Unos().UnosKnjiga();
+                new rs.luka.biblioteka.grafika.Unos().unesiKnjige(false);
+                return;
             }
             if (uceniciF.length() == 0) {
                 LOGGER.log(Level.FINE, "Lista sa učenicima je prazna. Zovem prozor za unos.");
-                new rs.luka.biblioteka.grafika.Unos().UnosUcenika();
+                new rs.luka.biblioteka.grafika.Unos().unesiUcenike();
+            }
+            try {
+                knjigeF.createNewFile();
+                uceniciF.createNewFile();
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, "I/O greška pri učitavanju podataka", ex);
+                showMessageDialog(null, LOADDATA_IOEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
+                        JOptionPane.ERROR_MESSAGE);
             }
             try (final Scanner inN = new Scanner(new BufferedReader(new FileReader(knjigeF)));
                     final Scanner inU = new Scanner(new BufferedReader(new FileReader(uceniciF)))) {
-                knjigeF.createNewFile();
-                uceniciF.createNewFile();
                 ucenici.clear();
                 knjige.clear();
                 ucenici.ensureCapacity(parseUnsignedInt(Config.get("ucSize", valueOf(defUcSize))));
@@ -211,7 +219,7 @@ public class Podaci {
     }
 
     /**
-     * Getter. Vraca knjigu trazenog naslova.
+     * Getter. Vraca knjigu trazenog naslova. Vraca originale.
      *
      * @param naslov naslov knjige koja se trazi
      * @return Knjiga koja se trazi
@@ -219,7 +227,27 @@ public class Podaci {
      */
     public static Knjiga getKnjiga(String naslov) throws VrednostNePostoji {
         LOGGER.log(Level.FINER, "Getter: zatražena knjiga sa naslovom {0}", naslov);
-        return getKnjiga(indexOfNaslov(naslov));
+        List<Knjiga> knjige = getAllKnjige(naslov);
+        if(knjige.isEmpty())
+            throw new VrednostNePostoji(vrednost.Knjiga);
+        else if(knjige.size()==1)
+            return knjige.get(0);
+        else
+            return knjige.get(Dijalozi.viseKnjiga(knjige));
+    }
+    
+    /**
+     * Vraca sve knjige sa datim naslovom
+     * @param naslov naslov knjige
+     * @return Listu Knjiga sa svim knjigama koje imaju taj naslov
+     * @since 6.1.'15.
+     */
+    public static List<Knjiga> getAllKnjige(String naslov) {
+        List<Knjiga> match = new ArrayList<>();
+        knjige.stream().filter((knjiga) -> (knjiga.getNaslov().equals(naslov))).forEach((knjiga) -> {
+            match.add(knjiga);
+        });
+        return match;
     }
 
     /**
@@ -249,18 +277,25 @@ public class Podaci {
      * Vraca index knjige, ignorisuci veliko i malo slovo
      *
      * @param naslov naslov knjige
+     * @param pisac pisac knjige
      * @return index trazene knjige
      * @throws VrednostNePostoji ako naslov ne postoji
      * @since pocetak
      */
-    public static int indexOfNaslov(String naslov) throws VrednostNePostoji {
-        for (int i = 0; i < knjige.size(); i++) {
-            if (knjige.get(i).getNaslov().equalsIgnoreCase(naslov)) {
-                LOGGER.log(Level.FINER, "Knjiga {0} pronađena, index: {1}", new Object[]{naslov, i});
-                return i;
-            }
+    public static int indexOfNaslov(String naslov, String pisac) throws VrednostNePostoji {
+        Knjiga knj;
+        try {knj = new Knjiga(naslov, 0, pisac);
+        } catch (Prazno ex) {
+            throw new VrednostNePostoji(vrednost.Knjiga);
         }
-        throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga);
+        int index = indexOfNaslov(knj);
+        if(index<0) 
+            throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga);
+        else return index;
+    }
+    
+    public static int indexOfNaslov(Knjiga knj) {
+        return knjige.indexOf(knj);
     }
 
     /**
@@ -436,7 +471,8 @@ public class Podaci {
         for (int i = 0; i < knjige.length; i++) {
             knjige[i] = "";
         }
-        dodajUcenika(ime, raz, knjige);
+        try{dodajUcenika(ime, raz, knjige);}
+        catch(VrednostNePostoji ex){throw new RuntimeException(ex);} //nikad
     }
 
     /**
@@ -444,13 +480,21 @@ public class Podaci {
      * {@link #dodajUcenika(rs.luka.biblioteka.data.Ucenik)} sa tim argumentom
      * @param ime ucenik
      * @param razred razred
-     * @param knjige niz UcenikKnjiga sa naslovima koje ucenik ima kod sebe i
+     * @param naslovi niz UcenikKnjiga sa naslovima koje ucenik ima kod sebe i
      * datumom kada su iznajmljene
      * @throws rs.luka.biblioteka.exceptions.Duplikat ako {@link #dodajUcenika(rs.luka.biblioteka.data.Ucenik)}
      * throwuje duplikat, tj. ako dati objekat vec postoji
+     * @throws rs.luka.biblioteka.exceptions.VrednostNePostoji ako knjiga ne postoji
      * @since kraj jula '13.
      */
-    public static void dodajUcenika(String ime, int razred, String[] knjige) throws Duplikat {
+    public static void dodajUcenika(String ime, int razred, String[] naslovi) throws Duplikat, VrednostNePostoji {
+        Knjiga[] knjige = new Knjiga[naslovi.length];
+        for(int i=0; i<naslovi.length; i++) {
+            if(naslovi[i] == null || naslovi[i].isEmpty())
+                knjige[i] = null;
+            else
+                knjige[i] = getKnjiga(naslovi[i]);
+        }
         Ucenik uc = new Ucenik(ime, razred, knjige);
         dodajUcenika(uc);
     }
@@ -464,13 +508,11 @@ public class Podaci {
      */
     public static void dodajUcenika(Ucenik ucenik) throws Duplikat {
         if(ucenici.add(ucenik)) {
-        
-        LOGGER.log(Level.INFO, "Učenik dodat: ", new Object[]{ucenik.toString()});
-        Undo.push(Akcija.DODAVANJE_UCENIKA, new Object[]{ucenik});
-        String ucSize = Config.get("ucSize", "0");
-        int ucSizeInt = parseInt(ucSize);
-        ucSizeInt++;
-        Config.set("ucSize", valueOf(ucSizeInt));
+            LOGGER.log(Level.INFO, "Učenik dodat: ", new Object[]{ucenik.toString()});
+            Undo.push(Akcija.DODAVANJE_UCENIKA, new Object[]{ucenik});
+            int ucSize = Config.getAsInt("ucSize", "0");
+            ucSize++;
+            Config.set("ucSize", valueOf(ucSize));
         }
         else
             throw new Duplikat(vrednost.Ucenik);
@@ -488,7 +530,7 @@ public class Podaci {
         List<String> uceniciNoveGen = asList(novaGen.split("\\s*,\\s*"));
         uceniciNoveGen.stream().forEach((ucenik) -> {
             try {
-                Podaci.dodajUcenika(ucenik, Ucenik.getPrviRazred());
+                Podaci.dodajUcenika(ucenik);
             } catch (Duplikat ex) {
                 JOptionPane.showMessageDialog(null, DODAJGENERACIJU_DEX_MSG_STRING, 
                         DODAJGENERACIJU_DEX_TITLE_STRING, JOptionPane.WARNING_MESSAGE);
@@ -665,7 +707,7 @@ public class Podaci {
         Ucenik uc = ucenici.get(ucIndex);
         Knjiga knj = knjige.get(knjIndex);
         try {
-            uc.setKnjiga(knjige.get(knjIndex).getNaslov());
+            uc.setKnjiga(knjige.get(knjIndex));
             knj.smanjiKolicinu();
             LOGGER.log(Level.INFO, "Učenik {0} je iznajmio knjigu {1}", 
                     new Object[]{ucenici.get(ucIndex).getIme(), knjiga.getNaslov()});

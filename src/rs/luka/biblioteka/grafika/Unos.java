@@ -1,17 +1,14 @@
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import static java.lang.Integer.parseUnsignedInt;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,6 +20,7 @@ import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
+import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
@@ -78,56 +76,26 @@ public class Unos {
             UNOSUC_UNESI_WIDTH, UNOSUC_UNESI_HEIGHT);
 
     /**
-     * Iscrtava glavni prozor za unos i 2 dugmeta za unos ucenika i knjiga.
-     */
-    public void UnosGrafika() {
-        win = new JFrame(UNOS_TITLE_STRING);
-        win.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        win.setSize(UNOS_SIZE);
-        win.setLocationRelativeTo(null);
-        win.setResizable(false);
-        win.setAlwaysOnTop(true);
-        JPanel pan = new JPanel(new FlowLayout(FlowLayout.LEADING, UNOS_HGAP, UNOS_VGAP));
-        pan.setBackground(Grafika.getBgColor());
-        win.setContentPane(pan);
-
-        JButton knj = new JButton(UNOS_KNJIGE_STRING);
-        knj.addActionListener((ActionEvent e1) -> {
-            UnosKnjiga();
-        });
-        knj.setFont(Grafika.getButtonFont());
-        knj.setPreferredSize(BUTTON_SIZE);
-        pan.add(knj);
-
-        JButton uc = new JButton(UNOS_UCENICI_STRING);
-        uc.addActionListener((ActionEvent e2) -> {
-            UnosUcenika();
-        });
-        uc.setFont(Grafika.getButtonFont());
-        uc.setPreferredSize(BUTTON_SIZE);
-        pan.add(uc);
-        win.setVisible(true);
-    }
-
-    /**
      * Iscrtava prozor za unos knjiga.
+     * @param cont ako je true, pri zatvaranju zove {@link #unesiUcenike()}
      */
-    public void UnosKnjiga() {
-        final rs.luka.biblioteka.funkcije.Unos unos = new rs.luka.biblioteka.funkcije.Unos();
+    public void unesiKnjige(boolean cont) {
+        rs.luka.biblioteka.funkcije.Unos.initUnos();
         //---------JFrame&JPanel------------------------------------------------
         final JFrame winKnj = new JFrame(UNOS_KNJIGE_STRING);
         winKnj.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         winKnj.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                unos.finalizeUnos();
+                rs.luka.biblioteka.funkcije.Unos.finalizeUnos();
                 winKnj.dispose();
+                if(cont)
+                    unesiUcenike();
             }
         });
         winKnj.setSize(UNOSKNJ_SIZE);
         winKnj.setLocationRelativeTo(null);
         winKnj.setResizable(false);
-        winKnj.setAlwaysOnTop(true);
         JPanel pan = new JPanel(null);
         pan.setBackground(Grafika.getBgColor());
         winKnj.setContentPane(pan);
@@ -175,7 +143,7 @@ public class Unos {
         but.setBounds(KNJ_UNESI_BOUNDS);
         ActionListener ubaci = (ActionEvent ae) -> {
             if ("".equals(nasText.getText())) {
-                unos.finalizeUnos();
+                rs.luka.biblioteka.funkcije.Unos.finalizeUnos();
                 winKnj.dispose();
             } else if ("".equals(kolText.getText())) {
                 LOGGER.log(Level.INFO, "Polje za količinu pri unosu je prazno");
@@ -184,7 +152,7 @@ public class Unos {
             } else {
                 try {
                     int kol = parseInt(kolText.getText());
-                    unos.UnosKnj(nasText.getText(), kol, pisacText.getText());
+                    rs.luka.biblioteka.funkcije.Unos.UnosKnj(nasText.getText(), kol, pisacText.getText());
                     nasText.setText("");
                     pisacText.setText("");
                     kolText.setText("");
@@ -200,16 +168,12 @@ public class Unos {
                     LOGGER.log(Level.WARNING, "Naslov {0} već postoji", nasText.getText());
                     showMessageDialog(null, UNOSKNJ_DEX_MSG_STRING, UNOSKNJ_DEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "I/O greška pri unosu knjiga u fajl", ex);
-                    showMessageDialog(null, UNOS_IOEX_MSG_STRING, UNOS_IOEX_TITLE_STRING, 
-                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
         but.addActionListener(ubaci);
         nasText.addActionListener(ubaci);
-        pisacText.addActionListener(ubaci);
+        kolText.addActionListener(ubaci);
         pan.add(but);
         //----------setVisible()------------------------------------------------
         winKnj.setVisible(true);
@@ -218,25 +182,24 @@ public class Unos {
     /**
      * Iscrtava prozor za unos ucenika.
      */
-    public void UnosUcenika() {
+    public void unesiUcenike() {
         if (!Config.hasKey("brKnjiga")) {
             Config.set("brKnjiga", String.valueOf(Dijalozi.brojKnjiga()));
         }
-        final rs.luka.biblioteka.funkcije.Unos unos = new rs.luka.biblioteka.funkcije.Unos();
+        rs.luka.biblioteka.funkcije.Unos.initUnos();
         //---------JFrame&JPanel------------------------------------------------
         final JFrame winU = new JFrame(UNOS_UCENICI_STRING);
         winU.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         winU.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                unos.finalizeUnos();
+                rs.luka.biblioteka.funkcije.Unos.finalizeUnos();
                 winU.dispose();
             }
         });
         winU.setSize(UNOSUC_SIZE);
         winU.setLocationRelativeTo(null);
         winU.setResizable(false);
-        winU.setAlwaysOnTop(true);
         JPanel pan = new JPanel(null);
         pan.setBackground(Grafika.getBgColor());
         winU.setContentPane(pan);
@@ -277,12 +240,12 @@ public class Unos {
         //----------ActionListener----------------------------------------------
         ActionListener unesi = (ActionEvent ae) -> {
             if ("".equals(imeText.getText())) {
-                unos.finalizeUnos();
+                rs.luka.biblioteka.funkcije.Unos.finalizeUnos();
                 winU.dispose();
             } else {
                 try {
                     String[] knjige = knjText.getText().split("\\s*,\\s*");
-                    unos.UnosUc(imeText.getText(), knjige,
+                    rs.luka.biblioteka.funkcije.Unos.UnosUc(imeText.getText(), knjige,
                             parseUnsignedInt(razText.getText()));
                     imeText.setText("");
                     knjText.setText("");
@@ -305,9 +268,9 @@ public class Unos {
                     showMessageDialog(null, UNOSUC_DEX_MSG_STRING, UNOSUC_DEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     imeText.grabFocus();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "Došlo je do I/O greške pri unosu učenika na disk", ex);
-                    showMessageDialog(null, UNOS_IOEX_MSG_STRING, UNOS_IOEX_TITLE_STRING, 
+                } catch (VrednostNePostoji ex) {
+                    LOGGER.log(Level.WARNING, "Nije uneta jedna od knjiga {0}", knjText.getText());
+                    showMessageDialog(null, UNOSUC_VNPEX_MSG_STRING, UNOSUC_VNPEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                 }
             }

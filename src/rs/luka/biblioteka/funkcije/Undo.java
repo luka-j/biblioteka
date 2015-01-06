@@ -279,7 +279,7 @@ public class Undo {
      */
     private void uzimanjeVracanje() throws VrednostNePostoji, PreviseKnjiga, Duplikat, NemaViseKnjiga {
         if (doWhat == BRISANJE) {
-            ucenik.setKnjiga(knjiga.getNaslov());
+            ucenik.setKnjiga(knjiga);
             knjiga.smanjiKolicinu();
         } else if (doWhat == DODAVANJE) {
             ucenik.clearKnjiga(knjiga.getNaslov());
