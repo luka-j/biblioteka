@@ -280,10 +280,8 @@ public class Undo {
     private void uzimanjeVracanje() throws VrednostNePostoji, PreviseKnjiga, Duplikat, NemaViseKnjiga {
         if (doWhat == BRISANJE) {
             ucenik.setKnjiga(knjiga);
-            knjiga.smanjiKolicinu();
         } else if (doWhat == DODAVANJE) {
-            ucenik.clearKnjiga(knjiga.getNaslov());
-            knjiga.povecajKolicinu();
+            ucenik.clearKnjiga(knjiga);
         }
     }
     private static final Logger LOG = Logger.getLogger(UndoAkcija.class.getName());

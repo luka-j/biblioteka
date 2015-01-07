@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import static java.lang.String.valueOf;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,8 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
-import static rs.luka.biblioteka.data.Podaci.getBrojKnjiga;
-import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
 import rs.luka.biblioteka.exceptions.ConfigException;
 import rs.luka.biblioteka.funkcije.Utils;
 import rs.luka.biblioteka.grafika.Konstante;
@@ -53,8 +50,6 @@ public class Config {
             + "dateLimit - broj dana koliko ucenik moze da zadrzi knjigu kod sebe. Default je 14\n"
             + "lookAndFeel - generalni izgled prozora i grafickih komponenti. Vrednosti:"
             + "system, ocean, metal, nimbus, motif. Izbegavati nimbus i motif\n"
-            + "uceniciS i uceniciV - sirina i visina prozora za pregled ucenika\n"
-            + "knjigeS i knjigeV - sirina i visina prozora za pregled knjiga\n"
             + "brKnjiga - maksimalan broj knjiga koje ucenik moze da ima kod sebe\n"
             + "bgBoja - RGB vrednost, pozadinska boja svih prozora\n"
             + "fgBoja - RGB vrednost, boja fonta\n"
@@ -68,7 +63,10 @@ public class Config {
             + "label,but i smallBut Font Name/Size/Weight - osobine fontova koriscenih za labele i dugmad\n"
             + "kPrefix - prefix za kljuceve koji oznacavaju da se vrednost odnosi na konstantu,"
             + "default je k_\n"
-            + "ucSort - metoda sortiranja ucenika. Default je po razredu (razred||raz), a moze i po imenu (ime)";
+            + "ucSort - metoda sortiranja ucenika. Default je po razredu (razred||raz), moze i po imenu (ime)\n"
+            + "shiftKnjige - odredjuje da li se pri vracanju sve knjige pomeraju ulevo, tako da knjige"
+            + "koje se trenutno nalaze kod ucenika popunjavaju prva prazna mesta (poravnate ulevo)\n"
+            + "customSize - oznacava da li se velicina prozora odredjuje automatski ili putem konstanti";
     
     private static String KONSTANTE_PREFIX = "k_";
     /**
@@ -81,9 +79,9 @@ public class Config {
     private static final Map<String, Limit> limiti = new HashMap<>();
 
     //LIMITI ZA CONFIG
-    private static final Limit SIRINA = new Limit(100, 4_000);
-    private static final Limit VISINA = new Limit(70, 3_000);
-    private static final Limit BR_KNJIGA = new Limit(1, 15);
+    private static final Limit SIRINA = new Limit(100, 6_000);
+    private static final Limit VISINA = new Limit(70, 5_000);
+    private static final Limit BR_KNJIGA = new Limit(1, 25);
     private static final Limit UC_KNJ_SIZE = new Limit(30);
     private static final Limit DATE_LIMIT = new Limit(1, 365);
     private static final Limit SAVE_PERIOD = new Limit(0, 1440); //1 dan
@@ -116,8 +114,7 @@ public class Config {
             showMessageDialog(null, LOADCONFIG_FNFEX_MSG_STRING + path, LOADCONFIG_FNFEX_TITLE_STRING, 
                     ERROR_MESSAGE);
         } catch (IOException ex) {
-            showMessageDialog(null, LOADCONFIG_IOEX_MSG_STRING, LOADCONFIG_IOEX_TITLE_STRING, 
-                    ERROR_MESSAGE);
+            showMessageDialog(null, LOADCONFIG_IOEX_MSG_STRING, LOADCONFIG_IOEX_TITLE_STRING, ERROR_MESSAGE);
         }
     }
 
@@ -125,8 +122,8 @@ public class Config {
      * Podesava hard-coded default vrednosti.
      */
     private static void setDefaults() {
-        defaults.setProperty("knjSize", valueOf(getBrojKnjiga()));
-        defaults.setProperty("ucSize", valueOf(getBrojUcenika()));
+        defaults.setProperty("knjSize", "300");
+        defaults.setProperty("ucSize", "550");
         defaults.setProperty("firstRun", "true");
         defaults.setProperty("dateLimit", "14");
         defaults.setProperty("lookAndFeel", "ocean");
@@ -137,6 +134,7 @@ public class Config {
         defaults.setProperty("maxUndo", "50");
         defaults.setProperty("logSizeLimit", "10000000");
         defaults.setProperty("logFileCount", "15");
+        defaults.setProperty("customSize", "false");
     }
 
     /**
@@ -151,10 +149,6 @@ public class Config {
         vrednosti.put("dateLimit", "dateLimit", "maxDana", "zadrzavanje", "zadrzavanjeKnjige", 
                 CONFIG_DATELIMIT_DESC);
         vrednosti.put("lookAndFeel", "lookAndFeel", "LaF", "LnF", "izgled", CONFIG_LOOKANDFEEL_DESC);
-        vrednosti.put("knjigeS", "knjigeS", "knjigeW", "knjigeSirina", "knjSirina", "sirinaKnjProzora");
-        vrednosti.put("knjigeV", "knjigeV", "knjigeH", "knjigeVisina", "knjVisina", "visinaKnjProzora");
-        vrednosti.put("uceniciS", "uceniciS", "uceniciW", "uceniciSirina", "ucSirina", "sirinaUcProzora");
-        vrednosti.put("uceniciV", "uceniciV", "uceniciH", "uceniciVisina", "ucVisina", "visinaUcProzora");
         vrednosti.put("brKnjiga", "brKnjiga", "maxBrojKnjigaPoUceniku", "maxKnjiga", "maxUcenikKnjiga",
                 CONFIG_BRKNJIGA_DESC);
         vrednosti.put("bgBoja", "bgBoja", "bojaPozadine", "pozadinskaBoja", "bgColor");
@@ -189,6 +183,8 @@ public class Config {
         vrednosti.put("kPrefix", "kPrefix", "konstantePrefix", "PrefixZaKonstante");
         vrednosti.put("ucSort", "ucSort", "uceniciSort", "sortiratiUcenikePo", "uceniciSortKriterijum");
         vrednosti.put("datePeriod", "datePeriod", "dateCheckPeriod", CONFIG_DATEPERIOD_DESC);
+        vrednosti.put("shiftKnjige", "shiftKnjige", "pomerajKnjige", "pomerajUcenikKnjige", "alignKnjige");
+        vrednosti.put("customSize", "customSize", "useCustomSize", "customVelicina");
     }
 
     /**
@@ -235,6 +231,9 @@ public class Config {
         }
     }
     
+    /**
+     * Postavlja prefix za konstante, ako postoji u configu. Raditi pre resolveKeys.
+     */
     private static void setKPrefix() {
         if(config.containsKey("kPrefix"))
             KONSTANTE_PREFIX = config.getProperty("kPrefix");
@@ -261,7 +260,10 @@ public class Config {
      * @since 25.10'.14.
      */
     public static boolean hasKey(String key) {
-        return config.containsKey(vrednosti.getKey(key));
+        String realKey = vrednosti.getKey(key);
+        if(realKey==null)
+            return false;
+        else return config.containsKey(realKey);
     }
 
     /**

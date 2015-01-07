@@ -2,6 +2,7 @@ package rs.luka.biblioteka.grafika;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -15,7 +16,6 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import static java.lang.String.valueOf;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -67,6 +67,8 @@ public class Ucenici implements FocusListener {
     private static final int maxKnjiga = getMaxBrojUcenikKnjiga();
     private final int maxUcenika;
     private static final JFrame win = new JFrame();
+    private static final int MAX_HEIGHT = 
+            GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize().height;
 
     /**
      * Dispose-uje {@link #win}
@@ -135,8 +137,7 @@ public class Ucenici implements FocusListener {
     }
 
     /**
-     * Pregled ucenika sa knjigama koje su trenutno kod njih. NE POZIVATI OSIM
-     * IZ KONSTRUKTORA!
+     * Pregled ucenika sa knjigama koje su trenutno kod njih.
      *
      * @since 1.7.'13.
      */
@@ -147,7 +148,7 @@ public class Ucenici implements FocusListener {
         initButtons();
         initIcons();
         initMainListeners();
-        win.setVisible(true);
+        showWindow();
         initSearchBox();
         setInputMaps();
     }
@@ -157,14 +158,11 @@ public class Ucenici implements FocusListener {
      * tekst, scroll.
      */
     private void initPanels() {
-        int sirina, visina;
-        sirina = Config.getAsInt("uceniciS",
-                valueOf(UCENICI_KNJPANEL_WIDTH * getMaxBrojUcenikKnjiga() + UCENICI_FIXED_WIDTH));
-        visina = Config.getAsInt("uceniciV", valueOf(UCENICI_HEIGHT));
-        win.setSize(sirina, visina);
-        LOGGER.log(Level.CONFIG, "Postavljam visinu prozora sa učenicima na {0}, širinu na {1}",
-                new Object[]{visina, sirina});
-        win.setLocationRelativeTo(null);
+        //sirina = UCENICI_KNJPANEL_WIDTH * getMaxBrojUcenikKnjiga() + UCENICI_FIXED_WIDTH;
+        //visina = UCENICI_HEIGHT;
+        //win.setSize(sirina, visina);
+        //LOGGER.log(Level.CONFIG, "Postavljam visinu prozora sa učenicima na {0}, širinu na {1}",
+        //        new Object[]{visina, sirina});
         //win.setResizable(false);
         win.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         win.addWindowListener(new WindowAdapter() {
@@ -181,7 +179,8 @@ public class Ucenici implements FocusListener {
         butPan.setBackground(Grafika.getBgColor());
         butPan.setLayout(new FlowLayout(FlowLayout.CENTER));
         split.setOneTouchExpandable(false);
-        split.setDividerLocation(visina - 100);
+        split.setResizeWeight(1);
+        //split.setDividerLocation(0.8);
         uceniciPan.setLayout(new BoxLayout(uceniciPan, BoxLayout.Y_AXIS));
         uceniciPan.setBackground(Grafika.getBgColor());
         uceniciPan.setAlignmentY(0);
@@ -415,7 +414,6 @@ public class Ucenici implements FocusListener {
         };
         for (int i = 0; i < maxUcenika; i++) {
             ucenici[i].addItemListener(uzimanjeListener);
-
             //knjige
             for (int j = 0; j < maxKnjiga; j++) {
                 if (knjige[j][i + 1].getText().equals(" ")) {
@@ -430,6 +428,20 @@ public class Ucenici implements FocusListener {
     private ItemListener vracanjeListener;
     private ItemListener uzimanjeListener;
 
+    /**
+     * Postavlja velicinu i poziciju i prikazuje prozor
+     */
+    private void showWindow() {
+        if(Config.getAsBool("customSize")) {
+            win.setSize(UCENICI_FIXED_WIDTH + maxKnjiga * UCENICI_KNJPANEL_WIDTH, UCENICI_HEIGHT);
+        }
+        else {
+            win.pack();
+            win.setSize(win.getWidth(), MAX_HEIGHT);
+        }
+        win.setLocationRelativeTo(null);
+        win.setVisible(true);
+    }
     /**
      * Inicijalizuje searchbox. Postavlje tekst, font, boju i listener-e.
      * Postavlja i velicinu sidePan-a (workaround)
@@ -728,6 +740,8 @@ public class Ucenici implements FocusListener {
         sidePan.remove(but);
         buttons.remove(but);
         sidePan.repaint();
+        win.pack();
+        win.setSize(win.getWidth(), MAX_HEIGHT);
     }
 
     //==========FOCUS============================================================

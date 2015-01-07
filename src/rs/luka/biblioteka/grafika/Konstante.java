@@ -91,6 +91,10 @@ public class Konstante {
     public static String DODAJGENERACIJU_DEX_MSG_STRING = "Uneli ste dva učenika sa istim imenom i prezimenom. "
             + "Jedan od njih neće biti unet.";
     public static String DODAJGENERACIJU_DEX_TITLE_STRING = "Duplikat";
+    /*----------Ucenik.java---------------------------------------------------*/
+    public static String UCENIK_SETRAZREDI_NFEX_MSG_STRING = "Podešavanje validnih razreda "
+            + "neuspelo zbog lošeg Stringa.\nBiće korišćene default vrednosti";
+    public static String UCENIK_SETRAZREDI_NFEX_TITLE_STRING = "Greška pri inicijalizaciji";
     /*----------Init.java-----------------------------------------------------*/
     public static String HANDLER_MSG1_STRING = "Došlo je do neočekivane greške. Detalji:\n";
     public static String HANDLER_MSG2_STRING = "\novi podaci su sačuvani u log.";

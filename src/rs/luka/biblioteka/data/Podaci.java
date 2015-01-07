@@ -3,7 +3,7 @@
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
 //2400 linija, 24.12.'14.
-//2639 linija, 4.1.'15. (trenutno, auto, Strings, viseKnjiga, cleanup)
+//2656 linija, 7.1.'15. (trenutno, auto, Strings, viseKnjiga, cleanup)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -41,7 +41,7 @@ import static rs.luka.biblioteka.grafika.Konstante.*;
  * @author Luka
  * @since pocetak (23.8.'14)
  */
-public class Podaci {
+public final class Podaci {
 
     private static final java.util.logging.Logger LOGGER = 
             java.util.logging.Logger.getLogger(Podaci.class.getName());
@@ -58,15 +58,15 @@ public class Podaci {
     /**
      * default broj ucenika, ako ne postoji u config-u
      */
-    protected static final int defUcSize = 550;
+    private static final int DEF_UC_SIZE = 550;
     /**
      * default broj knjiga, ako ne postoji u config-u
      */
-    protected static final int defKnjSize = 200;
+    private static final int DEF_KNJ_SIZE = 300;
     /**
      * Oznacava da li se testira. Ako da, unosi test podatke
      */
-    private static final boolean TEST=true;
+    private static final boolean TEST=false;
 
     /**
      * Zove metodu za backup i potom ucitava sve podatke. 
@@ -117,8 +117,8 @@ public class Podaci {
                     final Scanner inU = new Scanner(new BufferedReader(new FileReader(uceniciF)))) {
                 ucenici.clear();
                 knjige.clear();
-                ucenici.ensureCapacity(parseUnsignedInt(Config.get("ucSize", valueOf(defUcSize))));
-                knjige.ensureCapacity(parseUnsignedInt(Config.get("knjSize", valueOf(defKnjSize))));
+                ucenici.ensureCapacity(parseUnsignedInt(Config.get("ucSize", valueOf(DEF_UC_SIZE))));
+                knjige.ensureCapacity(parseUnsignedInt(Config.get("knjSize", valueOf(DEF_KNJ_SIZE))));
                 try {
                     while (inN.hasNextLine()) {
                         if(!knjige.add(new Knjiga(inN.nextLine())))
@@ -216,6 +216,10 @@ public class Podaci {
     public static Knjiga getKnjiga(int i) {
         LOGGER.log(Level.FINER, "Getter: zatražena knjiga sa indexa {0}: {1}", new Object[]{i, knjige.get(i)});
         return new Knjiga(knjige.get(i));
+    }
+    
+    static Knjiga getOriginal(int i) {
+        return knjige.get(i);
     }
 
     /**
@@ -633,7 +637,7 @@ public class Podaci {
     public static boolean obrisiKnjigu(Knjiga knj) throws PreviseKnjiga {
         Iterator<Ucenik> it = Podaci.iteratorUcenika();
         while(it.hasNext()) {
-            if(it.next().hasKnjiga(knj.getNaslov())) { 
+            if(it.next().hasKnjiga(knj)) { 
                 throw new PreviseKnjiga(knj.getNaslov());
             }
         }
@@ -656,8 +660,7 @@ public class Podaci {
     public static void vratiKnjigu(int ucIndex, int knjIndex) throws VrednostNePostoji {
         Ucenik uc = ucenici.get(ucIndex);
         Knjiga knj = knjige.get(knjIndex);
-        uc.clearKnjiga(knjige.get(knjIndex).getNaslov());
-        knj.povecajKolicinu();
+        uc.clearKnjiga(knjige.get(knjIndex));
         LOGGER.log(Level.INFO, "Knjiga {0} vraćena od učenika {1}", 
                 new Object[]{knjige.get(knjIndex).getNaslov(), ucenici.get(ucIndex).getIme()});
         Undo.push(Akcija.VRACANJE, new Object[]{uc, knj});
@@ -706,17 +709,10 @@ public class Podaci {
         }
         Ucenik uc = ucenici.get(ucIndex);
         Knjiga knj = knjige.get(knjIndex);
-        try {
             uc.setKnjiga(knjige.get(knjIndex));
-            knj.smanjiKolicinu();
             LOGGER.log(Level.INFO, "Učenik {0} je iznajmio knjigu {1}", 
                     new Object[]{ucenici.get(ucIndex).getIme(), knjiga.getNaslov()});
             Undo.push(Akcija.UZIMANJE, new Object[]{uc, knj});
-        }
-        catch(NemaViseKnjiga ex) { //ako ne može da smanji količinu, moram da vratim kako je bilo
-            uc.clearKnjiga(knjiga.getNaslov());
-            throw ex;
-        }
     }
     
     /**

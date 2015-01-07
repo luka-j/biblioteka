@@ -128,6 +128,7 @@ public class Knjiga implements Comparable<Knjiga> {
 
     public void povecajKolicinu() {
         kolicina++;
+        System.out.println("Povecavam kolicinu knjige " + this + " na " + kolicina);
     }
 
     //OVERRIDES

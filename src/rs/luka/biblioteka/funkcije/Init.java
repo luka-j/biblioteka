@@ -1,6 +1,6 @@
 /**
- * @lastmod 6.1.'15. 
- * optimizacija, viseKnjiga
+ * @lastmod 7.1.'15. 
+ * Prebacio povecaj/smanjiKolicinu() u UcenikKnjiga
  */
 /**
  * @curr 
@@ -17,8 +17,10 @@
  */
 /**
  * @todo 
- * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING) 
- * Knjiga unutar UcenikKnjiga - moze se bolje iskoristiti
+ * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING)
+ * Pretraga na osnovu Levenshtein distance stringova
+ * Prikazivanje vise knjiga i vise ucenika s istim imenom
+ * indexKnjige unutar UK - potreban ?
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception 
  * Bugfixing, optimizacija koda, cišenje koda 
  * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e) 
@@ -26,6 +28,10 @@
  */
 /**
  * @changelog 
+ * Izbacio knjige/ucenici S/V, ubacio customSize i win.pack()
+ * Dodao Ucenici#shiftLeft i napravio da bude opciono (shiftKnjige u Config-u)
+ * Popravio bagove sa kolicinom, morao da dodam Knjiga getOriginal(int i) zbog IOString konstruktora
+ * Prebacio povecaj/smanjiKolicinu() u UcenikKnjiga, testirati da li je izvodljivo uopste
  * Napokon puna podrska za naslove s razlicitim imenom, a istim piscem, drugaciji format cuvanja
  * Promenio UcenikKnjiga da se sastoji od objekta Knjiga i Date
  * Ubrzao uzimanje/vracanje uvodjenjem Ucenici#refreshUcenik umesto ponovnog iscrtavanja celog prozora
@@ -43,15 +49,15 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
-//7580 linije, 3.1.'15. (trenutno, config opcije&Strings, PeriodicActions, ICheckbox, setKol, UniqueList, 
-//                       viseKnjiga, optimizacija, cleanup)
+//7640 linije, 7.1.'15. (trenutno, config opcije&Strings, PeriodicActions, ICheckbox, setKol, UniqueList, 
+//                       viseKnjiga, Knjiga u UK, optimizacija, cleanup)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
 //1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
-//1327 linija, 2.1.'15. (trenutno, auto, cleanup)
+//1332 linija, 7.1.'15. (trenutno, auto, cleanup)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -68,7 +74,7 @@ import static rs.luka.biblioteka.data.Config.loadConfig;
 import static rs.luka.biblioteka.data.Datumi.proveriDatum;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.loadData;
-import static rs.luka.biblioteka.data.Ucenik.setValidRazred;
+import static rs.luka.biblioteka.data.Ucenik.initUcenik;
 import static rs.luka.biblioteka.funkcije.Logger.finalizeLogger;
 import static rs.luka.biblioteka.funkcije.Logger.initLogger;
 import static rs.luka.biblioteka.funkcije.Undo.initUndo;
@@ -156,7 +162,7 @@ public class Init {
      * @see Utils#setWorkingDir
      * @see rs.luka.biblioteka.funkcije.Logger#initLogger
      * @see Grafika#initGrafika
-     * @see rs.luka.biblioteka.data.Ucenik#setValidRazred
+     * @see rs.luka.biblioteka.data.Ucenik#initUcenik
      * @see Podaci#loadData
      * @see rs.luka.biblioteka.data.Datumi#proveriDatum
      * @see Undo#initUndo
@@ -168,7 +174,7 @@ public class Init {
         initLogger();
         //loadStrings();
         initGrafika();
-        setValidRazred();
+        initUcenik();
         loadData();
         proveriDatum();
         initUndo();

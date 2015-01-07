@@ -3,7 +3,7 @@
 //2141 linija, 25.10.'14.
 //2570 linija, 29.11.'14.
 //3000 linija, 25.12.'14. (dodavanje UVButton)
-//3387 linija, 3.11.'15. (trenutno, auto. Strings, cleanup)
+//3425 linija, 3.11.'15. (trenutno, auto. Strings, cleanup)
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Color;

@@ -2,6 +2,7 @@ package rs.luka.biblioteka.grafika;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -50,8 +51,6 @@ public class Knjige implements FocusListener {
      * searchBox za pretrazivanje knjiga.
      */
     private final JTextField searchBox = new JTextField(KNJIGE_SEARCH_STRING);
-
-    private int sirina, visina;
     
     private final LinkedList<SmallButton> buttons;
     private final JLabel[] pisac;
@@ -101,8 +100,7 @@ public class Knjige implements FocusListener {
         initButtons();
         initOtherListeners();
         initSearchBox();
-        
-        win.setVisible(true);
+        showWindow();
     }
     
     /**
@@ -110,11 +108,9 @@ public class Knjige implements FocusListener {
      */
     private void initPanels() {
         win.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        sirina = parseInt(Config.get("knjigeS", String.valueOf(KNJIGE_SIRINA)));
-        visina = parseInt(Config.get("knjigeV", String.valueOf(KNJIGE_VISINA)));
-        win.setSize(sirina, visina);
-        LOGGER.log(Level.CONFIG, "knjigeS: {0}, knjigeV: {1}", new Object[]{sirina, visina});
-        win.setLocationRelativeTo(null);
+        //win.setSize(KNJIGE_SIRINA, KNJIGE_VISINA);
+        LOGGER.log(Level.CONFIG, "knjigeS: {0}, knjigeV: {1}", new Object[]{KNJIGE_SIRINA, KNJIGE_VISINA});
+        //win.setLocationRelativeTo(null);
         mainPan.setLayout(new BoxLayout(mainPan, BoxLayout.X_AXIS));
         mainPan.setBackground(Grafika.getBgColor());
         mainPan.setAutoscrolls(true);
@@ -140,7 +136,8 @@ public class Knjige implements FocusListener {
         butPan.setBackground(Grafika.getBgColor());
         butPan.setLayout(new FlowLayout(FlowLayout.CENTER));
         split.setOneTouchExpandable(false);
-        split.setDividerLocation(visina - KNJIGE_DIVIDER_LOCATION);
+        split.setResizeWeight(0.99);
+        //split.setDividerLocation(KNJIGE_VISINA - KNJIGE_DIVIDER_LOCATION);
         win.setContentPane(split);
     }
 
@@ -168,7 +165,7 @@ public class Knjige implements FocusListener {
         for (int i = 0; i < kolicina.length; i++) {
             knj = it.next();
             box = new IndexedCheckbox(knj.getNaslov(), i, INVALID);
-            box.setMinimumSize(new Dimension(300, 30));
+            //box.setMinimumSize(new Dimension(300, 30));
             box.setFont(Grafika.getLabelFont());
             box.setForeground(Grafika.getFgColor());
             box.setBackground(Grafika.getBgColor());
@@ -200,6 +197,7 @@ public class Knjige implements FocusListener {
         novi.setPreferredSize(new Dimension(KNJIGE_NOVI_WIDTH, KNJIGE_BUTTON_HEIGHT));
         novi.addActionListener((ActionEvent e) -> {
             new KnjigeUtils().novi();
+            new Ucenici().pregledUcenika();
         });
         butPan.add(novi);
         JButton obrisi = new JButton(KNJIGE_OBRISI_STRING);
@@ -207,13 +205,14 @@ public class Knjige implements FocusListener {
         obrisi.setPreferredSize(new Dimension(KNJIGE_OBRISI_WIDTH, KNJIGE_BUTTON_HEIGHT));
         obrisi.addActionListener((ActionEvent e) -> {
             obrisiNaslov();
+            new Ucenici().pregledUcenika();
         });
         butPan.add(obrisi);
         JButton ucSearch = new JButton(KNJIGE_UCSEARCH_STRING);
         ucSearch.setFont(Grafika.getButtonFont());
         ucSearch.setPreferredSize(new Dimension(KNJIGE_UCSEARCH_WIDTH, KNJIGE_BUTTON_HEIGHT));
         ucSearch.addActionListener((ActionEvent e) -> {
-            new KnjigeUtils().ucSearch(getFirstSelected(), visina);
+            new KnjigeUtils().ucSearch(getFirstSelected(), KNJIGE_VISINA);
         });
         butPan.add(ucSearch);
     }
@@ -247,6 +246,20 @@ public class Knjige implements FocusListener {
         searchBox.setCaretColor(Grafika.getFgColor());
         searchBox.setBounds(KNJIGE_SEARCHBOX_X, KNJIGE_SEARCHBOX_Y, KNJIGE_SEARCHBOX_WIDTH, KNJIGE_SEARCHBOX_HEIGHT);
         sidePan.add(searchBox);
+    }
+    
+    /**
+     * Postavlja velicinu i poziciju i prikazuje prozor
+     */
+    private void showWindow() {
+        if(Config.getAsBool("customSize"))
+            win.setSize(KNJIGE_SIRINA, KNJIGE_VISINA);
+        else {
+            win.pack();
+            win.setSize(win.getWidth(), GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize().height);
+        }
+        win.setLocationRelativeTo(null);
+        win.setVisible(true);
     }
 
     /**

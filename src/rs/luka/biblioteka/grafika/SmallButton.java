@@ -1,5 +1,6 @@
 package rs.luka.biblioteka.grafika;
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +40,11 @@ class SmallButton extends JButton {
     public void uzmi(Ucenici grafika) {
         this.setText(SMALLBUT_UZMI_STRING);
         this.addActionListener((ActionEvent e) -> {
-            new Uzimanje().uzmi(index);
-            Knjige.refresh();
-            grafika.refreshUcenik(index, this);
+            EventQueue.invokeLater(() -> {
+                new Uzimanje().uzmi(index);
+                Knjige.refresh();
+                grafika.refreshUcenik(index, this);
+            });
         });
         LOGGER.log(Level.FINE, "Dodato dugme za uzimanje br {0}", index);
         this.setVisible(true);
@@ -53,9 +56,11 @@ class SmallButton extends JButton {
     public void vrati(Ucenici grafika) {
         this.setText(SMALLBUT_VRATI_STRING);
         this.addActionListener((ActionEvent e) -> {
-            Podaci.vratiViseKnjigaSafe(index, naslovi);
-            Knjige.refresh();
-            grafika.refreshUcenik(index, this);
+            EventQueue.invokeLater(() -> {
+                Podaci.vratiViseKnjigaSafe(index, naslovi);
+                Knjige.refresh();
+                grafika.refreshUcenik(index, this);
+            });
         });
         LOGGER.log(Level.FINE, "Dodato dugme za vraćanje br {0}", index);
         this.setVisible(true);
@@ -64,9 +69,11 @@ class SmallButton extends JButton {
     public void setKol() {
         this.setText(SMALLBUT_SETKOL_STRING);
         this.addActionListener((ActionEvent e) -> {
-            new KnjigeUtils().promeniKolicinu(index);
-            Podaci.sortKnjige();
-            Knjige.refresh();
+            EventQueue.invokeLater(() -> {
+                new KnjigeUtils().promeniKolicinu(index);
+                Podaci.sortKnjige();
+                Knjige.refresh();
+            });
         });
         this.setVisible(true);
     }

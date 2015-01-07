@@ -7,10 +7,12 @@ import java.util.Date;
 import java.util.Objects;
 import javax.swing.JOptionPane;
 import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji.vrednost;
 import rs.luka.biblioteka.funkcije.Utils;
+import rs.luka.biblioteka.grafika.Konstante;
 
 /**
  *
@@ -35,15 +37,20 @@ public class Ucenik implements Comparable<Ucenik> {
      * @since 23.9.'14.
      */
     private static final String splitString = String.valueOf(splitChar);
+    private static boolean shiftKnjige = true;
 
     //STATIC:
+    public static void initUcenik() {
+        setValidRazred();
+        setShift();
+    }
     /**
      * Postavlja validne razrede prema datom Stringu, koji je razdvojen
      * zapetama. Radi exception-handling.
      *
      * @since 6.10.'14.
      */
-    public static void setValidRazred() {
+    private static void setValidRazred() {
         if (Config.hasKey("razredi")) {
             String razredi = Config.get("razredi");
             String[] split = razredi.split(",");
@@ -53,11 +60,15 @@ public class Ucenik implements Comparable<Ucenik> {
                     validRazred[i] = Integer.parseInt(split[i]);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Podešavanje validnih razreda "
-                        + "neuspelo zbog lošeg Stringa.\nBiće korišćene default vrednosti",
-                        "Greška pri inicijalizaciji", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, Konstante.UCENIK_SETRAZREDI_NFEX_MSG_STRING,
+                        Konstante.UCENIK_SETRAZREDI_NFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+    
+    private static void setShift() {
+        if(Config.hasKey("shiftKnjige"))
+            shiftKnjige=Config.getAsBool("shiftKnjige");
     }
 
     /**
@@ -258,9 +269,9 @@ public class Ucenik implements Comparable<Ucenik> {
      * @param knjiga knjiga koja se testira
      * @return true ako se nalazi, false u suprotnom
      */
-    public boolean hasKnjiga(String knjiga) {
+    public boolean hasKnjiga(Knjiga knjiga) {
         for (UcenikKnjiga knjige0 : knjige) {
-            if (knjige0.getNaslov().equalsIgnoreCase(knjiga)) {
+            if (knjiga.equals(knjige0.getKnjiga())) {
                 return true;
             }
         }
@@ -289,8 +300,9 @@ public class Ucenik implements Comparable<Ucenik> {
      * @throws PreviseKnjiga ako ucenik kod sebe vec ima maksimum knjiga. U message se nalazi spisak naslova
      * @throws rs.luka.biblioteka.exceptions.Duplikat ako je Ucenik vec iznajmio
      * knjigu tog naslova
+     * @throws rs.luka.biblioteka.exceptions.NemaViseKnjiga ako nema vise knjiga datog naslova
      */
-    public void setKnjiga(Knjiga knjiga) throws PreviseKnjiga, Duplikat {
+    public void setKnjiga(Knjiga knjiga) throws PreviseKnjiga, Duplikat, NemaViseKnjiga {
         for (UcenikKnjiga UKnjiga : knjige) {
             if (!UKnjiga.isEmpty() && UKnjiga.getKnjiga().equals(knjiga)) {
                 throw new Duplikat("UcenikKnjiga");
@@ -298,7 +310,7 @@ public class Ucenik implements Comparable<Ucenik> {
         }
         for (UcenikKnjiga knjige1 : knjige) {
             if (knjige1.isEmpty()) {
-                knjige1.setNaslov(knjiga);
+                knjige1.setKnjiga(knjiga);
                 return;
             }
         }
@@ -318,25 +330,38 @@ public class Ucenik implements Comparable<Ucenik> {
      *
      * @param mesto mesto na kojem se knjiga nalazi
      */
-    public void clearKnjiga(int mesto) {
+    private void clearKnjiga(int mesto) {
         knjige[mesto].clear();
+        if(shiftKnjige)
+            shiftLeft(mesto);
+    }
+    
+    /**
+     * Pomera sve od datog mesta u levo. Ne koristi funkcije UcenikKnjiga, već direktno radi na podacima
+     * (izbegava sve provere i menjanja količine, koristiti s oprezom i redovno update-ovati)
+     * @param mesto prazno mesto
+     */
+    private void shiftLeft(int mesto) {
+        if(!knjige[mesto].isEmpty())
+            throw new RuntimeException("Pokusaj shiftLeft-a nad punim mestom");
         for (int j = mesto + 1; j < knjige.length; j++) {
-            knjige[j - 1].setNaslov(knjige[j].getKnjiga());
-            knjige[j - 1].setDatum(knjige[j].getDatum());
-            knjige[j].clear();
+            knjige[j - 1].knjiga=knjige[j].knjiga;
+            knjige[j - 1].datum=knjige[j].datum;
+            knjige[j].knjiga=null;
+            knjige[j].datum=null;
         }
     }
 
     /**
      * Pronalazi knjigu datog naslova i zove {@link #clearKnjiga(int)} metodu.
      *
-     * @param naslov naslov knjige
+     * @param knjiga knjiga koja se iznajmljuje
      * @throws VrednostNePostoji ako se kod ucenika ne nalazi nijedna knjiga tog
      * naslova.
      */
-    public void clearKnjiga(String naslov) throws VrednostNePostoji {
+    public void clearKnjiga(Knjiga knjiga) throws VrednostNePostoji {
         for (int i = 0; i < knjige.length; i++) {
-            if (knjige[i].getNaslov().equals(naslov)) {
+            if (knjige[i].getKnjiga()!=null && knjige[i].getKnjiga().equals(knjiga)) {
                 clearKnjiga(i);
                 return;
             }
@@ -344,7 +369,6 @@ public class Ucenik implements Comparable<Ucenik> {
             {
                 throw new VrednostNePostoji(vrednost.drugo); /*ako se nalazi van for
                  petlje, throw se izvrsava svaki put, umesto samo ako knjiga nije pronadjena*/
-
             }
         }
     }
@@ -425,13 +449,13 @@ public class Ucenik implements Comparable<Ucenik> {
      * @author Luka
      * @since 7. 17. 2014.
      */
-    static class UcenikKnjiga {
+    class UcenikKnjiga {
         /**
          * Naslov knjige koja je izdata uceniku.
          */
         private Knjiga knjiga;
 
-        private final int indexKnjige;
+        private final int indexKnjige; //potrebno ??
         /**
          * Datum kada je data knjiga izdata.
          */
@@ -472,7 +496,7 @@ public class Ucenik implements Comparable<Ucenik> {
                 indexKnjige = -1;
             } else {
                 indexKnjige = Integer.parseInt((fields[0]));
-                knjiga = Podaci.getKnjiga(Integer.parseInt(fields[0]));
+                knjiga = Podaci.getOriginal(indexKnjige);
                 datum = Datumi.df.parse(fields[1]);
             }
         }
@@ -485,7 +509,7 @@ public class Ucenik implements Comparable<Ucenik> {
          */
         UcenikKnjiga(UcenikKnjiga uk) {
             knjiga = uk.getKnjiga();
-            indexKnjige = uk.getIndexKnjige();
+            indexKnjige = uk.indexKnjige;
             if (uk.isEmpty()) {
                 datum = null;
             } else {
@@ -507,11 +531,11 @@ public class Ucenik implements Comparable<Ucenik> {
          * @deprecated 
          * @return 
          */
-        public String getNaslov() {
+        private String getNaslov() {
             return knjiga.getNaslov();
         }
         
-        public Knjiga getKnjiga() {
+        private Knjiga getKnjiga() {
             return knjiga;
         }
 
@@ -521,16 +545,12 @@ public class Ucenik implements Comparable<Ucenik> {
         private Date getDatum() {
             return datum;
         }
-        
-        private int getIndexKnjige() {
-            return indexKnjige;
-        }
 
         /**
          * @return Datum kao I/O String
          * @see Datumi#df
          */
-        protected String getDatumAsString() {
+        private String getDatumAsString() {
             if (datum == null) {
                 return "";
             }
@@ -543,15 +563,16 @@ public class Ucenik implements Comparable<Ucenik> {
          * @return Reprezentaciju objekta u jednom stringu
          * @since 23.9.'14.
          */
-        protected String getAsIOString() {
+        private String getAsIOString() {
             return Podaci.indexOfNaslov(knjiga) + splitString + getDatumAsString();
         }
 
         //SETTERI
         /**
-         * Brise UcenikKnjiga, tj postavlja naslov na "" i datum na null.
+         * Brise UcenikKnjiga, tj postavlja naslov i datum na null i povecava kolicinu knjige.
          */
-        protected void clear() {
+        private void clear() {
+            knjiga.povecajKolicinu();
             knjiga = null;
             datum = null;
         }
@@ -561,13 +582,10 @@ public class Ucenik implements Comparable<Ucenik> {
          *
          * @param naslov
          */
-        protected void setNaslov(Knjiga knjiga) {
+        private void setKnjiga(Knjiga knjiga) throws NemaViseKnjiga {
+            knjiga.smanjiKolicinu();
             this.knjiga = knjiga;
             datum = new Date();
-        }
-
-        private void setDatum(Date datum) {
-            this.datum = datum;
         }
 
         //is... METODE
@@ -576,7 +594,7 @@ public class Ucenik implements Comparable<Ucenik> {
          *
          * @return
          */
-        public boolean isEmpty() {
+        private boolean isEmpty() {
             return knjiga == null;
         }
 
