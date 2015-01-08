@@ -8,9 +8,7 @@ import rs.luka.biblioteka.data.Knjiga;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.getBrojKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getBrojUcenika;
-import static rs.luka.biblioteka.data.Podaci.getKnjiga;
 import static rs.luka.biblioteka.data.Podaci.getMaxBrojUcenikKnjiga;
-import static rs.luka.biblioteka.data.Podaci.indexOfNaslov;
 import rs.luka.biblioteka.data.Ucenik;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 
@@ -31,13 +29,14 @@ public class Pretraga {
      * @since '14.
      */
     public static ArrayList<Integer> pretraziKnjige(String pocetak) {
+        pocetak = pocetak.toLowerCase();
         int brojKnjiga = getBrojKnjiga();
         ArrayList<Integer> inx = new ArrayList<>();
         inx.ensureCapacity(brojKnjiga / 16);
         Iterator <Knjiga> it = Podaci.iteratorKnjiga(); int i=0; Knjiga knj;
         while(it.hasNext()) {
             knj = it.next();
-            if (knj.getNaslov().toLowerCase().startsWith(pocetak.toLowerCase())
+            if (knj.getNaslov().toLowerCase().startsWith(pocetak)
                     || knj.getPisac().toLowerCase().startsWith(pocetak)) { //startsWith ili equals?
                 inx.add(i);
             }
@@ -46,7 +45,7 @@ public class Pretraga {
         if (inx.isEmpty()) {
             it = Podaci.iteratorKnjiga(); i=0;
             while(it.hasNext()) {
-                if (it.next().getNaslov().toLowerCase().contains(pocetak.toLowerCase())) {
+                if (it.next().getNaslov().toLowerCase().contains(pocetak)) {
                     inx.add(i);
                 }
             }

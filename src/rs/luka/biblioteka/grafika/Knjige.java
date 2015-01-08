@@ -9,7 +9,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import static java.lang.Integer.parseInt;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -32,6 +31,7 @@ import rs.luka.biblioteka.data.Knjiga;
 import rs.luka.biblioteka.data.Podaci;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
+import rs.luka.biblioteka.funkcije.Pretraga;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
@@ -197,7 +197,6 @@ public class Knjige implements FocusListener {
         novi.setPreferredSize(new Dimension(KNJIGE_NOVI_WIDTH, KNJIGE_BUTTON_HEIGHT));
         novi.addActionListener((ActionEvent e) -> {
             new KnjigeUtils().novi();
-            new Ucenici().pregledUcenika();
         });
         butPan.add(novi);
         JButton obrisi = new JButton(KNJIGE_OBRISI_STRING);
@@ -205,7 +204,6 @@ public class Knjige implements FocusListener {
         obrisi.setPreferredSize(new Dimension(KNJIGE_OBRISI_WIDTH, KNJIGE_BUTTON_HEIGHT));
         obrisi.addActionListener((ActionEvent e) -> {
             obrisiNaslov();
-            new Ucenici().pregledUcenika();
         });
         butPan.add(obrisi);
         JButton ucSearch = new JButton(KNJIGE_UCSEARCH_STRING);
@@ -332,8 +330,7 @@ public class Knjige implements FocusListener {
      * Pretrazuje knjige i prikazuje nadjene.
      */
     private void search() {
-        rs.luka.legacy.biblioteka.Knjige funkcije = new rs.luka.legacy.biblioteka.Knjige();
-        ArrayList<Integer> nasIndexes = funkcije.pretraziKnjige(searchBox.getText());
+        ArrayList<Integer> nasIndexes = Pretraga.pretraziKnjige(searchBox.getText());
         for (int i = 0; i < maxKnjiga; i++) {
             if (nasIndexes.contains(i)) {
                 Knjiga knjiga = Podaci.getKnjiga(i);

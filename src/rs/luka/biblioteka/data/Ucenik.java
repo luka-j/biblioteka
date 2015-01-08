@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import javax.swing.JOptionPane;
 import rs.luka.biblioteka.exceptions.Duplikat;
@@ -37,13 +38,28 @@ public class Ucenik implements Comparable<Ucenik> {
      * @since 23.9.'14.
      */
     private static final String splitString = String.valueOf(splitChar);
+    /**
+     * Oznacava da li se knjige pomeraju ulevo pri vracanju
+     *
+     * @since 7.1.'15.
+     */
     private static boolean shiftKnjige = true;
+    /**
+     * Prethodni ucenik koji se proveravao putem {@link #checkUniqueness()}, ako su ucenici sortirani po imenu.
+     */
+    private static Ucenik prevUcenik;
+    /**
+     * Flag koji oznacava metodu sortiranja.
+     */
+    private static boolean isSortedByRazred;
 
     //STATIC:
     public static void initUcenik() {
         setValidRazred();
         setShift();
+        setSortMethod();
     }
+
     /**
      * Postavlja validne razrede prema datom Stringu, koji je razdvojen
      * zapetama. Radi exception-handling.
@@ -65,10 +81,15 @@ public class Ucenik implements Comparable<Ucenik> {
             }
         }
     }
-    
+
     private static void setShift() {
-        if(Config.hasKey("shiftKnjige"))
-            shiftKnjige=Config.getAsBool("shiftKnjige");
+        if (Config.hasKey("shiftKnjige")) {
+            shiftKnjige = Config.getAsBool("shiftKnjige");
+        }
+    }
+
+    private static void setSortMethod() {
+        isSortedByRazred = sortedByRazred();
     }
 
     /**
@@ -102,13 +123,15 @@ public class Ucenik implements Comparable<Ucenik> {
     public static int getPrviRazred() {
         return validRazred[0];
     }
-    
+
     /**
-     * Vraca da li se ucenici sortiraju po razredu. Ako je false, ucenici se sortiraju po imenu.
+     * Vraca da li se ucenici sortiraju po razredu. Ako je false, ucenici se
+     * sortiraju po imenu.
+     *
      * @return true ili false, u zavisnosti od nacina sortiranja
      */
     public static boolean sortedByRazred() {
-        return !Config.hasKey("ucSort")||Config.get("ucSort").equals("razred")||Config.get("ucSort").equals("raz");
+        return !Config.hasKey("ucSort") || Config.get("ucSort").equals("razred") || Config.get("ucSort").equals("raz");
     }
     /**
      * Ime i prezime ucenika.
@@ -122,6 +145,10 @@ public class Ucenik implements Comparable<Ucenik> {
      * Knjige koje su trenutno kod ucenika.
      */
     private final UcenikKnjiga[] knjige;
+    /**
+     * Oznacava da li postoji jos neki ucenik s istim imenom.
+     */
+    private boolean isImeUnique = true;
 
     //KONSTRUKTORI:
     public Ucenik(String ime, int razred, Knjiga[] knjige) {
@@ -135,10 +162,11 @@ public class Ucenik implements Comparable<Ucenik> {
         }
         this.knjige = new UcenikKnjiga[Podaci.getMaxBrojUcenikKnjiga()];
         for (int i = 0; i < knjige.length; i++) {
-            if(knjige[i] == null)
+            if (knjige[i] == null) {
                 this.knjige[i] = new UcenikKnjiga();
-            else
+            } else {
                 this.knjige[i] = new UcenikKnjiga(knjige[i], new java.util.Date()); //throwuje IndexOutOfBounds
+            }
         }
         for (int i = knjige.length; i < this.knjige.length; i++) {
             this.knjige[i] = new UcenikKnjiga();
@@ -177,11 +205,20 @@ public class Ucenik implements Comparable<Ucenik> {
         {
             knjige[i] = new UcenikKnjiga(ucenik.getUcenikKnjiga(i));
         }
+        isImeUnique = ucenik.isImeUnique;
     }
 
     //GETTERI
     public String getIme() {
         return ime;
+    }
+
+    public String getDisplayName() {
+        if (isImeUnique) {
+            return ime;
+        } else {
+            return ime + ", " + razred;
+        }
     }
 
     public int getRazred() {
@@ -254,6 +291,10 @@ public class Ucenik implements Comparable<Ucenik> {
     }
 
     //boolean METODE
+    public boolean isImeUnique() {
+        return isImeUnique;
+    }
+
     public boolean isKnjFull() {
         for (UcenikKnjiga knjige1 : knjige) {
             if (knjige1.isEmpty()) {
@@ -282,7 +323,7 @@ public class Ucenik implements Comparable<Ucenik> {
      * Proverava da li je dato mesto za Knjigu kod ucenika prazno
      *
      * @param i mesto
-     * @return
+     * @return true ili false, u zavisnosti od toga da li je mesto za knjigu puno ili prazno
      */
     public boolean isKnjigaEmpty(int i) {
         if (i < knjige.length) {
@@ -294,13 +335,52 @@ public class Ucenik implements Comparable<Ucenik> {
 
     //SETTERI
     /**
+     * Postavlja {@link #isImeUnique} na false.
+     */
+    public void setNotUnique() {
+        isImeUnique = false;
+    }
+
+    /**
+     * Proverava da li Ucenik ima isto ime kao i prethodni koji se proveravao
+     * ovom metodom i postavlja {@link #isImeUnique} flag. Znatno brze ako su ucenici
+     * sortirani po imenu (proverava samo prethodni), sporije ako su sortirani po razredu
+     * (proverava sve prethodno unesene).
+     *
+     * @return this, da dozvoli chaining
+     * @since 8.1.'15.
+     */
+    public Ucenik checkUniqueness() {
+        if (!isSortedByRazred) {
+            if (prevUcenik != null && prevUcenik.ime.equalsIgnoreCase(ime)) {
+                this.isImeUnique = false;
+                prevUcenik.isImeUnique = false;
+            }
+            prevUcenik = this;
+        } else {
+            List<Integer> indexi = Podaci.indexOfUcenik(ime);
+            if (indexi.size() == 1) {
+                indexi.stream().forEach((i) -> {
+                    Podaci.setUcenikNotUnique(i);
+                });
+                this.isImeUnique = false;
+            } else if(indexi.size() > 1) {
+                this.isImeUnique = false;
+            }
+        }
+        return this;
+    }
+
+    /**
      * Ubacuje novu knjigu kod ucenika na sledece prazno mesto.
      *
      * @param knjiga knjiga koja se iznajmljuje
-     * @throws PreviseKnjiga ako ucenik kod sebe vec ima maksimum knjiga. U message se nalazi spisak naslova
+     * @throws PreviseKnjiga ako ucenik kod sebe vec ima maksimum knjiga. U
+     * message se nalazi spisak naslova
      * @throws rs.luka.biblioteka.exceptions.Duplikat ako je Ucenik vec iznajmio
      * knjigu tog naslova
-     * @throws rs.luka.biblioteka.exceptions.NemaViseKnjiga ako nema vise knjiga datog naslova
+     * @throws rs.luka.biblioteka.exceptions.NemaViseKnjiga ako nema vise knjiga
+     * datog naslova
      */
     public void setKnjiga(Knjiga knjiga) throws PreviseKnjiga, Duplikat, NemaViseKnjiga {
         for (UcenikKnjiga UKnjiga : knjige) {
@@ -315,7 +395,7 @@ public class Ucenik implements Comparable<Ucenik> {
             }
         }
         StringBuilder knj = new StringBuilder(72);
-        for(UcenikKnjiga UKnjiga : knjige) {
+        for (UcenikKnjiga UKnjiga : knjige) {
             knj.append(UKnjiga.toString()).append('\n');
         }
         throw new PreviseKnjiga(knj.toString());
@@ -332,23 +412,27 @@ public class Ucenik implements Comparable<Ucenik> {
      */
     private void clearKnjiga(int mesto) {
         knjige[mesto].clear();
-        if(shiftKnjige)
+        if (shiftKnjige) {
             shiftLeft(mesto);
+        }
     }
-    
+
     /**
-     * Pomera sve od datog mesta u levo. Ne koristi funkcije UcenikKnjiga, već direktno radi na podacima
-     * (izbegava sve provere i menjanja količine, koristiti s oprezom i redovno update-ovati)
+     * Pomera sve od datog mesta u levo. Ne koristi funkcije UcenikKnjiga, već
+     * direktno radi na podacima (izbegava sve provere i menjanja količine,
+     * koristiti s oprezom i redovno update-ovati)
+     *
      * @param mesto prazno mesto
      */
     private void shiftLeft(int mesto) {
-        if(!knjige[mesto].isEmpty())
+        if (!knjige[mesto].isEmpty()) {
             throw new RuntimeException("Pokusaj shiftLeft-a nad punim mestom");
+        }
         for (int j = mesto + 1; j < knjige.length; j++) {
-            knjige[j - 1].knjiga=knjige[j].knjiga;
-            knjige[j - 1].datum=knjige[j].datum;
-            knjige[j].knjiga=null;
-            knjige[j].datum=null;
+            knjige[j - 1].knjiga = knjige[j].knjiga;
+            knjige[j - 1].datum = knjige[j].datum;
+            knjige[j].knjiga = null;
+            knjige[j].datum = null;
         }
     }
 
@@ -361,7 +445,7 @@ public class Ucenik implements Comparable<Ucenik> {
      */
     public void clearKnjiga(Knjiga knjiga) throws VrednostNePostoji {
         for (int i = 0; i < knjige.length; i++) {
-            if (knjige[i].getKnjiga()!=null && knjige[i].getKnjiga().equals(knjiga)) {
+            if (knjige[i].getKnjiga() != null && knjige[i].getKnjiga().equals(knjiga)) {
                 clearKnjiga(i);
                 return;
             }
@@ -369,6 +453,7 @@ public class Ucenik implements Comparable<Ucenik> {
             {
                 throw new VrednostNePostoji(vrednost.drugo); /*ako se nalazi van for
                  petlje, throw se izvrsava svaki put, umesto samo ako knjiga nije pronadjena*/
+
             }
         }
     }
@@ -426,6 +511,9 @@ public class Ucenik implements Comparable<Ucenik> {
      */
     @Override
     public boolean equals(Object uc) {
+        if (this == uc) {
+            return true;
+        }
         if (!(uc instanceof Ucenik)) {
             return false;
         }
@@ -450,6 +538,7 @@ public class Ucenik implements Comparable<Ucenik> {
      * @since 7. 17. 2014.
      */
     class UcenikKnjiga {
+
         /**
          * Naslov knjige koja je izdata uceniku.
          */
@@ -528,13 +617,12 @@ public class Ucenik implements Comparable<Ucenik> {
 
         //GETTERI
         /**
-         * @deprecated 
-         * @return 
+         * @deprecated @return
          */
         private String getNaslov() {
             return knjiga.getNaslov();
         }
-        
+
         private Knjiga getKnjiga() {
             return knjiga;
         }
@@ -569,7 +657,8 @@ public class Ucenik implements Comparable<Ucenik> {
 
         //SETTERI
         /**
-         * Brise UcenikKnjiga, tj postavlja naslov i datum na null i povecava kolicinu knjige.
+         * Brise UcenikKnjiga, tj postavlja naslov i datum na null i povecava
+         * kolicinu knjige.
          */
         private void clear() {
             knjiga.povecajKolicinu();
@@ -621,19 +710,21 @@ public class Ucenik implements Comparable<Ucenik> {
          */
         @Override
         public boolean equals(Object uk) {
+            if (this == uk) {
+                return true;
+            }
             if (!(uk instanceof UcenikKnjiga)) {
                 return false;
             }
             UcenikKnjiga UKnjiga = (UcenikKnjiga) uk;
             return UKnjiga.isEmpty() && this.isEmpty()
-                    || (UKnjiga.getKnjiga().equals(knjiga) && UKnjiga.getDatum().equals(datum));
+                    || (UKnjiga.getKnjiga().equals(knjiga));
         }
 
         @Override
         public int hashCode() {
             int hash = 5;
             hash = 53 * hash + Objects.hashCode(this.knjiga);
-            hash = 53 * hash + Objects.hashCode(this.datum);
             return hash;
         }
     }

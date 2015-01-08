@@ -1,6 +1,7 @@
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
@@ -242,7 +243,7 @@ public class Ucenici implements FocusListener {
         ucenici = new IndexedCheckbox[maxUcenika];
         Iterator<Ucenik> it = Podaci.iteratorUcenika();
         for (int i = 0; i < maxUcenika; i++) {
-            ucenici[i] = new IndexedCheckbox(it.next().getIme(), i, INVALID);
+            ucenici[i] = new IndexedCheckbox(it.next().getDisplayName(), i, INVALID);
         }
 
         for (int i = 0; i < maxKnjiga; i++) {
@@ -449,7 +450,9 @@ public class Ucenici implements FocusListener {
     private void initSearchBox() {
         searchBox.addFocusListener(this);
         searchBox.addActionListener((ActionEvent e) -> {
-            search();
+            EventQueue.invokeLater(() -> {
+                search();
+            });
         });
         searchBox.setBounds(UCENICI_SEARCHBOX_X, UCENICI_SEARCHBOX_Y,
                 UCENICI_SEARCHBOX_WIDTH, UCENICI_SEARCHBOX_HEIGHT);
@@ -678,16 +681,15 @@ public class Ucenici implements FocusListener {
             try {
                 ucIndexes.addAll(Utils.extractXFromPointList(Pretraga.pretraziUcenikePoNaslovu(searchBox.getText())));
             } catch (VrednostNePostoji ex) {/*nikad, zbog provere u if-u*/
-
                 throw new RuntimeException(ex);
             }
         }
 
         Ucenik uc;
         for (int i = 0; i < maxUcenika; i++) {
-            uc = getUcenik(i);
             if (ucIndexes.contains(i)) {
-                ucenici[i].setText(uc.getIme());
+                uc = getUcenik(i);
+                ucenici[i].setText(uc.getDisplayName());
                 ucenici[i].setVisible(true);
                 for (int j = 0; j < maxKnjiga; j++) {
                     if (uc.isKnjigaEmpty(j)) {

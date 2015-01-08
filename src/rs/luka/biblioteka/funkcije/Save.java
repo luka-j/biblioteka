@@ -48,7 +48,7 @@ public class Save {
      * @throws IOException 
      * @since 24.9.'14.(new)
      */
-    public static void saveUcenike() throws IOException {
+    private static void saveUcenike() throws IOException {
         Podaci.sortKnjige();
         LOGGER.log(Level.FINE, "Počinjem čuvanje učenika");
         File ucenici = new File(Utils.getWorkingDir() + "Data" + File.separator + "Ucenici.dat");
@@ -75,7 +75,7 @@ public class Save {
      * @throws IOException 
      * @since 24.9.'14.(new)
      */
-    public static void saveKnjige() throws IOException {
+    private static void saveKnjige() throws IOException {
         LOGGER.log(Level.FINE, "Počinjem čuvanje knjiga");
         File knjige = new File(Utils.getWorkingDir() + "Data" + File.separator + "Knjige.dat");
         if (getBrojKnjiga() == 0) {

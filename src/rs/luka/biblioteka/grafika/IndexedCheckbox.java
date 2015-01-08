@@ -48,7 +48,7 @@ public class IndexedCheckbox extends JCheckBox {
     public IndexedCheckbox(Knjiga knj, int red, int kol) {
         super(" ");
         if(knj != null) {
-            super.setText(knj.getNaslov());
+            super.setText(knj.getDisplayName());
         }
         this.index = red;
         this.kol = kol;

@@ -3,7 +3,7 @@
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
 //2400 linija, 24.12.'14.
-//2656 linija, 7.1.'15. (trenutno, auto, Strings, viseKnjiga, cleanup)
+//2790 linija, 8.1.'15. (trenutno, auto, Strings, viseKnjiga, cleanup)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -121,13 +121,15 @@ public final class Podaci {
                 knjige.ensureCapacity(parseUnsignedInt(Config.get("knjSize", valueOf(DEF_KNJ_SIZE))));
                 try {
                     while (inN.hasNextLine()) {
-                        if(!knjige.add(new Knjiga(inN.nextLine())))
-                            throw new NotUnique("Greška pri učitavanju knjiga: postoji duplikat");
+                        if(!knjige.add(new Knjiga(inN.nextLine()).checkUniqueness()))
+                            throw new NotUnique("Greška pri učitavanju knjiga: duplikat ");
                     }
                     while (inU.hasNextLine()) {
-                        if(!ucenici.add(new Ucenik(inU.nextLine()))) 
+                        if(!ucenici.add(new Ucenik(inU.nextLine()).checkUniqueness())) 
                             throw new NotUnique("Greška pri učitavanju učenika: postoji duplikat");
                     }
+                    knjige.trimToSize();
+                    ucenici.trimToSize();
                 } catch (NoSuchElementException ex) {
                     LOGGER.log(Level.SEVERE, "Greška pri učitavanju: premalo linija", ex);
                     showMessageDialog(null, LOADDATA_NSEEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
@@ -148,6 +150,7 @@ public final class Podaci {
                         JOptionPane.ERROR_MESSAGE);
             }
         }
+        System.gc();
         LOGGER.log(Level.FINE, "Završio učitavanje podataka");
     }
 
@@ -412,6 +415,13 @@ public final class Podaci {
 
     //SETTERI, ADD-eri
     /**
+     * Postavlja flag za uniqueIme u uceniku na i-tom mestu na false
+     * @param i index ucenika
+     */
+    public static void setUcenikNotUnique(int i) {
+        ucenici.get(i).setNotUnique();
+    }
+    /**
      * addNas, refactored. Pravi objekat Knjiga sa datim podacima i zove
      * {@link #dodajKnjigu(rs.luka.biblioteka.data.Knjiga) } da ubaci objekat u listu.
      *
@@ -471,11 +481,11 @@ public final class Podaci {
      * @see #dodajUcenika(java.lang.String, int, java.lang.String[]) 
      */
     public static void dodajUcenika(String ime, int raz) throws Duplikat {
-        String knjige[] = new String[Podaci.getMaxBrojUcenikKnjiga()];
-        for (int i = 0; i < knjige.length; i++) {
-            knjige[i] = "";
+        String naslovi[] = new String[Podaci.getMaxBrojUcenikKnjiga()];
+        for (int i = 0; i < naslovi.length; i++) {
+            naslovi[i] = "";
         }
-        try{dodajUcenika(ime, raz, knjige);}
+        try{dodajUcenika(ime, raz, naslovi);}
         catch(VrednostNePostoji ex){throw new RuntimeException(ex);} //nikad
     }
 
@@ -619,8 +629,8 @@ public final class Podaci {
     /**
      * Brise naslov iz liste.
      * @param inx index naslova
-     * @throws rs.luka.biblioteka.exceptions.PreviseKnjiga ako {@link #obrisiKnjigu(rs.luka.biblioteka.data.Knjiga)}
-     * throwuje PreviseKnjiga, tj ako se kod nekog Ucenika nalazi Knjiga
+     * @throws rs.luka.biblioteka.exceptions.PreviseKnjiga ako {@link #obrisiKnjigu(Knjiga)} 
+     * throwuje PreviseKnjiga, tj. ako se kod nekog Ucenika nalazi Knjiga
      * @since 17.9.'14.
      */
     public static void obrisiKnjigu(int inx) throws PreviseKnjiga {

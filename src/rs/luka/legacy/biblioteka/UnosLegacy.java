@@ -84,11 +84,11 @@ public class UnosLegacy {
                 }
             }
         }
-        try {
-            Save.saveKnjige();
-        } catch (IOException ex) {
+//        try {
+//            Save.saveKnjige();
+//        } catch (IOException ex) {
 //            Logger.getLogger(Podaci.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        }
     }
 
     /**
@@ -96,7 +96,7 @@ public class UnosLegacy {
      * @return lista
      * @deprecated Koristiti ArraylistToString. Uradjeno sa if, itd., a ne sa
      * switch n vraca ArrayList n(naslove) kol vraca ArrayList kol(kolicina) pu
-     * vraca ArrayList pu(prodaci ucenika, ime i prezime) knj1 vraca ArrayList
+     * vraca ArrayList pu(podaci ucenika, ime i prezime) knj1 vraca ArrayList
      * knj1(prva knjiga koja je kod i-tog ucenika knj2 vraca ArrayList
      * knj2(druga knjiga koja je kod i-tog ucenika sve ostalo vraca ArrayList
      * knj3(treca knjiga koja je kod i-tog ucenika)

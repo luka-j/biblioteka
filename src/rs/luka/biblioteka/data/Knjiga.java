@@ -19,6 +19,10 @@ public class Knjiga implements Comparable<Knjiga> {
      * @since 23.9.'14.
      */
     private static final String splitString = new String(new char[]{splitChar});
+    /**
+     * Prethodna knjiga koja se proveravala putem {@link #isNaslovUnique()}
+     */
+    private static Knjiga prevKnjiga;
 
     /**
      * Naslov knjige.
@@ -32,6 +36,10 @@ public class Knjiga implements Comparable<Knjiga> {
      * Pisac knjige.
      */
     private String pisac;
+    /**
+     * Oznacava da li postoji jos neka knjiga s istim naslovom.
+     */
+    private boolean isNaslovUnique = true;
 
     /**
      * Konstruktor koji ne uzima pisca u obzir.
@@ -51,6 +59,7 @@ public class Knjiga implements Comparable<Knjiga> {
      * @param naslov naslov knjige
      * @param kolicina broj knjiga koje su trenutno u biblioteci
      * @param pisac opciono, pisac knjige
+     * @throws rs.luka.biblioteka.exceptions.Prazno ako je naslov null ili ""
      */
     public Knjiga(String naslov, int kolicina, String pisac) throws Prazno {
         if(naslov == null || naslov.isEmpty()) {
@@ -70,9 +79,7 @@ public class Knjiga implements Comparable<Knjiga> {
         String [] fields = IOString.split(splitString);
         this.naslov = fields[0];
         this.kolicina = Integer.parseInt(fields[1]);
-        if(fields.length > 2) {
-            this.pisac = fields[2];
-        }
+        this.pisac = fields[2];
     }
     
     /**
@@ -99,6 +106,10 @@ public class Knjiga implements Comparable<Knjiga> {
         return pisac;
     }
     
+    public boolean isNaslovUnique() {
+        return isNaslovUnique;
+    }
+    
     /**
      * Vraca objekat kao string, namenjen za upis u fajl.
      * Redosled: naslov + {@link #splitChar} + kolicina + {@link #splitChar} + pisac
@@ -113,8 +124,28 @@ public class Knjiga implements Comparable<Knjiga> {
         }
         return string.toString();
     }
+    
+    public String getDisplayName() {
+        if(isNaslovUnique) {
+            return naslov;
+        }
+        else return naslov + ", " + pisac;
+    }
 
     //SETTERI
+    /**
+     * Proverava da li prethodna knjiga ima isti naslov i postavlja flag {@link #isNaslovUnique}
+     * @return this, da dozvoli chaining
+     */
+    protected Knjiga checkUniqueness() {
+        if(prevKnjiga != null && prevKnjiga.naslov.equalsIgnoreCase(naslov)) {
+            this.isNaslovUnique = false;
+            prevKnjiga.isNaslovUnique = false;
+        }
+        prevKnjiga = this;
+        return this;
+    }
+    
     /**
      * Smanjuje kolicinu date knjige
      * @throws NemaViseKnjiga ako je kolicina manja od 1, jer ne moze biti negativna
@@ -141,7 +172,10 @@ public class Knjiga implements Comparable<Knjiga> {
      */
     @Override
     public int compareTo(Knjiga knj) {
-        return this.naslov.compareToIgnoreCase(knj.getNaslov());
+        int compNaslov = this.naslov.compareToIgnoreCase(knj.naslov);
+        if(compNaslov != 0)
+            return compNaslov;
+        else return this.pisac.compareToIgnoreCase(knj.pisac);
     }
 
     /**
@@ -165,11 +199,13 @@ public class Knjiga implements Comparable<Knjiga> {
      */
     @Override
     public boolean equals(Object knj) {
+        /*if(this==knj)
+            return true;*/
         if(!(knj instanceof Knjiga)) {
             return false;
         }
         Knjiga knjiga = (Knjiga) knj;
-        return knjiga.getNaslov().equals(naslov) && knjiga.getPisac().equals(pisac);
+        return knjiga.getNaslov().equalsIgnoreCase(naslov) && knjiga.getPisac().equalsIgnoreCase(pisac);
     }
 
     /**

@@ -1,6 +1,6 @@
 /**
- * @lastmod 7.1.'15. 
- * Prebacio povecaj/smanjiKolicinu() u UcenikKnjiga
+ * @lastmod 8.1.'15. 
+ * Ucenici/Knjige sa istim imenom: displayname
  */
 /**
  * @curr 
@@ -28,6 +28,8 @@
  */
 /**
  * @changelog 
+ * Popravio pretragu knjiga, izbacio neke nepotrebne refreshove
+ * Ubacio prikaz ucenika/knjiga s istim imenom/naslovom i checkUniqueness()/is*Unique
  * Izbacio knjige/ucenici S/V, ubacio customSize i win.pack()
  * Dodao Ucenici#shiftLeft i napravio da bude opciono (shiftKnjige u Config-u)
  * Popravio bagove sa kolicinom, morao da dodam Knjiga getOriginal(int i) zbog IOString konstruktora
@@ -49,15 +51,15 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
-//7640 linije, 7.1.'15. (trenutno, config opcije&Strings, PeriodicActions, ICheckbox, setKol, UniqueList, 
-//                       viseKnjiga, Knjiga u UK, optimizacija, cleanup)
+//7958 linije, 8.1.'15. (trenutno, config opcije&Strings, PeriodicActions, ICheckbox, setKol, UniqueList, 
+//                       viseKnjiga, Knjiga u UK, displayName, optimizacija, cleanup)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
 //1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
-//1332 linija, 7.1.'15. (trenutno, auto, cleanup)
+//1333 linija, 8.1.'15. (trenutno, auto, cleanup)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;

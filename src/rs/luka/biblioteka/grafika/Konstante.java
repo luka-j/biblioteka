@@ -126,7 +126,7 @@ public class Konstante {
     static int DIJALOZI_TEXTFIELD_WIDTH = 300;
     static int DIJALOZI_TEXTFIELD_HEIGHT = 25;
     static int DIJALOZI_INFOWINDOW_WIDTH = 250;
-    static int DIJALOZI_INFOWINDOW_HEGHT = 80;
+    static int DIJALOZI_INFOWINDOW_HEGHT = 50;
     static String DIJALOZI_VISERAZREDA_MSG_STRING = "Postoji vise učenika sa tim imenom.\n"
             + "Odaberite razred:";
     static String DIJALOZI_VISERAZREDA_TITLE_STRING = "Odaberite razred";

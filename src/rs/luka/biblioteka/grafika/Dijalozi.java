@@ -3,6 +3,7 @@ package rs.luka.biblioteka.grafika;
 import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import static java.lang.String.valueOf;
 import java.util.List;
@@ -142,6 +143,7 @@ public class Dijalozi {
      */
     public static void drawInfoWindow(String naslov, String poruka) {
         infoWindow = new JDialog();
+        infoWindow.setUndecorated(true);
         infoWindow.setTitle(naslov);
         infoWindow.setSize(INFOWINDOW_BOUNDS);
         infoWindow.setLocationRelativeTo(null);
@@ -151,6 +153,7 @@ public class Dijalozi {
         infoPan.setBackground(Color.WHITE);
         infoWindow.setContentPane(infoPan);
         JLabel infoLab = new JLabel(poruka);
+        infoLab.setFont(new Font("SansSerif", Font.PLAIN, 14));
         infoPan.add(infoLab);
         infoWindow.setVisible(true);
     }

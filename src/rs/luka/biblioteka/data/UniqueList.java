@@ -22,7 +22,8 @@ public class UniqueList<E> extends ArrayList<E> {
     @Override
     public boolean add(E e) {
         if(isUnique(e)) {
-            return super.add(e);
+            super.add(e);
+            return true;
         }
         return false;
     }
@@ -59,10 +60,6 @@ public class UniqueList<E> extends ArrayList<E> {
      * @return ako sadrzi, false (oznacava da nije jedinstven), u suprotnom true (jedinstven je)
      */
     private boolean isUnique(E e) {
-        if(this.contains(e)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !this.contains(e);
     }
 }

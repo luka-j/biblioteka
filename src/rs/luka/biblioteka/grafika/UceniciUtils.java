@@ -136,7 +136,7 @@ public class UceniciUtils {
         final rs.luka.legacy.biblioteka.Ucenici ucenici = new rs.luka.legacy.biblioteka.Ucenici();
         //---------JFrame&JPanel------------------------------------------------
         String ucenik = Dijalozi.showTextFieldDialog(OBRISIUCENIKA_TITLE_STRING, OBRISIUCENIKA_MSG_STRING, "");
-        if (ucenik == null || ucenik.equals("null")) {
+        if (ucenik == null || ucenik.equals("null") || ucenik.isEmpty()) {
             return;
         }
         List<Integer> inx = indexOfUcenik(ucenik);
