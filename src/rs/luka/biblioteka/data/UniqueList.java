@@ -1,6 +1,7 @@
 package rs.luka.biblioteka.data;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import rs.luka.biblioteka.exceptions.NotUnique;
 
 /**
@@ -15,6 +16,8 @@ import rs.luka.biblioteka.exceptions.NotUnique;
  * @since 3.1.'15.
  */
 public class UniqueList<E> extends ArrayList<E> {
+    private int prevModCount;
+    
     /**
      * {@inheritDoc}
      * @return true ako je sve OK, false ako je doslo do greske (ili element vec postoji)
@@ -52,6 +55,23 @@ public class UniqueList<E> extends ArrayList<E> {
         }
         else 
             throw new NotUnique("Element " + element + " nije jedinstven.");
+    }
+    
+    
+    
+    /**
+     * Proverava da li je lista sortirana od poslednje modifikacije (gleda modCount).
+     * Ako nije, vraca se bez izmena, u suprotnom radi sortiranje.
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public void sort(Comparator<? super E> c) {
+        if(prevModCount == modCount)
+            return;
+        else 
+            super.sort(c);
+        prevModCount = modCount;
     }
     
     /**

@@ -56,7 +56,7 @@ public class IndexedCheckbox extends JCheckBox {
         this.setForeground(Grafika.getFgColor());
         this.setBackground(Grafika.getBgColor());
         this.setBorder(new EmptyBorder(INSET));
-        knjIndex = Podaci.indexOfNaslov(knj);
+        knjIndex = Podaci.indexOfKnjiga(knj);
     }
     
     /**
@@ -89,7 +89,7 @@ public class IndexedCheckbox extends JCheckBox {
      * @param knj knjiga na koju se ovaj checkbox odnosi
      */
     public void setKnjiga(Knjiga knj) {
-        this.setText(knj.getNaslov());
-        this.knjIndex = Podaci.indexOfNaslov(knj);
+        this.setText(knj.getDisplayName());
+        this.knjIndex = Podaci.indexOfKnjiga(knj);
     }
 }

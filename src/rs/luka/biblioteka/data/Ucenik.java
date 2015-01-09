@@ -318,6 +318,24 @@ public class Ucenik implements Comparable<Ucenik> {
         }
         return false;
     }
+    
+    /**
+     * Pretrazuje da li se knjiga koja pocinje sa datim stringom ili cije je ime pisca
+     * dati string, nalazi kod ovog ucenika. 
+     * @param str string za pretragu. Mora biti lowercase (mala slova)
+     * @return true ako se nalazi, false u suprotnom
+     * @throws NullPointerException ako sam opet nesto zaboravio -.-
+     */
+    public boolean searchKnjiga(String str) {
+        for(UcenikKnjiga knjiga : knjige) {
+            if(knjiga == null || knjiga.isEmpty())
+                continue;
+            if(knjiga.getKnjiga().getNaslov().toLowerCase().startsWith(str) ||
+                    knjiga.getKnjiga().getPisac().toLowerCase().equals(str))
+                return true;
+        }
+        return false;
+    }
 
     /**
      * Proverava da li je dato mesto za Knjigu kod ucenika prazno
@@ -565,7 +583,7 @@ public class Ucenik implements Comparable<Ucenik> {
 
         UcenikKnjiga(Knjiga knjiga, Date datum) {
             this.knjiga = knjiga;
-            this.indexKnjige = Podaci.indexOfNaslov(knjiga);
+            this.indexKnjige = Podaci.indexOfKnjiga(knjiga);
             this.datum = datum;
         }
 
@@ -652,7 +670,10 @@ public class Ucenik implements Comparable<Ucenik> {
          * @since 23.9.'14.
          */
         private String getAsIOString() {
-            return Podaci.indexOfNaslov(knjiga) + splitString + getDatumAsString();
+            if(this.isEmpty())
+                return splitString;
+            else
+                return Podaci.indexOfKnjiga(knjiga) + splitString + getDatumAsString();
         }
 
         //SETTERI

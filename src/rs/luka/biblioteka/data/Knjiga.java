@@ -172,6 +172,8 @@ public class Knjiga implements Comparable<Knjiga> {
      */
     @Override
     public int compareTo(Knjiga knj) {
+        if(knj==null)
+            return -1;
         int compNaslov = this.naslov.compareToIgnoreCase(knj.naslov);
         if(compNaslov != 0)
             return compNaslov;

@@ -30,29 +30,29 @@ public class Pretraga {
      */
     public static ArrayList<Integer> pretraziKnjige(String pocetak) {
         pocetak = pocetak.toLowerCase();
-        int brojKnjiga = getBrojKnjiga();
-        ArrayList<Integer> inx = new ArrayList<>();
-        inx.ensureCapacity(brojKnjiga / 16);
+        ArrayList<Integer> inx = new ArrayList<>(), wider = new ArrayList<>();
         Iterator <Knjiga> it = Podaci.iteratorKnjiga(); int i=0; Knjiga knj;
         while(it.hasNext()) {
             knj = it.next();
             if (knj.getNaslov().toLowerCase().startsWith(pocetak)
-                    || knj.getPisac().toLowerCase().startsWith(pocetak)) { //startsWith ili equals?
+                    || knj.getPisac().toLowerCase().startsWith(pocetak)
+                    || knj.getPisac().toLowerCase().endsWith(pocetak)) { //startsWith ili equals?
                 inx.add(i);
             }
+            else if(knj.getNaslov().toLowerCase().contains(pocetak))
+                wider.add(i);
             i++;
         }
-        if (inx.isEmpty()) {
-            it = Podaci.iteratorKnjiga(); i=0;
-            while(it.hasNext()) {
-                if (it.next().getNaslov().toLowerCase().contains(pocetak)) {
-                    inx.add(i);
-                }
-            }
+        if(inx.isEmpty()) {
+            LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"",
+                    new Object[]{wider.size(), pocetak});
+            return wider;
         }
-        LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"",
-                new Object[]{inx.size(), pocetak});
-        return inx;
+        else {
+            LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"",
+                    new Object[]{inx.size(), pocetak});
+            return inx;
+        }
     }
 
     /**
@@ -94,27 +94,30 @@ public class Pretraga {
      * sadrze pocetak. Аko takvi ne postoje, vraća praznu listu.
      */
     public static ArrayList<Integer> pretraziUcenike(String pocetak) {
+        pocetak = pocetak.toLowerCase();
         int brojUcenika = getBrojUcenika();
-        ArrayList<Integer> inx = new ArrayList<>();
+        ArrayList<Integer> inx = new ArrayList<>(), wider = new ArrayList<>();
         inx.ensureCapacity(brojUcenika / 32);
-        Iterator<Ucenik> it;
+        Iterator<Ucenik> it; Ucenik uc;
         int i = 0;
         for(i=0, it=Podaci.iteratorUcenika(); it.hasNext(); i++) {
-            if (it.next().getIme().toLowerCase().startsWith(pocetak.toLowerCase())) {
+            uc=it.next();
+            if (uc.getIme().toLowerCase().startsWith(pocetak) ||
+                    uc.searchKnjiga(pocetak)) {
                 inx.add(i);
             }
+            else if(uc.getIme().toLowerCase().startsWith(pocetak))
+                wider.add(i);
         }
         if (inx.isEmpty()) {
-            for(it=Podaci.iteratorUcenika(), i=0; it.hasNext(); i++) {
-                if (it.next().getIme().toLowerCase().contains(pocetak.toLowerCase())) {
-                    inx.add(i);
-                }
-            }
-        }
-        
-        LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"",
+            LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"",
+                new Object[]{wider.size(), pocetak});
+            return wider;
+        } else {
+            LOGGER.log(Level.INFO, "Pronađeno {0} rezultata za upit \"{1}\"",
                 new Object[]{inx.size(), pocetak});
-        return inx;
+            return inx;
+        }
     }
 
     private Pretraga() {

@@ -49,7 +49,6 @@ import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.data.Ucenik;
 import rs.luka.biblioteka.debugging.Console;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
-import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import rs.luka.biblioteka.funkcije.Pretraga;
 import rs.luka.biblioteka.funkcije.Save;
 import rs.luka.biblioteka.funkcije.Undo;
@@ -134,7 +133,6 @@ public class Ucenici implements FocusListener {
         //vratiBut = new JButton[Podaci.getBrojUcenika()];
         searchBox = new JTextField(UCENICI_SEARCH_STRING);
         selectAllUc = new JCheckBox(UCENICI_UCENICI_STRING);
-        System.out.println("\t" + System.currentTimeMillis() + "\tZavrsio konstruktovanje ucenika");
     }
 
     /**
@@ -149,8 +147,8 @@ public class Ucenici implements FocusListener {
         initButtons();
         initIcons();
         initMainListeners();
-        showWindow();
         initSearchBox();
+        showWindow();
         setInputMaps();
     }
 
@@ -198,7 +196,6 @@ public class Ucenici implements FocusListener {
 //        sidePan.setBorder(BorderFactory.createLineBorder(Color.RED));
         sidePan.setAlignmentY(0);
         win.setContentPane(split);
-        System.out.println("\t" + System.currentTimeMillis() + "\tInicijalizovao panele");
     }
 
     /**
@@ -225,7 +222,6 @@ public class Ucenici implements FocusListener {
         actionMap.put("console", generateEmptyResetAction(consoleMethod, console));
         inputMap.put(KeyStroke.getKeyStroke("ctrl alt T"), "fullconsole");
         actionMap.put("fullconsole", generateEmptyResetAction(fullConsoleMethod, console));
-        System.out.println("\t" + System.currentTimeMillis() + "\tPostavio input mape");
     }
 
     /**
@@ -257,7 +253,6 @@ public class Ucenici implements FocusListener {
         LOGGER.log(Level.FINE, "Postavio labele učenika");
         uceniciPan.add(selectAllUc);
         pan.add(uceniciPan);
-        System.out.println("\t" + System.currentTimeMillis() + "\tInicijalizovao text");
     }
 
     /**
@@ -296,7 +291,6 @@ public class Ucenici implements FocusListener {
             }
             pan.add(knjigePan[i]);
         }
-        System.out.println("\t" + System.currentTimeMillis() + "\tPostavio text i separatore");
     }
 
     /**
@@ -326,7 +320,6 @@ public class Ucenici implements FocusListener {
         butPan.add(novaGen);
 
         butPan.add(Box.createRigidArea(new Dimension(UCENICI_BUTPAN_RIGIDAREA_WIDTH, 1)));
-        System.out.println("\t" + System.currentTimeMillis() + "\tInicijalizovao buttone");
     }
 
     /**
@@ -389,7 +382,6 @@ public class Ucenici implements FocusListener {
         podesavanjaBut.setBorder(null);
         podesavanjaBut.setContentAreaFilled(false);
         butPan.add(podesavanjaBut);
-        System.out.println("\t" + System.currentTimeMillis() + "\tInicijalizovao ikonice");
     }
 
     /**
@@ -424,7 +416,6 @@ public class Ucenici implements FocusListener {
                 }
             }
         }
-        System.out.println("\t" + System.currentTimeMillis() + "\tInicijalizovao glavne listenere");
     }
     private ItemListener vracanjeListener;
     private ItemListener uzimanjeListener;
@@ -463,11 +454,10 @@ public class Ucenici implements FocusListener {
         sidePan.add(searchBox);
         if (maxUcenika > 0) {
             sidePan.setPreferredSize(new Dimension(UCENICI_SIDEPAN_WIDTH,
-                    ucenici[maxUcenika - 1].getLocationOnScreen().y + UCENICI_HEIGHT_PER_LABEL));
+                    (maxUcenika+1)*UCENICI_HEIGHT_PER_LABEL));
         }
         //NE RADI
         pan.add(sidePan);
-        System.out.println("\t" + System.currentTimeMillis() + "\tInicalizovao searchbox");
     }
 
     /**
@@ -665,6 +655,7 @@ public class Ucenici implements FocusListener {
      * Radi pretragu.
      */
     private void search() {
+        System.out.println(System.currentTimeMillis() + "\tPocinjem pretragu");
         LOGGER.log(Level.FINE, "Počinjem pretragu (grafički)");
         if (ucSeparatori != null) {
             for (JSeparator sep : ucSeparatori) {
@@ -677,14 +668,8 @@ public class Ucenici implements FocusListener {
             }
         }
         ArrayList<Integer> ucIndexes = Pretraga.pretraziUcenike(searchBox.getText());
-        if (Podaci.naslovExists(searchBox.getText())) {
-            try {
-                ucIndexes.addAll(Utils.extractXFromPointList(Pretraga.pretraziUcenikePoNaslovu(searchBox.getText())));
-            } catch (VrednostNePostoji ex) {/*nikad, zbog provere u if-u*/
-                throw new RuntimeException(ex);
-            }
-        }
 
+        System.out.println(System.currentTimeMillis() + "\tBackend gotov. Krecem iteracije");
         Ucenik uc;
         for (int i = 0; i < maxUcenika; i++) {
             if (ucIndexes.contains(i)) {
@@ -709,12 +694,14 @@ public class Ucenici implements FocusListener {
                 }
             }
         }
-
+        
+        System.out.println(System.currentTimeMillis() + "\tIteracija gotova");
         sidePan.setMaximumSize(new Dimension(UCENICI_SIDEPAN_WIDTH,
                 (ucIndexes.size() + 1) * selectAllUc.getHeight()));
 
         pan.revalidate();
         pan.repaint();
+        System.out.println(System.currentTimeMillis() + "\tPretraga gotova");
     }
 
     /**

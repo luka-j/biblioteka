@@ -18,6 +18,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -288,6 +289,7 @@ public final class Podaci {
      * @return index trazene knjige
      * @throws VrednostNePostoji ako naslov ne postoji
      * @since pocetak
+     * @deprecated no occurences
      */
     public static int indexOfNaslov(String naslov, String pisac) throws VrednostNePostoji {
         Knjiga knj;
@@ -295,14 +297,17 @@ public final class Podaci {
         } catch (Prazno ex) {
             throw new VrednostNePostoji(vrednost.Knjiga);
         }
-        int index = indexOfNaslov(knj);
+        int index = indexOfKnjiga(knj);
         if(index<0) 
             throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga);
         else return index;
     }
     
-    public static int indexOfNaslov(Knjiga knj) {
-        return knjige.indexOf(knj);
+    public static int indexOfKnjiga(Knjiga knj) {
+        if(knj==null)
+            return -1;
+        sortKnjige();
+        return Collections.binarySearch(knjige, knj, null);
     }
 
     /**
@@ -333,7 +338,10 @@ public final class Podaci {
      * @since 28.9.'14.
      */
     public static int indexOfUcenik(Ucenik ucenik) {
-        return ucenici.indexOf(ucenik);
+        if(ucenik == null)
+            return -1;
+        sortUcenike();
+        return Collections.binarySearch(ucenici, ucenik, null);
     }
 
     /**
