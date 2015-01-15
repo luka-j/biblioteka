@@ -16,7 +16,7 @@ public class Konstante {
      * {@link rs.luka.biblioteka.data.Strings}, pa da se ne radi ista operacija dvaput).
      *
      * @param podesavanje ime konstante, dozvoljava tačke umesto donjih crta
-     * @param vrednost vrednost konstante, parsuje se u int
+     * @param vrednost vrednost konstante, parsuje se u int ako je potrebno
      * @since 29.11.'14.
      */
     public static void set(String podesavanje, String vrednost) {
@@ -49,6 +49,8 @@ public class Konstante {
     }
 
     static final int INVALID = -1;
+    public static String DA_STRING = "Da";
+    public static String NE_STRING = "Ne";
     /*----------Config.java---------------------------------------------------*/
     public static String CONFIG_DATELIMIT_DESC = "Broj dana koji učenik sme da zadrži knjigu kod sebe";
     public static String CONFIG_LOOKANDFEEL_DESC = "Izgled aplikacije (system, ocean, nimbus ili motif)";
@@ -91,6 +93,9 @@ public class Konstante {
     public static String DODAJGENERACIJU_DEX_MSG_STRING = "Uneli ste dva učenika sa istim imenom i prezimenom. "
             + "Jedan od njih neće biti unet.";
     public static String DODAJGENERACIJU_DEX_TITLE_STRING = "Duplikat";
+    public static String DODAJGENERACIJU_LFEX_MSG_STRING = " nije validno ime za učenika (sadrži \"/\")\n"
+            + "Možete ga naknadno uneti bez nedozvoljenih karaktera.";
+    public static String DODAJGENERACIJU_LFEX_TITLE_STRING = "Nedozvoljen karakter";
     /*----------Ucenik.java---------------------------------------------------*/
     public static String UCENIK_SETRAZREDI_NFEX_MSG_STRING = "Podešavanje validnih razreda "
             + "neuspelo zbog lošeg Stringa.\nBiće korišćene default vrednosti";
@@ -130,7 +135,7 @@ public class Konstante {
     static String DIJALOZI_VISERAZREDA_MSG_STRING = "Postoji vise učenika sa tim imenom.\n"
             + "Odaberite razred:";
     static String DIJALOZI_VISERAZREDA_TITLE_STRING = "Odaberite razred";
-    static String DIJALOZI_VISEKNJIGA_MSG1_STRING = "Postoji vise knjiga sa imenom ";
+    static String DIJALOZI_VISEKNJIGA_MSG1_STRING = "Postoji više knjiga sa imenom ";
     static String DIJALOZI_VISEKNJIGA_MSG2_STRING = "\nOdaberite autora:";
     static String DIJALOZI_VISEKNJIGA_TITLE_STRING = "Odaberite autora";
     static String DIJALOZI_BROJKNJIGA_TITLE_STRING = "Broj knjiga";
@@ -179,14 +184,6 @@ public class Konstante {
             + " se nalazi ova knjiga\nKada vrati knjigu, pokušajte ponovo.";
     static String KNJIGE_BRISANJE_PKEX_TITLE_STRING = "Zauzeta knjiga";
     static String KNJIGE_UZMI_DIJALOG_TITLE_STRING = "Iznajmljivanje knjige";
-    static String KNJIGE_UZMI_DIJALOG_MSG_STRING = "Unesite ime učenika koji iznajmljuje knjigu i pritisnite enter:";
-    static String KNJIGE_UZMI_SUCC_MSG_STRING = "Učenik je uspešno iznajmio knjigu";
-    static String KNJIGE_UZMI_SUCC_TITLE_STRING = "Uspeh!";
-    static String KNJIGE_UZMI_EX_TITLE_STRING = "Greška pri iznajmljivanju";
-    static String KNJIGE_UZMI_PKEX_MSG_STRING = "Kod učenika se trenutno nalazi previše knjiga";
-    static String KNJIGE_UZMI_DEX_MSG_STRING = "Kod učenika se već nalazi knjiga tog naslova";
-    static String KNJIGE_UZMI_NVKEX_MSG_STRING = "Nema više knjiga tog naslova";
-    static String KNJIGE_UZMI_VNPEX_MSG_STRING = "Učenik nije pronađen.\nProverite unos i pokušajte ponovo";
     /*----------KnjigeUtils.java----------------------------------------------*/
     static int NOVINASLOV_WIDTH = 330;
     static int NOVINASLOV_HEIGHT = 330;
@@ -219,6 +216,8 @@ public class Konstante {
     static String NOVINASLOV_DEX_TITLE_STRING = "Duplikat";
     static String NOVINASLOV_NFEX_MSG_STRING = "Uneta količina nije broj.";
     static String NOVINASLOV_NFEX_TITLE_STRING = "Loš unos";
+    static String NOVINASLOV_LFEX_MSG_STRING = "Naslov ili pisac sadrži nedozvoljene karaktere (\"/\")";
+    static String NOVINASLOV_LFEX_TITLE_STRING = "Nedozvoljen karakter";
     static int UCSEARCH_WIDTH = 350;
     static int UCSEARCH_HEIGHT = 130;
     static int UCSEARCH_NASLOV_X = 20;
@@ -370,6 +369,8 @@ public class Konstante {
     static String DODAJUCENIKA_DEX_MSG_STRING = "Već postoji učenik koji ide u isti razred sa istim imenom i "
             + "prezimenom.\nNovi učenik ne može biti dodat";
     static String DODAJUCENIKA_DEX_TITLE_STRING = "Duplikat";
+    static String DODAJUCENIKA_LFEX_MSG_STRING = "Uneto ime sadrži nedozvoljene karaktere";
+    static String DODAJUCENIKA_LFEX_TITLE_STRING = "Nedozvoljen karakter";
     static String OBRISIUCENIKA_TITLE_STRING = "Brisanje učenika";
     static String OBRISIUCENIKA_MSG_STRING = "Unesite ime učenika i pritisnite enter:";
     static String OBRISIUCENIKA_EMPTY_MSG_STRING = "Učenik nije pronađen\nProverite unos  i pokušajte ponovo.";
@@ -437,6 +438,8 @@ public class Konstante {
     static String UNOSKNJ_NFEX_TITLE_STRING = "Loš unos";
     static String UNOSKNJ_DEX_MSG_STRING = "Naslov već postoji.";
     static String UNOSKNJ_DEX_TITLE_STRING = "Dupli unos";
+    static String UNOSKNJ_LFEX_MSG_STRING = "Naslov ili pisac sadrži nedozvoljene karaktere (\"/\")";
+    static String UNOSKNJ_LFEX_TITLE_STRING = "Nedozvoljen karakter";
     static int UNOSUC_WIDTH = 400;
     static int UNOSUC_HEIGHT = 360;
     static int UNOSUC_TEXT_X = 20;
@@ -469,6 +472,8 @@ public class Konstante {
     static String UNOSUC_VNPEX_MSG_STRING = "Jedna od knjiga nije prethodno uneta. Možete koristiti\t"
             + "\"Ubaci novi naslov\" iz pregleda knjiga da je naknadno dodate.";
     static String UNOSUC_VNPEX_TITLE_STRING = "Knjiga ne postoji";
+    static String UNOSUC_LFEX_MSG_STRING = "Ime učenika sadrži nedozvoljene karaktere (\"/\")";
+    static String UNOSUC_LFEX_TITLE_STRING = "Nedozvoljen karakter";
     /*----------Uzimanje.java-------------------------------------------------*/
     static String UZIMANJE_TITLE_STRING = "Iznajmljivanje knjige";
     static String UZIMANJE_MSG_STRING = "Unesite naslov knjige koju učenik iznajmljuje:";

@@ -30,9 +30,6 @@ public class Uzimanje {
         String knjiga = Dijalozi.showTextFieldDialog(UZIMANJE_TITLE_STRING, UZIMANJE_MSG_STRING, "");
             try {
                 Podaci.uzmiKnjigu(indexUcenika, Podaci.getKnjiga(knjiga)); //šaljem objekat knjiga, ne naslov
-                showMessageDialog(null, "Sve je u redu! "
-                        + "Knjiga dodata kod ucenika, i oduzeta od biblioteke", "Uspeh!",
-                        JOptionPane.INFORMATION_MESSAGE);
             } catch (VrednostNePostoji ex) {
                 switch (ex.getMessage()) {
                     case "Knjiga":
@@ -43,7 +40,7 @@ public class Uzimanje {
                     default: 
                         LOGGER.log(Level.SEVERE, "Nepostojeća VrednostNePostoji "
                                 + "u uzimanju: {0}", ex.getMessage());
-                        throw new RuntimeException("Invalid VrednostNePostoji vrednost");
+                        throw new RuntimeException("Invalid VrednostNePostoji vrednost", ex);
                         //menjao ovaj deo. ne bi trebalo da dođe do default, ako dođe, bolje da znam
                 }
             } catch (NemaViseKnjiga ex) {

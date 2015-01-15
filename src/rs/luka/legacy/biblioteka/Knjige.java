@@ -42,7 +42,7 @@ public class Knjige {
         if ("".equals(nas)) {
             throw new VrednostNePostoji(VrednostNePostoji.vrednost.Knjiga);
         }
-        dodajKnjigu(nas, kol, pisac);
+//        dodajKnjigu(nas, kol, pisac);
     }
 
     /**

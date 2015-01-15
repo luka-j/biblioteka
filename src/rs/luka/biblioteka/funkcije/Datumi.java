@@ -1,4 +1,4 @@
-package rs.luka.biblioteka.data;
+package rs.luka.biblioteka.funkcije;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,10 +10,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.logging.Level;
+import rs.luka.biblioteka.data.Config;
+import rs.luka.biblioteka.data.Podaci;
+import rs.luka.biblioteka.data.Ucenik;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
-import rs.luka.biblioteka.funkcije.Utils;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**

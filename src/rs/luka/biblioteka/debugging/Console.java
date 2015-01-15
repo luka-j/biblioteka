@@ -16,10 +16,8 @@ public class Console {
     /**
      * Crta bsh konzolu.
      * 
-     * @throws bsh.EvalError ako dodje do greske u Interpreter-u bsh-a
-     * @throws java.io.IOException ??
      */
-    public void console() throws EvalError, IOException {
+    public void console() {
         JFrame frame = new JFrame();
         JPanel pan = new JPanel(null);
         frame.setLocationRelativeTo(null);

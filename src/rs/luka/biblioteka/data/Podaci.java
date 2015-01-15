@@ -96,25 +96,26 @@ public final class Podaci {
             LOGGER.log(Level.FINE, "Prvo pokretanje ili su liste prazne. "
                     + "Zovem prozor za unos i obustavljam učitavanje podataka.");
             new rs.luka.biblioteka.grafika.Unos().unesiKnjige(true);
-        } else {
-            if (knjigeF.length() == 0) {
+            return;
+        } 
+        if (knjigeF.length() == 0) {
                 LOGGER.log(Level.FINE, "Lista sa knjigama je prazna. Zovem prozor za unos.");
                 new rs.luka.biblioteka.grafika.Unos().unesiKnjige(false);
                 return;
-            }
-            if (uceniciF.length() == 0) {
+        }
+        if (uceniciF.length() == 0) {
                 LOGGER.log(Level.FINE, "Lista sa učenicima je prazna. Zovem prozor za unos.");
                 new rs.luka.biblioteka.grafika.Unos().unesiUcenike();
-            }
-            try {
+        }
+        try {
                 knjigeF.createNewFile();
                 uceniciF.createNewFile();
-            } catch (IOException ex) {
+        } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "I/O greška pri učitavanju podataka", ex);
                 showMessageDialog(null, LOADDATA_IOEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
-            }
-            try (final Scanner inN = new Scanner(new BufferedReader(new FileReader(knjigeF)));
+        }
+        try (final Scanner inN = new Scanner(new BufferedReader(new FileReader(knjigeF)));
                     final Scanner inU = new Scanner(new BufferedReader(new FileReader(uceniciF)))) {
                 ucenici.clear();
                 knjige.clear();
@@ -145,11 +146,10 @@ public final class Podaci {
                     showMessageDialog(null, LOADDATA_RTEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
                             JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (IOException ex) {
+        } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "I/O greška pri učitavanju podataka", ex);
                 showMessageDialog(null, LOADDATA_IOEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
-            }
         }
         System.gc();
         LOGGER.log(Level.FINE, "Završio učitavanje podataka");
@@ -294,8 +294,8 @@ public final class Podaci {
     public static int indexOfNaslov(String naslov, String pisac) throws VrednostNePostoji {
         Knjiga knj;
         try {knj = new Knjiga(naslov, 0, pisac);
-        } catch (Prazno ex) {
-            throw new VrednostNePostoji(vrednost.Knjiga);
+        } catch (Prazno | LosFormat ex) {
+            throw new VrednostNePostoji(vrednost.Knjiga, ex);
         }
         int index = indexOfKnjiga(knj);
         if(index<0) 
@@ -441,7 +441,8 @@ public final class Podaci {
      * tj. ako je naslov "" ili null
      * @since kraj jula '13.
      */
-    public static void dodajKnjigu(String nas, int kol, String pisac) throws Duplikat, VrednostNePostoji {
+    public static void dodajKnjigu(String nas, int kol, String pisac) 
+            throws Duplikat, VrednostNePostoji, LosFormat {
         Knjiga knj = null;
         try {
             knj = new Knjiga(nas, kol, pisac); 
@@ -477,7 +478,7 @@ public final class Podaci {
      * @param ime ime ucenika 
      * @throws Duplikat ako {@link #dodajUcenika(java.lang.String, int)} throwuje Duplikat.
      */
-    public static void dodajUcenika(String ime) throws Duplikat {
+    public static void dodajUcenika(String ime) throws Duplikat, LosFormat {
         dodajUcenika(ime, Ucenik.getPrviRazred());
     }
     
@@ -488,7 +489,7 @@ public final class Podaci {
      * @throws Duplikat ako {@link #dodajUcenika(java.lang.String, int, java.lang.String[])} throwuje Duplikat
      * @see #dodajUcenika(java.lang.String, int, java.lang.String[]) 
      */
-    public static void dodajUcenika(String ime, int raz) throws Duplikat {
+    public static void dodajUcenika(String ime, int raz) throws Duplikat, LosFormat {
         String naslovi[] = new String[Podaci.getMaxBrojUcenikKnjiga()];
         for (int i = 0; i < naslovi.length; i++) {
             naslovi[i] = "";
@@ -509,7 +510,7 @@ public final class Podaci {
      * @throws rs.luka.biblioteka.exceptions.VrednostNePostoji ako knjiga ne postoji
      * @since kraj jula '13.
      */
-    public static void dodajUcenika(String ime, int razred, String[] naslovi) throws Duplikat, VrednostNePostoji {
+    public static void dodajUcenika(String ime, int razred, String[] naslovi) throws Duplikat, VrednostNePostoji, LosFormat {
         Knjiga[] knjige = new Knjiga[naslovi.length];
         for(int i=0; i<naslovi.length; i++) {
             if(naslovi[i] == null || naslovi[i].isEmpty())
@@ -550,13 +551,18 @@ public final class Podaci {
     public static void dodajNovuGen(String novaGen) {
         LOGGER.log(Level.INFO, "Iniciram dodavanje nove generacije...");
         List<String> uceniciNoveGen = asList(novaGen.split("\\s*,\\s*"));
-        uceniciNoveGen.stream().forEach((ucenik) -> {
+        uceniciNoveGen.stream().forEach((String ucenik) -> {
             try {
                 Podaci.dodajUcenika(ucenik);
             } catch (Duplikat ex) {
+                LOGGER.log(Level.INFO, "Učenik {0} već postoji; neće biti dodat", ucenik);
                 JOptionPane.showMessageDialog(null, DODAJGENERACIJU_DEX_MSG_STRING, 
                         DODAJGENERACIJU_DEX_TITLE_STRING, JOptionPane.WARNING_MESSAGE);
                 //ne zelim da prekidam unos, umesto toga izbacujem gresku i nastavljam
+            } catch (LosFormat ex) {
+                LOGGER.log(Level.WARNING, "Učenik {0} sadrži nedozvoljen karakter (\"/\")", ucenik);
+                JOptionPane.showMessageDialog(null, ucenik + DODAJGENERACIJU_LFEX_MSG_STRING, 
+                        DODAJGENERACIJU_LFEX_TITLE_STRING, JOptionPane.WARNING_MESSAGE);
             }
         });
         povecajRazred();

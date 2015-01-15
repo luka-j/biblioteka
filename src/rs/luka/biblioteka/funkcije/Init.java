@@ -1,6 +1,6 @@
 /**
  * @lastmod 8.1.'15. 
- * Ucenici/Knjige sa istim imenom: displayname
+ * LosFormat u konstruktorima Ucenika i Knjiga
  */
 /**
  * @curr 
@@ -8,7 +8,8 @@
  */
 /**
  * @bugs 
- * Undo ne dolazi do fokusa u Ucenici
+ * prozor Ucenici ide preko prozora za Unos
+ * Unos ucenika - oduzima knjige od biblioteke ili ne? (Config opcija)
  * Ucenici sidePan.setPreferredSize ne radi, postoji workaround koji se resetuje pri scroll-u 
  * ^^^ Samo u netbeans okruzenju, setPreferredSize radi normalno kada se pokrene posebno kao aplikacija !!! 
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije
@@ -18,16 +19,19 @@
 /**
  * @todo 
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING)
+ * Koristiti DA_STRING i NE_STRING
  * Pretraga na osnovu Levenshtein distance stringova
- * Prikazivanje vise knjiga i vise ucenika s istim imenom
  * indexKnjige unutar UK - potreban ?
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception 
- * Bugfixing, optimizacija koda, cišenje koda 
+ * Bugfixing, optimizacija koda, cišenje koda (starog pogotovo, videti imena)
+ * Custom Logging handler, custom error messages
  * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e) 
  * Izbaciti sve preostale workaround-ove
  */
 /**
  * @changelog 
+ * LosFormat u konstruktorima, ne dozvoljava / u imenima
+ * Dodao globalne precice sa tastature, izbacio reflekciju i input/actionMap
  * Popravio pretragu knjiga, izbacio neke nepotrebne refreshove
  * Ubacio prikaz ucenika/knjiga s istim imenom/naslovom i checkUniqueness()/is*Unique
  * Izbacio knjige/ucenici S/V, ubacio customSize i win.pack()
@@ -73,7 +77,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JOptionPane.showOptionDialog;
 import rs.luka.biblioteka.data.Config;
 import static rs.luka.biblioteka.data.Config.loadConfig;
-import static rs.luka.biblioteka.data.Datumi.proveriDatum;
+import static rs.luka.biblioteka.funkcije.Datumi.proveriDatum;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.loadData;
 import static rs.luka.biblioteka.data.Ucenik.initUcenik;

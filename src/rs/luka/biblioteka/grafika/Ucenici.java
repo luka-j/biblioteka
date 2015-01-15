@@ -5,11 +5,13 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
@@ -17,18 +19,15 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
-import javax.swing.ActionMap;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -39,7 +38,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import rs.luka.biblioteka.data.Config;
@@ -53,7 +51,6 @@ import rs.luka.biblioteka.funkcije.Pretraga;
 import rs.luka.biblioteka.funkcije.Save;
 import rs.luka.biblioteka.funkcije.Undo;
 import rs.luka.biblioteka.funkcije.Utils;
-import static rs.luka.biblioteka.grafika.Grafika.generateEmptyResetAction;
 import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
@@ -202,26 +199,24 @@ public class Ucenici implements FocusListener {
      * Postavlja precice na tastaturi.
      */
     private void setInputMaps() {
-        InputMap inputMap = pan.getInputMap();
-        ActionMap actionMap = pan.getActionMap();
-        Console console = new rs.luka.biblioteka.debugging.Console();
-        Method consoleMethod = null, undoMethod = null, redoMethod = null, fullConsoleMethod = null;
-        try {
-            consoleMethod = console.getClass().getDeclaredMethod("console", null);
-            undoMethod = Undo.class.getDeclaredMethod("undo", null);
-            redoMethod = Undo.class.getDeclaredMethod("redo", null);
-            fullConsoleMethod = console.getClass().getDeclaredMethod("fullConsoleWindow", null);
-        } catch (NoSuchMethodException | SecurityException ex) {
-            LOGGER.log(Level.SEVERE, "Greška pri kreiranju neke od metoda", ex);
-        }
-        inputMap.put(KeyStroke.getKeyStroke("ctrl Z"), "undo");
-        actionMap.put("undo", generateEmptyResetAction(undoMethod, null));
-        inputMap.put(KeyStroke.getKeyStroke("ctrl Y"), "redo");
-        actionMap.put("redo", generateEmptyResetAction(redoMethod, null));
-        inputMap.put(KeyStroke.getKeyStroke("ctrl shift T"), "console");
-        actionMap.put("console", generateEmptyResetAction(consoleMethod, console));
-        inputMap.put(KeyStroke.getKeyStroke("ctrl alt T"), "fullconsole");
-        actionMap.put("fullconsole", generateEmptyResetAction(fullConsoleMethod, console));
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher((KeyEvent e) -> {
+            if(e.getKeyCode() == KeyEvent.VK_Z && e.isControlDown()) { //ctrl + z
+                Undo.undo();
+                return true;
+            } else if(e.getKeyCode() == KeyEvent.VK_Y && e.isControlDown()) { //ctrl  + y
+                Undo.redo();
+                return true;
+            } else if(e.getKeyCode() == KeyEvent.VK_T && e.isControlDown()) {
+                if(e.isShiftDown()) { //ctrl + shift + T
+                    new Console().console();
+                    return true;
+                } else if(e.isAltDown()) { //ctrl + alt + T
+                    new Console().fullConsoleWindow();
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     /**

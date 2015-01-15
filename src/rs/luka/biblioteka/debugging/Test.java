@@ -7,6 +7,7 @@ package rs.luka.biblioteka.debugging;
 
 import java.util.logging.Logger;
 import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
@@ -18,22 +19,25 @@ import rs.luka.biblioteka.funkcije.Unos;
  * @author Luka
  */
 public class Test {
+    
+    private final int BROJ_UCENIKA = 10_000;
+    private final int BROJ_KNJIGA = 20_000;
 
     /**
      *
      */
     public void testUnos() {
         Unos.initUnos();
-        int i = 0, j = 0;
-        for (i = 0; i < 3_000; i++) {
+        int i, j;
+        for (i = 0; i < BROJ_UCENIKA; i++) {
             try{Unos.UnosUc("Pera Peric " + i,  new String[]{}, (i%8)+1);}
-            catch (PreviseKnjiga | Prazno | Duplikat | VrednostNePostoji ex) {
+            catch (PreviseKnjiga | Prazno | Duplikat | VrednostNePostoji | LosFormat ex) {
                 ex.printStackTrace();
             }
         }
-        for (j = 0; j < 300; j++) {
+        for (j = 0; j < BROJ_KNJIGA; j++) {
             try {Unos.UnosKnj("Knjiga o dzungli " + j, j%100, "Imaginaran " + j%3);} 
-            catch (Duplikat ex) {} catch (Prazno ex) {
+            catch (Duplikat | LosFormat ex) {} catch (Prazno ex) {
                 ex.printStackTrace();
             }
         }

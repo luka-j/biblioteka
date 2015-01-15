@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.logging.Level;
 import rs.luka.biblioteka.data.Config;
 import javax.swing.JOptionPane;
-import rs.luka.biblioteka.data.Datumi;
 
 /**
  *
@@ -47,10 +46,11 @@ public class PeriodicActions {
      * @see #start(int)
      */
     protected static void doPeriodicActions() {
+        setDateCheckPeriod(-1);
         if (Config.get("savePeriod").equals("0")) {
             LOGGER.log(Level.FINE, "autosave isključen.");
             AUTOSAVE = false;
-            AUTOSAVE_PERIOD = 3_600_000;
+            AUTOSAVE_PERIOD = (int) (DATE_CHECK_PERIOD * MS_U_DANU);
         } else {
             try {
                 AUTOSAVE_PERIOD = (int) (Float.parseFloat(Config.get("savePeriod")) * 60_000);
@@ -71,7 +71,6 @@ public class PeriodicActions {
      * @param period period na koji se periodicne akcije ponavljaju
      */
     private static void start(int period) {
-        setDateCheckPeriod(-1);
         Method[] methods = PeriodicActions.class.getDeclaredMethods();
 
         try {

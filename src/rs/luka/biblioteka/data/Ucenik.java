@@ -1,5 +1,6 @@
 package rs.luka.biblioteka.data;
 
+import rs.luka.biblioteka.funkcije.Datumi;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.swing.JOptionPane;
 import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
@@ -123,7 +125,7 @@ public class Ucenik implements Comparable<Ucenik> {
     public static int getPrviRazred() {
         return validRazred[0];
     }
-
+    
     /**
      * Vraca da li se ucenici sortiraju po razredu. Ako je false, ucenici se
      * sortiraju po imenu.
@@ -151,7 +153,7 @@ public class Ucenik implements Comparable<Ucenik> {
     private boolean isImeUnique = true;
 
     //KONSTRUKTORI:
-    public Ucenik(String ime, int razred, Knjiga[] knjige) {
+    public Ucenik(String ime, int razred, Knjiga[] knjige) throws LosFormat {
         this.ime = ime;
         /*if(razred < 1) {
          this.razred = validRazred[0];
@@ -159,6 +161,9 @@ public class Ucenik implements Comparable<Ucenik> {
             this.razred = razred;
         } else {
             throw new NumberFormatException("Loš razred: " + razred);
+        }
+        if(ime.contains(splitString)) {
+            throw new LosFormat("splitString u imenu ucenika");
         }
         this.knjige = new UcenikKnjiga[Podaci.getMaxBrojUcenikKnjiga()];
         for (int i = 0; i < knjige.length; i++) {
@@ -226,7 +231,7 @@ public class Ucenik implements Comparable<Ucenik> {
     }
 
     public String getNaslovKnjige(int i) {
-        return getUcenikKnjiga(i).getNaslov();
+        return getUcenikKnjiga(i).knjiga.getNaslov();
     }
 
     public String getDatumKnjige(int i) {
@@ -573,13 +578,13 @@ public class Ucenik implements Comparable<Ucenik> {
          *
          * @since 23.9.'14.
          */
-        private final char splitChar = '@';
+        private static final char splitChar = '@';
         /**
          * String wrapper za {@link #splitChar}.
          *
          * @since 23.9.'14.
          */
-        private final String splitString = String.valueOf(splitChar);
+        private static final String splitString = "@"; //workaround -.-
 
         UcenikKnjiga(Knjiga knjiga, Date datum) {
             this.knjiga = knjiga;
@@ -634,13 +639,6 @@ public class Ucenik implements Comparable<Ucenik> {
         }
 
         //GETTERI
-        /**
-         * @deprecated @return
-         */
-        private String getNaslov() {
-            return knjiga.getNaslov();
-        }
-
         private Knjiga getKnjiga() {
             return knjiga;
         }
@@ -671,7 +669,7 @@ public class Ucenik implements Comparable<Ucenik> {
          */
         private String getAsIOString() {
             if(this.isEmpty())
-                return splitString;
+                return "";
             else
                 return Podaci.indexOfKnjiga(knjiga) + splitString + getDatumAsString();
         }

@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import static java.lang.Integer.parseUnsignedInt;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -20,6 +21,7 @@ import javax.swing.WindowConstants;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.indexOfUcenik;
 import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import static rs.luka.biblioteka.grafika.Konstante.*;
@@ -120,6 +122,10 @@ public class UceniciUtils {
                         + "Novi učenik nije dodat.", new Object[]{ucTF.getText(), razTF.getText()});
                 showMessageDialog(null, DODAJUCENIKA_DEX_MSG_STRING, DODAJUCENIKA_DEX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
+            } catch (LosFormat ex) {
+                LOGGER.log(Level.INFO, "{0} nije validno ime (sadrži nedozvoljene karatere)", ucTF.getText());
+                showMessageDialog(null, DODAJUCENIKA_LFEX_MSG_STRING, 
+                        DODAJUCENIKA_LFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             }
         });
         pan.add(unesi);

@@ -53,7 +53,7 @@ public class Logger {
                     throw new IOException("logFolder nije kreiran");
                 }
                 handler = new FileHandler(Utils.getWorkingDir() + "logs/biblioteka.log%g",
-                        FILE_SIZE_LIMIT, FILE_COUNT, false);
+                        FILE_SIZE_LIMIT, FILE_COUNT, true);
                 handler.setEncoding("UTF-8");
                 handler.setFormatter(new SimpleFormatter());
                 handler.setLevel(LOGGING_LEVEL);

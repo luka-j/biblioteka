@@ -9,6 +9,7 @@ import static java.lang.Integer.parseInt;
 import static java.lang.Math.min;
 import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,6 +21,7 @@ import javax.swing.JTextField;
 import rs.luka.biblioteka.data.Podaci;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
 import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
@@ -116,7 +118,6 @@ public class KnjigeUtils {
         unos.setFont(Grafika.getButtonFont());
         unos.setBounds(NOVI_UNOS_BOUNDS);
         ActionListener listener = (ActionEvent e) -> {
-            try {
                 try {
                     Podaci.dodajKnjigu(naslovTF.getText(), parseInt(kolicinaTF.getText()), pisacTF.getText());
                     showMessageDialog(null, NOVINASLOV_SUCC_MSG_STRING, NOVINASLOV_SUCC_TITLE_STRING, 
@@ -130,11 +131,15 @@ public class KnjigeUtils {
                     LOGGER.log(Level.INFO, "Naslov {0} već postoji", naslovTF.getText());
                     showMessageDialog(null, NOVINASLOV_DEX_MSG_STRING,
                             NOVINASLOV_DEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException ex) {
-                LOGGER.log(Level.INFO, "{0} nije broj", naslovTF.getText());
-                showMessageDialog(null, NOVINASLOV_NFEX_MSG_STRING,
-                        NOVINASLOV_NFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
+                } catch (LosFormat ex) {
+                    LOGGER.log(Level.INFO, "{0} ili {1} nije validan string za Knjigu", 
+                            new String[]{naslovTF.getText(), pisacTF.getText()});
+                    showMessageDialog(null, NOVINASLOV_LFEX_MSG_STRING, 
+                            NOVINASLOV_LFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
+                } catch (NumberFormatException ex) {
+                    LOGGER.log(Level.INFO, "{0} nije broj", naslovTF.getText());
+                    showMessageDialog(null, NOVINASLOV_NFEX_MSG_STRING,
+                            NOVINASLOV_NFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             }
         };
         unos.addActionListener(listener);

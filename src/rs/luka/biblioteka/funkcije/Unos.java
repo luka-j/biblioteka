@@ -8,6 +8,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.data.Podaci;
 import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
@@ -46,7 +47,7 @@ public class Unos {
      * @throws rs.luka.biblioteka.exceptions.Prazno ako je naslov "" ili null
      * @throws rs.luka.biblioteka.exceptions.Duplikat ako naslov već postoji
      */
-    public static void UnosKnj(String nas, int kol, String pisac) throws Prazno, Duplikat {
+    public static void UnosKnj(String nas, int kol, String pisac) throws Prazno, Duplikat, LosFormat {
         try {
             Podaci.dodajKnjigu(nas, kol, pisac);
         }
@@ -67,7 +68,8 @@ public class Unos {
      * @throws rs.luka.biblioteka.exceptions.Duplikat ako ucenik vec postoji
      * @throws rs.luka.biblioteka.exceptions.VrednostNePostoji ako knjiga ne postoji
      */
-    public static void UnosUc(String uc, String[] knjige, int raz) throws PreviseKnjiga, Prazno, Duplikat, VrednostNePostoji {
+    public static void UnosUc(String uc, String[] knjige, int raz) 
+            throws PreviseKnjiga, Prazno, Duplikat, VrednostNePostoji, LosFormat {
         if (uc == null || uc.isEmpty()) {
             throw new Prazno("String imena ucenika je \"\" ili null");
         }

@@ -9,6 +9,7 @@ import java.awt.event.WindowEvent;
 import static java.lang.Integer.parseInt;
 import static java.lang.Integer.parseUnsignedInt;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.exceptions.Duplikat;
+import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
@@ -164,10 +166,18 @@ public class Unos {
                     LOGGER.log(Level.INFO, "Uneta količina {0} nije broj", kolText.getText());
                     showMessageDialog(null, UNOSKNJ_NFEX_MSG_STRING, UNOSKNJ_NFEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
+                    kolText.grabFocus();
                 } catch (Duplikat ex) {
                     LOGGER.log(Level.WARNING, "Naslov {0} već postoji", nasText.getText());
                     showMessageDialog(null, UNOSKNJ_DEX_MSG_STRING, UNOSKNJ_DEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
+                    nasText.grabFocus();
+                } catch (LosFormat ex) {
+                    LOGGER.log(Level.INFO, "{0} ili {1} nije validan string za Knjigu", 
+                            new String[]{nasText.getText(), pisacText.getText()});
+                    showMessageDialog(null, UNOSKNJ_LFEX_MSG_STRING, UNOSKNJ_LFEX_TITLE_STRING,
+                            JOptionPane.ERROR_MESSAGE);
+                    nasText.grabFocus();
                 }
             }
         };
@@ -259,19 +269,25 @@ public class Unos {
                 } catch (Prazno ex) {
                     winU.dispose();
                 } catch (PreviseKnjiga ex) {
-                    LOGGER.log(Level.WARNING, "Uneto previše knjiga: {0}", knjText.getText());
+                    LOGGER.log(Level.INFO, "Uneto previše knjiga: {0}", knjText.getText());
                     JOptionPane.showMessageDialog(null, UNOSUC_PKEX_MSG_STRING, UNOSUC_PKEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     knjText.grabFocus();
                 } catch (Duplikat ex) {
-                    LOGGER.log(Level.WARNING, "Učenik {0} već postoji", imeText.getText());
+                    LOGGER.log(Level.INFO, "Učenik {0} već postoji", imeText.getText());
                     showMessageDialog(null, UNOSUC_DEX_MSG_STRING, UNOSUC_DEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     imeText.grabFocus();
                 } catch (VrednostNePostoji ex) {
-                    LOGGER.log(Level.WARNING, "Nije uneta jedna od knjiga {0}", knjText.getText());
+                    LOGGER.log(Level.INFO, "Nije uneta jedna od knjiga {0}", knjText.getText());
                     showMessageDialog(null, UNOSUC_VNPEX_MSG_STRING, UNOSUC_VNPEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
+                    knjText.grabFocus();
+                } catch (LosFormat ex) {
+                    LOGGER.log(Level.INFO, "Ime {0} sadrži nedozvoljene karaktere", imeText.getText());
+                    showMessageDialog(null, UNOSUC_LFEX_MSG_STRING, 
+                            UNOSUC_LFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
+                    imeText.grabFocus();
                 }
             }
         };

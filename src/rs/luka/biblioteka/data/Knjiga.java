@@ -1,6 +1,7 @@
 package rs.luka.biblioteka.data;
 
 import java.util.Objects;
+import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
 import rs.luka.biblioteka.exceptions.Prazno;
 
@@ -61,9 +62,12 @@ public class Knjiga implements Comparable<Knjiga> {
      * @param pisac opciono, pisac knjige
      * @throws rs.luka.biblioteka.exceptions.Prazno ako je naslov null ili ""
      */
-    public Knjiga(String naslov, int kolicina, String pisac) throws Prazno {
+    public Knjiga(String naslov, int kolicina, String pisac) throws Prazno, LosFormat {
         if(naslov == null || naslov.isEmpty()) {
             throw new Prazno("Prazan argument prosledjen konstruktoru");
+        }
+        if(naslov.contains(splitString) || pisac.contains(splitString)) {
+            throw new LosFormat("splitString u imenu naslova ili pisca");
         }
         this.naslov = naslov;
         this.kolicina = kolicina;
