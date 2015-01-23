@@ -12,20 +12,20 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static rs.luka.biblioteka.data.Strings.loadStrings;
 import rs.luka.biblioteka.exceptions.ConfigException;
 import rs.luka.biblioteka.funkcije.Utils;
 import rs.luka.biblioteka.grafika.Konstante;
-import static rs.luka.biblioteka.data.Strings.loadStrings;
 import static rs.luka.biblioteka.grafika.Konstante.*;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 
 
 public class Config {
     private static final java.util.logging.Logger LOGGER = 
             java.util.logging.Logger.getLogger(Config.class.getName());
-
 
 
     /**
@@ -43,10 +43,8 @@ public class Config {
     /**
      * Komentar za config fajl, koji se upisuje na pocetku fajla.
      */
-    private static final String configMsg = "ucSize i knjSize - koliko ima ucenika i knjiga, "
-            + "predvidjena velicina lista. Opciono.\n"
-            + "firstRun - true ili false, oznacava da li se program pokrece po prvi put. Ako da, "
-            + "otvara prozor za unos podataka.\n"
+    private static final String configMsg = "firstRun - true ili false, oznacava da li se "
+            + "program pokrece po prvi put. Ako da, otvara prozor za unos podataka.\n"
             + "dateLimit - broj dana koliko ucenik moze da zadrzi knjigu kod sebe. Default je 14\n"
             + "lookAndFeel - generalni izgled prozora i grafickih komponenti. Vrednosti:"
             + "system, ocean, metal, nimbus, motif. Izbegavati nimbus i motif\n"
@@ -63,25 +61,34 @@ public class Config {
             + "label,but i smallBut Font Name/Size/Weight - osobine fontova koriscenih za labele i dugmad\n"
             + "kPrefix - prefix za kljuceve koji oznacavaju da se vrednost odnosi na konstantu,"
             + "default je k_\n"
-            + "ucSort - metoda sortiranja ucenika. Default je po razredu (razred||raz), moze i po imenu (ime)\n"
+            + "ucSort - metoda sortiranja ucenika. Default je po razredu (razred/raz), moze i po imenu (ime)\n"
             + "shiftKnjige - odredjuje da li se pri vracanju sve knjige pomeraju ulevo, tako da knjige"
             + "koje se trenutno nalaze kod ucenika popunjavaju prva prazna mesta (poravnate ulevo)\n"
-            + "customSize - oznacava da li se velicina prozora odredjuje automatski ili putem konstanti";
-    
+            + "customSize - oznacava da li se velicina prozora odredjuje automatski ili putem konstanti\n"
+            + "kazna - kazna za cuvanje knjige predugo, povecava se dnevno (0 za iskljuceno)";
+    /**
+     * Prefix za konstante. Default je k_, ucitava se odmah po ucitavanju config-a
+     */
     private static String KONSTANTE_PREFIX = "k_";
     /**
-     * Sve vrednosti koje kljuc moze da ima, sem onih koji pocinju sa k_ (koje se nalaze u Konstante.java).
+     * Tipovi podataka ili validne vrednosti za svaki kljuc. Sadrzi sve moguce kljuceve sem konstanti
+     * @since 16.1.'14.
      */
-    private static final StringMultiMap vrednosti = new StringMultiMap();
+    private static final StringMultiMap types = new StringMultiMap();
+    /**
+     * Opisi kljuceva za prikaz korisniku. Koristi Stringove iz Konstanti.
+     * @since 16.1.'14.
+     */
+    private static final Map<String, String> descriptions = new HashMap<>();
     /**
      * Limiti za sve vrednosti.
      */
     private static final Map<String, Limit> limiti = new HashMap<>();
 
     //LIMITI ZA CONFIG
-    private static final Limit SIRINA = new Limit(100, 6_000);
-    private static final Limit VISINA = new Limit(70, 5_000);
-    private static final Limit BR_KNJIGA = new Limit(1, 25);
+    private static final Limit SIRINA = new Limit(100, 20_000);
+    private static final Limit VISINA = new Limit(70, 10_000);
+    private static final Limit BR_KNJIGA = new Limit(1, 30);
     private static final Limit UC_KNJ_SIZE = new Limit(30);
     private static final Limit DATE_LIMIT = new Limit(1, 365);
     private static final Limit SAVE_PERIOD = new Limit(0, 1440); //1 dan
@@ -91,6 +98,7 @@ public class Config {
     private static final Limit LABEL_FONT = new Limit(1, 50);
     private static final Limit BUTTON_FONT = new Limit(1, 30);
     private static final Limit DATE_CHECK_LIMIT = new Limit(0, 30); //1 mesec
+    private static final Limit KAZNA_LIMIT = new Limit(0, 1000); //1000 dinara dnevno, vise nego dovoljno
 
     /**
      * Ucitava config iz fajla u Properties.
@@ -98,8 +106,9 @@ public class Config {
     public static void loadConfig() {
         setDefaults();
         loadStrings();
-        defineSynonyms();
+        setDescriptions();
         setLimits();
+        setTypes();
         configFile = new File(Utils.getWorkingDir() + "config.properties");
         config = new Properties(defaults);
         String path = null;
@@ -109,7 +118,7 @@ public class Config {
             FileReader configFR = new FileReader(configFile);
             Config.config.load(configFR);
             setKPrefix();
-            resolveKeys();
+            setKonstante();
         } catch (FileNotFoundException ex) {
             showMessageDialog(null, LOADCONFIG_FNFEX_MSG_STRING + path, LOADCONFIG_FNFEX_TITLE_STRING, 
                     ERROR_MESSAGE);
@@ -134,63 +143,35 @@ public class Config {
         defaults.setProperty("maxUndo", "50");
         defaults.setProperty("logSizeLimit", "10000000");
         defaults.setProperty("logFileCount", "15");
-        defaults.setProperty("customSize", "false");
     }
-
+    
     /**
-     * Podesava sinonime za kljuceve u configu.
-     *
-     * @since 25.10.'14.
+     * Podesava opise kljuceva za prikaz korisniku.
+     * @see #descriptions
+     * @since 16.1.'14.
      */
-    private static void defineSynonyms() {
-        vrednosti.put("ucSize", "ucSize", "brojUcenika");
-        vrednosti.put("knjSize", "knjSize", "brojKnjiga");
-        vrednosti.put("firstRun", "firstRun", "prvoPokretanje");
-        vrednosti.put("dateLimit", "dateLimit", "maxDana", "zadrzavanje", "zadrzavanjeKnjige", 
-                CONFIG_DATELIMIT_DESC);
-        vrednosti.put("lookAndFeel", "lookAndFeel", "LaF", "LnF", "izgled", CONFIG_LOOKANDFEEL_DESC);
-        vrednosti.put("brKnjiga", "brKnjiga", "maxBrojKnjigaPoUceniku", "maxKnjiga", "maxUcenikKnjiga",
-                CONFIG_BRKNJIGA_DESC);
-        vrednosti.put("bgBoja", "bgBoja", "bojaPozadine", "pozadinskaBoja", "bgColor");
-        vrednosti.put("fgBoja", "fgBoja", "bojaTeksta", "fgColor");
-        vrednosti.put("TFBoja", "TFBoja", "bojitiPoljaZaUnosTeksta");
-        vrednosti.put("TFColor", "TFColor", "bojaPolja", "bojaPoljaZaUnosTeksta");
-        vrednosti.put("logLevel", "logLevel", "nivoLogovanja", CONFIG_LOGLEVEL_DESC);
-        vrednosti.put("savePeriod", "savePeriod", "autosavePeriod", "saveInterval", "autosaveInterval", "intervalCuvanja",
-                CONFIG_SAVEPERIOD_DESC);
-        vrednosti.put("maxUndo", "maxUndo", "undoStackDepth", "velicinaUndoStacka", CONFIG_MAXUNDO_DESC);
-        vrednosti.put("razredi", "razredi", "razrediUcenika", "validniRazredi", CONFIG_RAZREDI_DESC);
-        vrednosti.put("workingDir", "workingDir", "workingDirectory", "Radni direktorijum", "dataDir",
-                CONFIG_WORKINGDIR_DESC);
-        vrednosti.put("logSizeLimit", "logSizeLimit", "logSize", "logLimit", "logFileSizeLimit", "velicinaLogFajla",
-                CONFIG_LOGSIZELIMIT_DESC);
-        vrednosti.put("logFileCount", "logFileCount", "logCount", "logFileNumber", "brojLogFajlova",
-                CONFIG_LOGFILECOUNT_DESC);
-        vrednosti.put("labelFontName", "labelFontName", "labelName", "fontName", "font", 
-                CONFIG_LABELFONTNAME_DESC);
-        vrednosti.put("labelFontSize", "labelFontSize", "labelSize", "fontSize");
-        vrednosti.put("labelFontWeight", "labelFontWeight", "labelWeight", "fontWeight");
-        vrednosti.put("butFontName", "butFontName", "buttonFontName", "butName", "buttonName",
-                CONFIG_BUTFONTNAME_DESC);
-        vrednosti.put("butFontSize", "butFontSize", "buttonFontSize", "butSize", "buttonSize");
-        vrednosti.put("butFontWeight", "butFontWeight", "buttonFontWeight", "butWeight", "buttonWeight");
-        vrednosti.put("smallButFontName", "smallButFontName", "sButFontName", "sButName", "smallButtonName",
-                "UzmiVratiFontName", "UzmiVratiName", "UVFont", CONFIG_SMALLBUTFONTNAME_DESC);
-        vrednosti.put("smallButFontSize", "smallButFontSize", "sButFontSize", "sButSize", "smallButtonSize",
-                "UzmiVratiFontSize", "UzmiVratiSize", "UVSize");
-        vrednosti.put("smallButWeight", "smallButWeight", "smallButtonWeight", "sButW", "sButWeight",
-                "UzmiVratiFontWeight", "UzmiVratiWeight", "UVWeight");
-        vrednosti.put("kPrefix", "kPrefix", "konstantePrefix", "PrefixZaKonstante");
-        vrednosti.put("ucSort", "ucSort", "uceniciSort", "sortiratiUcenikePo", "uceniciSortKriterijum");
-        vrednosti.put("datePeriod", "datePeriod", "dateCheckPeriod", CONFIG_DATEPERIOD_DESC);
-        vrednosti.put("shiftKnjige", "shiftKnjige", "pomerajKnjige", "pomerajUcenikKnjige", "alignKnjige");
-        vrednosti.put("customSize", "customSize", "useCustomSize", "customVelicina");
+    private static void setDescriptions() {
+        descriptions.put("razredi", CONFIG_RAZREDI_DESC);
+        descriptions.put("brKnjiga", CONFIG_BRKNJIGA_DESC);
+        descriptions.put("dateLimit", CONFIG_DATELIMIT_DESC);
+        descriptions.put("workingDir", CONFIG_WORKINGDIR_DESC);
+        descriptions.put("savePeriod", CONFIG_SAVEPERIOD_DESC);
+        descriptions.put("datePeriod", CONFIG_DATEPERIOD_DESC);
+        descriptions.put("logLevel", CONFIG_LOGLEVEL_DESC);
+        descriptions.put("logSizeLimit", CONFIG_LOGSIZELIMIT_DESC);
+        descriptions.put("logFileCount", CONFIG_LOGFILECOUNT_DESC);
+        descriptions.put("lookAndFeel", CONFIG_LOOKANDFEEL_DESC);
+        descriptions.put("labelFontName", CONFIG_LABELFONTNAME_DESC);
+        descriptions.put("butFontName", CONFIG_BUTFONTNAME_DESC);
+        descriptions.put("smallButFontName", CONFIG_SMALLBUTFONTNAME_DESC);
+        descriptions.put("kazna", CONFIG_KAZNA_DESC);
     }
 
     /**
      * Postavlja limite u mapi koristeći vrednosti iz fieldova.
      *
      * @since 11.'14
+     * @see #limiti
      */
     private static void setLimits() {
         limiti.put("ucSize", UC_KNJ_SIZE);
@@ -209,26 +190,16 @@ public class Config {
         limiti.put("butFontSize", BUTTON_FONT);
         limiti.put("smallButFontSize", BUTTON_FONT);
         limiti.put("datePeriod", DATE_CHECK_LIMIT);
+        limiti.put("kazna", KAZNA_LIMIT);
     }
 
     /**
-     * Radi iteraciju preko configa i zamenjuje ključeve ako su sinonimi sa
-     * glavnim (iz mape vrednosti). Postavlja grafičke konstante (o istom
-     * trošku).
-     *
-     * @since 7.11.'14.
+     * Postavlja konstante. Overriduje Strings.
+     * @since 16.1.'14.
      */
-    private static void resolveKeys() {
-        Entry e;
-        for (Iterator<Entry<Object, Object>> it = config.entrySet().iterator(); it.hasNext();) {
-            e = it.next();
-            if (e.getKey().toString().startsWith("k_")) {
-                set(e.getKey().toString(), e.getValue().toString());
-            } else if (!vrednosti.containsKey(e.getKey())) {
-                config.put(vrednosti.getKey((String) e.getKey()), e.getValue());
-                it.remove();
-            }
-        }
+    private static void setKonstante() {
+        config.entrySet().stream().filter((entry) -> (entry.getKey().toString().startsWith(KONSTANTE_PREFIX)))
+              .forEach((Entry konstanta) -> (set(konstanta.getKey().toString(), konstanta.getValue().toString())));
     }
     
     /**
@@ -237,6 +208,47 @@ public class Config {
     private static void setKPrefix() {
         if(config.containsKey("kPrefix"))
             KONSTANTE_PREFIX = config.getProperty("kPrefix");
+    }
+    
+    /**
+     * Podesava tipove podataka za sve kljuceve. Ako su moguce samo odredjene vrednosti,
+     * ubacuje te vrednosti umesto konkretnog tipa u mapu.
+     * @see #types
+     * @since 16.1.'14.
+     */
+    private static void setTypes() {
+        types.put("ucSize", "int");
+        types.put("knjSize", "int");
+        types.put("firstRun", "boolean");
+        types.put("dateLimit", "int");
+        types.put("lookAndFeel", "ocean", "metal", "system", "nimbus", "motif", "win classic");
+        types.put("brKnjiga", "int");
+        types.put("bgBoja", "color");
+        types.put("fgBoja", "color");
+        types.put("TFBoja", "boolean");
+        types.put("TFColor", "color");
+        types.put("logLevel", "level");
+        types.put("savePeriod", "int");
+        types.put("maxUndo", "int");
+        types.put("razredi", "delimitedInts");
+        types.put("workingDir", "url");
+        types.put("logSizeLimit", "int");
+        types.put("logFileCount", "int");
+        types.put("labelFontName", "string");
+        types.put("labelFontSize", "int");
+        types.put("labelFontWeight", "plain", "bold", "italic", "bold italic");
+        types.put("butFontName", "string");
+        types.put("butFontSize", "int");
+        types.put("butFontWeight", "plain", "bold", "italic", "bold italic");
+        types.put("smallButFontName", "string");
+        types.put("smallButFontSize", "int");
+        types.put("smallButFontWeight", "plain", "bold", "italic", "bold italic");
+        types.put("kPrefix", "string");
+        types.put("ucSort", "ime", "razred", "raz");
+        types.put("datePeriod", "double");
+        types.put("shiftKnjige", "boolean");
+        types.put("customSize", "boolean");
+        types.put("kazna", "int");
     }
 
     /**
@@ -253,22 +265,20 @@ public class Config {
     }
 
     /**
-     * Proverava da li config sadrzi dati kljuc ili sinonim.
+     * Proverava da li config sadrzi dati kljuc. Case-sensitive
      *
      * @param key kljuc koji se trazi
      * @return true ako sadrzi, false u suprotnom
      * @since 25.10'.14.
      */
     public static boolean hasKey(String key) {
-        String realKey = vrednosti.getKey(key);
-        if(realKey==null)
-            return false;
-        else return config.containsKey(realKey);
+        return config.containsKey(key);
     }
 
     /**
-     * Vraca vrednost koja je povezana sa ovim kljucem ili sinonimom. Ako ne
+     * Vraca vrednost koja je povezana sa ovim kljucem. Ako ne
      * postoji, vraca default vrednost. Ako ni default ne postoji, vraca null.
+     * Case-sensitive
      *
      * @param key kljuc ili sinonim
      * @return String vrednost
@@ -277,51 +287,57 @@ public class Config {
         if (key == null) {
             return null;
         }
-        return config.getProperty(vrednosti.getKey(key));
+        return config.getProperty(key);
     }
 
     /**
-     * Vraca vrednost koja je povezana sa ovim kljucem ili sinonimom. Ako ne
-     * postoji, vraca def.
+     * Vraca vrednost koja je povezana sa ovim kljucem. Ako ne
+     * postoji, vraca def. Case-sensitive
      *
      * @param key kljuc ili sinonim
      * @param def default vrednost
      * @return vrednost koja je povezana sa datim kljucem ili sinonimom ili def.
      */
     public static String get(String key, String def) {
-        return config.getProperty(vrednosti.getKey(key), def);
+        return config.getProperty(key, def);
     }
 
     /**
-     * Vraca integer reprezentaciju trazenog kljuca ili njegovog sinonima.
+     * Vraca integer reprezentaciju trazenog kljuca ili.
      *
      * @param key kljuc koji se trazi
      * @return vrednost kljuca kao int.
      * @throws NumberFormatException ako vrednost nije int
+     * @see #get(java.lang.String) 
      * @since 25.10'.14.
      */
     public static int getAsInt(String key) {
-        return Integer.parseInt(get(key));
+        String val = get(key);
+        if(val==null)
+            return 0;
+        return Integer.parseInt(val);
     }
 
     /**
-     * Vraca integer reprezentaciju trazenog kljuce ili njgeovog sinonima. Ako ne postoji, vraca default
+     * Vraca integer reprezentaciju trazenog kljuca. Ako ne postoji, vraca default
      * u int obliku.
      * @param key kljuc cija se vrednost trazi
      * @param def default vrednost
      * @return odgovarajuca vrednost za kljuc
+     * @see #get(java.lang.String, java.lang.String) 
      */
     public static int getAsInt(String key, String def) {
         return Integer.parseInt(get(key, def));
     }
 
     /**
-     * Vraca boolean reprezentaciju trazenog kljuca ili njegovog sinonima. Ako
+     * Vraca boolean reprezentaciju trazenog kljuca. Ako
      * je vrednost kljuca int, koristi {@link Utils#parseBoolean(int)} da dobije
      * boolean, u suprotnom uporedjuje String sa "true".
      *
      * @param key kljuc koji se trazi ili sinonim.
      * @return boolean koji se dobija na opisani nacin
+     * @see #get(java.lang.String) 
      * @since 25.10'.14.
      */
     public static boolean getAsBool(String key) {
@@ -342,96 +358,75 @@ public class Config {
      * @param key kljuc
      * @param val vrednost
      * @see #isNameValid(java.lang.String, java.lang.String)
+     * @see #checkValue(java.lang.String, java.lang.String) 
      * @since 25.10.'14.
      */
     public static void set(String key, String val) {
-        if (!isNameValid(key, val)) {
-            throw new IllegalArgumentException("Vrednost " + val + " nije validna za kljuc " + key);
-        }
         if (key.startsWith(KONSTANTE_PREFIX)) {
             Konstante.set(key.substring(2), val);
             return;
         }
-
-        String realKey = vrednosti.getKey(key);
-        checkValue(realKey, val); //throwuje ConfigException-e (koji su Runtime)
-
+        
+        checkValue(key, val); //throwuje ConfigException-e (koji su Runtime)
+        if (!isNameValid(key, val)) {
+            throw new IllegalArgumentException("Vrednost " + val + " nije validna za kljuc " + key);
+        }
         if (limiti.containsKey(key)) {
-            config.setProperty(realKey,
-                limiti.get(key).limit(val));
+            config.setProperty(key, limiti.get(key).limit(val));
         } else {
-            config.setProperty(realKey, val);
+            config.setProperty(key, val);
         }
         LOGGER.log(Level.CONFIG, "{0} podešen na {1}", new String[]{key, val});
         storeConfig();
     }
 
     /**
-     * Proverava da li je data vrednost dozvoljena za dati kljuc. Razredi moraju
-     * da budu validni integeri razdvojeni zapetama, logLevel integer ili
-     * validan string, lookAndFeel jedan on system, crossOcean ili crossMetal,
-     * firstRun i TFBoja 0 ili 1 ili true ili false, sve ostale vrednosti
-     * integeri.
-     *
+     * Proverava da li je data vrednost dozvoljena za dati kljuc. 
+     * Koristi vrednosti iz {@link #types} tako sto uzima 0ti clan i:
+     * Za int i double zove odgovarajuce metode iz {@link Utils}
+     * Za boolean, dozvoljene vrednosti su true, false i broj (pri cemu se 0 tumaci kao false, sve ostalo true)
+     * Za color, pokusava {@link Color#decode(java.lang.String)} i vraca true, ako dodje do Exceptiona vraca false
+     * Za level isto kao za Color, samo kao metodu za proveru koristi {@link Level#parse(java.lang.String)}
+     * Za url i delimitedInts vraca true, jer ocekuje proveru u {@link #checkValue(java.lang.String, java.lang.String)}
+     * Za string vraca true, jer su sve vrednosti vec Stringovi
+     * Ako ne odgovara nijednom, proverava da li se data vrednost nalazi medju ostalim
+     * clanovima liste iz types i vraca rezultat {@link ArrayList#contains(java.lang.Object)}
+     * 
      * @param key kljuc u configu
      * @param val vrednost u configu.
-     * @return true ako sme da postoji, false u suprotnom.
+     * @return true ako je validna (moze da postoji), false u suprotnom.
      * @since 24.10.'14.
      */
     private static boolean isNameValid(String key, String val) {
         if (key.startsWith(KONSTANTE_PREFIX)) {
             return true;
         }
-        if (!vrednosti.contains(key)) {
+        if (!types.contains(key)) {
             System.out.println(key + " ne postoji");
             return false;
         }
         val = val.toLowerCase();
-        String realKey = vrednosti.getKey(key).toLowerCase();
-        if ("razredi".equals(realKey)) {
-            String[] razredi = val.split(",");
-            for (String razred : razredi) {
-                razred = razred.trim();
-                if (!Utils.isInteger(razred) && !Ucenik.isRazredValid(Integer.parseInt(razred))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        if ("loglevel".equals(realKey)) {
-            try {
-                Level.parse(val.toUpperCase());
-            } catch (IllegalArgumentException ex) {
-                return false;
-            }
-            return true;
-        }
-        if ("lookandfeel".equals(realKey)) {
-            return val.equals("system") || val.equals("ocean") || val.equals("metal")
-                    || val.equals("nimbus") || val.equals("motif") || val.equals("win classic");
-        }
-        if ("firstrun".equals(realKey) || "tfboja".equals(realKey)) {
-            return val.equals("0") || val.equals("1") || val.equals("true") || val.equals("false");
-        }
-        if ("bgboja".equalsIgnoreCase(realKey) || "fgboja".equals(realKey)
-                || "tfcolor".equalsIgnoreCase(realKey)) {
-            try {
-                Color.decode(val);
-            } catch (NumberFormatException ex) {
-                return false;
-            }
-            return true;
-        } else if(realKey.endsWith("weight")) {
-            return val.equals("bold") || val.equals("italic") || val.equals("plain") ||
-                    (val.startsWith("bold") && val.endsWith("italic"));
-        } else if(realKey.endsWith("name") || realKey.equals("kprefix")) {
-            return true;
-        } else if(realKey.equals("ucSort")) {
-            return val.equals("ime") || val.equals("razred") || val.equals("raz");
-        } else if(realKey.equals("dateperiod")) {
-            return Utils.isDouble(val);
-        } else {
-            return Utils.isInteger(val);
+        ArrayList<String> type = types.get(key);
+        switch(type.get(0)) {
+            case "int": return Utils.isInteger(val);
+            case "double": return Utils.isDouble(val);
+            case "boolean": return val.equals("true") || val.equals("false") || Utils.isInteger(val);
+            case "color": try {
+                            Color.decode(val);
+                            return true;
+                        } catch (NumberFormatException ex) {
+                            return false;
+                        }
+            case "level": try {
+                            Level.parse(val.toUpperCase());
+                            return true;
+                        } catch (IllegalArgumentException ex) {
+                            return false;
+                        }
+            case "string": case "url": case "delimitedInts":
+                return true; //proverava se u checkValue
+            default:
+                return type.contains(val);
         }
     }
 
@@ -456,7 +451,7 @@ public class Config {
                 String[] valsStr = val.split(",");
                 int[] vals = new int[valsStr.length];
                 for (int i = 0; i < vals.length; i++) {
-                    vals[i] = Integer.parseInt(valsStr[i]);
+                    vals[i] = Integer.parseInt(valsStr[i].trim());
                 }
                 iterator = Podaci.iteratorUcenika();
                 iterator.forEachRemaining((Ucenik uc) -> {
@@ -484,20 +479,23 @@ public class Config {
     }
 
     /**
-     * Vraca nazive svih kljuceva u listi, ako imaju puno ime (vise reci sa
-     * razmakom).
+     * Vraca nazive svih kljuceva u listi, ako imaju puno ime (ako se nalaze u mapi descriptions).
      *
-     * @return ime kljuca koja je user-friendly
+     * @return ime kljuca koji je user-friendly
      * @since 26.10.'14.
+     * @since 23.1.'15.
      */
-    public static ArrayList<String> getUserFriendlyNames() {
-        ArrayList<String> vals = new ArrayList<>();
-        for (int i = 0; i < vrednosti.size(); i++) {
-            if (vrednosti.getLastValue(i).contains(" ")) {
-                vals.add(vrednosti.getLastValue(i));
-            }
-        }
-        return vals;
+    public static Set<String> getPodesavanjaKeys() {
+        return descriptions.keySet();
+    }
+    
+    /**
+     * Vraca opis kljuca sa datim imenom.
+     * @param key kljuc 
+     * @return opis kljuca iz mape {@link #descriptions}
+     */
+    public static String getKeyDescription(String key) {
+        return descriptions.get(key);
     }
     
     //==========LIMITS==========================================================
@@ -553,7 +551,7 @@ public class Config {
          * @return validna vrednost kao String
          */
         public String limit(String val) {
-            return String.valueOf(limit((int)Math.ceil(Float.valueOf(val))));
+            return String.valueOf(limit((int)Math.floor(Float.valueOf(val))));
         }
     }
 }

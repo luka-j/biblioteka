@@ -3,7 +3,7 @@
 //2141 linija, 25.10.'14.
 //2570 linija, 29.11.'14.
 //3000 linija, 25.12.'14. (dodavanje UVButton)
-//3427 linija, 8.11.'15. (trenutno, auto. Strings, cleanup)
+//3432 linija, 23.1.'15. (auto. Strings, SmallButton, ICheckbox cleanup)
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Color;
@@ -30,7 +30,7 @@ import static javax.swing.plaf.metal.MetalLookAndFeel.setCurrentTheme;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.funkcije.Init;
 import rs.luka.biblioteka.funkcije.Utils;
-import static rs.luka.biblioteka.grafika.Konstante.INVALID;
+import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  *
@@ -77,8 +77,7 @@ public class Grafika {
     }
 
     /**
-     * Iscrtava glavni prozor. Pri zatvaranju zove
-     * {@link rs.luka.biblioteka.funkcije.Init#exit}
+     * Ucitava podatke vezane za grafiku (lookAndFeel, boje i fontove).
      */
     public static void initGrafika() {
         loadLnF();
@@ -181,8 +180,7 @@ public class Grafika {
             LOGGER.log(Level.CONFIG, "lookAndFeel: {0}", UIManager.getLookAndFeel());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             LOGGER.log(Level.SEVERE, "Greška pri postavljanju teme (Look and Feel).", ex);
-            showMessageDialog(null, "Došlo je do greške pri postavljanju teme.",
-                    "LookAndFeel greška", JOptionPane.ERROR_MESSAGE);
+            showMessageDialog(null, LOADLNF_EX_MSG_STRING, LOADLNF_EX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -191,38 +189,19 @@ public class Grafika {
      * @param invoke metoda koju treba izvrsiti
      * @param obj objekat ciju metodu treba izvrsiti
      * @return prazna akcija sa opisanom actionPerformed() metodom
+     * @deprecated nepotrebna
      */
     protected static Action generateEmptyResetAction(Method invoke, Object obj) {
         return new Action() {
-            @Override
-            public Object getValue(String key) {
-                return null;
-            }
-
-            @Override
-            public void putValue(String key, Object value) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setEnabled(boolean b) {
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-
-            @Override
-            public void addPropertyChangeListener(PropertyChangeListener l) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void removePropertyChangeListener(PropertyChangeListener listener) {
-                throw new UnsupportedOperationException();
-            }
-
+            @Override public Object getValue(String key) {return null;}
+            @Override public void putValue(String key, Object value) {throw new UnsupportedOperationException();}
+            @Override public void setEnabled(boolean b) {}
+            @Override public boolean isEnabled() {return true;}
+            @Override public void addPropertyChangeListener(PropertyChangeListener l) {
+                throw new UnsupportedOperationException();}
+            @Override public void removePropertyChangeListener(PropertyChangeListener listener) {
+                throw new UnsupportedOperationException();}
+            
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -235,9 +214,6 @@ public class Grafika {
         };
     }
 
-    /**
-     * @return the labelFont
-     */
     protected static Font getLabelFont() {
         return labelFont;
     }
@@ -250,24 +226,14 @@ public class Grafika {
         return smallButtonFont;
     }
 
-    /**
-     * @return the bgColor
-     */
     protected static Color getBgColor() {
         return bgColor;
     }
 
-    /**
-     * @return the fgColor
-     */
     protected static Color getFgColor() {
         return fgColor;
     }
 
-    /**
-     *
-     * @return
-     */
     protected static Color getTFColor() {
         return TFColor;
     }
@@ -287,14 +253,12 @@ public class Grafika {
     protected static void exit() {
         LOGGER.log(Level.FINE, "Iniciram zatvaranje aplikacije i "
                 + "prikazujem dijalog za čuvanje podataka.");
-        String[] opcije = {"Da", "Ne"};
-        int sacuvaj = showOptionDialog(null, "Sačuvati izmene?",
-                "Izlaz", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, opcije, opcije[0]); //0 za da, 1 za ne, -1 za X
-        if (sacuvaj != INVALID) {
-            Init.exit(!Utils.parseBoolean(sacuvaj)); //0 oznacava false (sacuvati), a 1 true (brisati)
-            //drugim recima, cuva samo ako je odabrana prva opcija
-        }
+        String[] opcije = {DA_STRING, NE_STRING};
+        int sacuvaj = showOptionDialog(null, EXIT_MSG_STRING, EXIT_TITLE_STRING, 
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcije, opcije[0]); 
+        //0 za da, 1 za ne, -1 za X
+        if (sacuvaj != INVALID)
+            Init.exit(sacuvaj==0);
         else
             LOGGER.log(Level.FINE, "Izlaz otkazan. Ostajem u aplikaciji.");
     }

@@ -47,6 +47,11 @@ public class Ucenik implements Comparable<Ucenik> {
      */
     private static boolean shiftKnjige = true;
     /**
+     * Iznos dnevne kazne za predugo zadrzavanje knjige. 
+     * @since 23.1.'15.
+     */
+    private static int iznosKazne;
+    /**
      * Prethodni ucenik koji se proveravao putem {@link #checkUniqueness()}, ako su ucenici sortirani po imenu.
      */
     private static Ucenik prevUcenik;
@@ -58,8 +63,7 @@ public class Ucenik implements Comparable<Ucenik> {
     //STATIC:
     public static void initUcenik() {
         setValidRazred();
-        setShift();
-        setSortMethod();
+        setConfig();
     }
 
     /**
@@ -83,15 +87,11 @@ public class Ucenik implements Comparable<Ucenik> {
             }
         }
     }
-
-    private static void setShift() {
-        if (Config.hasKey("shiftKnjige")) {
-            shiftKnjige = Config.getAsBool("shiftKnjige");
-        }
-    }
-
-    private static void setSortMethod() {
+    
+    private static void setConfig() {
+        shiftKnjige = Config.getAsBool("shiftKnjige");
         isSortedByRazred = sortedByRazred();
+        iznosKazne = Config.getAsInt("kazna");
     }
 
     /**
@@ -190,9 +190,12 @@ public class Ucenik implements Comparable<Ucenik> {
         String[] fields = IOString.split(splitString);
         ime = fields[0];
         razred = Integer.parseInt(fields[1]);
-        knjige = new UcenikKnjiga[fields.length - 2];
+        knjige = new UcenikKnjiga[Config.getAsInt("brKnjiga", "3")];
         for (int i = 2; i < fields.length; i++) {
             knjige[i - 2] = new UcenikKnjiga(fields[i]);
+        }
+        for(int i=fields.length; i<knjige.length + 2; i++) {
+            knjige[i-2] = new UcenikKnjiga();
         }
     }
 
@@ -293,6 +296,14 @@ public class Ucenik implements Comparable<Ucenik> {
             }
         }
         return count;
+    }
+    
+    public int getIznosKazne(Knjiga knjiga) {
+        if(knjiga == null) return 0;
+        for(UcenikKnjiga knj : knjige)
+            if(knjiga.equals(knj.getKnjiga()))
+                return knj.kazna;
+        return -1;
     }
 
     //boolean METODE
@@ -472,11 +483,9 @@ public class Ucenik implements Comparable<Ucenik> {
                 clearKnjiga(i);
                 return;
             }
-            if (i == knjige.length) //poslednja iteracija
-            {
+            if (i == knjige.length) { //poslednja iteracija 
                 throw new VrednostNePostoji(vrednost.drugo); /*ako se nalazi van for
                  petlje, throw se izvrsava svaki put, umesto samo ako knjiga nije pronadjena*/
-
             }
         }
     }
@@ -493,6 +502,10 @@ public class Ucenik implements Comparable<Ucenik> {
                 razred = -1;
             }
         }
+    }
+    
+    public void setKazna(int brDana, int knjiga) {
+        knjige[knjiga].setKazna(brDana * iznosKazne);
     }
 
     //OVERRIDES
@@ -513,7 +526,7 @@ public class Ucenik implements Comparable<Ucenik> {
      */
     @Override
     public int compareTo(Ucenik uc) {
-        if (sortedByRazred()) {
+        if (isSortedByRazred) {
             if (Utils.getArrayIndex(validRazred, razred) < Utils.getArrayIndex(validRazred, uc.getRazred())) {
                 return -1;
             }
@@ -560,7 +573,7 @@ public class Ucenik implements Comparable<Ucenik> {
      * @author Luka
      * @since 7. 17. 2014.
      */
-    class UcenikKnjiga {
+    private class UcenikKnjiga {
 
         /**
          * Naslov knjige koja je izdata uceniku.
@@ -572,6 +585,7 @@ public class Ucenik implements Comparable<Ucenik> {
          * Datum kada je data knjiga izdata.
          */
         private Date datum;
+        private int kazna;
         /**
          * Karakter koji se u fajlovima koristi za razdvajanje polja. Ne sme
          * biti isti kao splitChar klase Ucenik ili Knjiga
@@ -687,13 +701,20 @@ public class Ucenik implements Comparable<Ucenik> {
 
         /**
          * Postavlja naslov na dati String, datum na trenutni.
-         *
-         * @param naslov
+         * @param knjiga knjiga koju ucenik iznajmljuje
          */
         private void setKnjiga(Knjiga knjiga) throws NemaViseKnjiga {
             knjiga.smanjiKolicinu();
             this.knjiga = knjiga;
             datum = new Date();
+        }
+        
+        /**
+         * Postavlja trenutnu kaznu za predugo zadrzavanje knjige na datu vrednost.
+         * @param kazna 
+         */
+        private void setKazna(int kazna) {
+            this.kazna = kazna;
         }
 
         //is... METODE

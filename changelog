@@ -1,4 +1,21 @@
-
+ * Popravljeni bagovi sa Configom (prikaz podataka sa izbacenim sinonimom) i Ucenikom (IOString konstruktor)
+ * Kazne za predugo cuvanje knjiga
+ * isNameValid radi prema vrednostima iz types
+ * Ubacio types i descriptions u Configu, izbacio vrednosti (sinonime). Dodao odgovarajuce metode
+ * StringMultiMap extends HashMap
+ * CustomFormatter za Logger
+ * LosFormat u konstruktorima, ne dozvoljava / u imenima
+ * Dodao globalne precice sa tastature, izbacio reflekciju i input/actionMap
+ * Popravio pretragu knjiga, izbacio neke nepotrebne refreshove
+ * Ubacio prikaz ucenika/knjiga s istim imenom/naslovom i checkUniqueness()/is*Unique
+ * Izbacio knjige/ucenici S/V, ubacio customSize i win.pack()
+ * Dodao Ucenici#shiftLeft i napravio da bude opciono (shiftKnjige u Config-u)
+ * Popravio bagove sa kolicinom, morao da dodam Knjiga getOriginal(int i) zbog IOString konstruktora
+ * Prebacio povecaj/smanjiKolicinu() u UcenikKnjiga, testirati da li je izvodljivo uopste
+ * Napokon puna podrska za naslove s razlicitim imenom, a istim piscem, drugaciji format cuvanja
+ * Promenio UcenikKnjiga da se sastoji od objekta Knjiga i Date
+ * Ubrzao uzimanje/vracanje uvodjenjem Ucenici#refreshUcenik umesto ponovnog iscrtavanja celog prozora
+ * Pocistio unos, obrisao ~100ak linija, sad ubacuje direktno u memoriju. Neka ostane u posebnoj klasi za sada.
  * Dodao String konstante za sve (van pakovanja grafika)
  * Uradio profiling, eliminisao pozive funkcijama koje se pozivaju hiljadama puta, hashCode za SmallButton
  * Zamenio neke pogresne indexe (bugfixing) unutar grafike

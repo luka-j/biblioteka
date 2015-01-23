@@ -5,9 +5,16 @@ import java.awt.Point;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import static java.net.URLDecoder.decode;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -191,10 +198,19 @@ public class Utils {
         return true;
     }
     
+    /**
+     * Pattern po regex-u datom u dokumentaciji,
+     */
     private static final Pattern doubleRegex = Pattern.compile(
             "[\\x00-\\x20]*[+-]?(((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)([eE][+-]?(\\p{Digit}+))?)|(\\.((\\p{Digit}+))([eE][+-]?(\\p{Digit}+))?)|(((0[xX](\\p{XDigit}+)(\\.)?)|(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+)))[pP][+-]?(\\p{Digit}+)))[fFdD]?))[\\x00-\\x20]*");
+    /**
+     * Proverava da li je dati broj double. Koristi regex dat iz dokumentacije
+     * (prihvata sve vrednosti, ukljucujuci Infinity, NaN i sl).
+     * @param str string koji se proverava
+     * @return 
+     */
     public static boolean isDouble(String str) {
-        return str.matches(doubleRegex.pattern());
+        return doubleRegex.matcher(str).matches();
     }
     
     /**
@@ -244,5 +260,31 @@ public class Utils {
             return Font.BOLD | Font.ITALIC;
         else
             return Font.PLAIN;
+    }
+    
+    /**
+     * DateFormat koriscen za formatiranje vremena za prikaz
+     */
+    private static final DateFormat df = new SimpleDateFormat("EEE, dd. MM. yyyy. HH:mm:ss");
+    /**
+     * Vraca dan u nedelji, datum i vreme za prikaz korisniku.
+     * @param time broj milisekundi proteklih od 1.1.1970 (Unix era)
+     * @return datum za prikaz
+     * @since 14.1.'15.
+     */
+    public static String getHumanReadableTime(long time) {
+        return df.format(new Date(time));
+    }
+    
+    public static Object getKey(Map m, Object val) {
+        Set<Entry<Object, Object>> set = m.entrySet();
+        Entry<Object, Object> next;
+        Iterator<Entry<Object, Object>> it = set.iterator();
+        while(it.hasNext()) {
+            next = it.next();
+            if(next.equals(val))
+                return next.getKey();
+        }
+        return null;
     }
 }

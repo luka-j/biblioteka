@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,29 +17,10 @@ import java.util.Set;
  * @author luka
  * @since 25.10.'14.
  */
-public class StringMultiMap implements Map<String, ArrayList<String>> {
-    private static final long serialVersionUID = 1L;
-    private final List<String> keys;
-    private final List<ArrayList<String>> values;
+public class StringMultiMap extends HashMap<String, ArrayList<String>> {
     
     public StringMultiMap() {
-        keys = new ArrayList<>(18);
-        values = new ArrayList<>(18);
-    }
-
-    @Override
-    public int size() {
-        return keys.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return keys.isEmpty();
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        return keys.contains((String)key);
+        super();
     }
 
     /**
@@ -49,70 +32,10 @@ public class StringMultiMap implements Map<String, ArrayList<String>> {
     @Override
     public boolean containsValue(Object value) {
         if (value instanceof String) {
-            return values.stream().anyMatch((vals) -> (vals.stream().anyMatch((val) -> (val.equalsIgnoreCase((String)value)))));
-        }
-        else {
-            return values.stream().anyMatch((val) -> (val.equals(value)));
-        }
-    }
-
-    @Override
-    public ArrayList<String> get(Object key) {
-        if(key==null || !this.containsKey(key)) {
-            return null;
-        }
-        return values.get(keys.indexOf((String)key));
-    }
-
-    @Override
-    public ArrayList<String> put(String key, ArrayList<String> value) {
-        if(!keys.contains(key)) {
-            keys.add(key);
-            values.add(value);
-            return null;
-        }
-        else {
-            ArrayList<String> prev = values.get(keys.indexOf(key));
-            values.set(keys.indexOf(key), value);
-            return prev;
-        }
-    }
-
-    @Override
-    public ArrayList<String> remove(Object key) {
-        int inx = keys.indexOf(key);
-        ArrayList<String> prev = values.get(inx);
-        keys.remove(inx);
-        values.remove(inx);
-        return prev;
-    }
-
-    @Override
-    public void putAll(Map<? extends String, ? extends ArrayList<String>> m) {
-        throw new UnsupportedOperationException("putAll za MultiMap ne postoji. "
-                + "Mrzi me da radim iteraciju preko mape.");
-    }
-
-    @Override
-    public void clear() {
-        keys.clear();
-        values.clear();
-    }
-
-    @Override
-    public Set<String> keySet() {
-        return new HashSet<>(keys);
-    }
-
-    @Override
-    public Collection<ArrayList<String>> values() {
-        return Collections.unmodifiableCollection(values);
-    }
-
-    @Override
-    public Set<Entry<String, ArrayList<String>>> entrySet() {
-        throw new UnsupportedOperationException("entrySet za ovu implementaciju ne postoji. "
-                + "Nisam siguran kako bih uradio, a ne treba mi.");
+            return super.entrySet().stream().anyMatch((vals) -> (vals.getValue().stream().anyMatch((val) -> (val.equalsIgnoreCase((String)value)))));
+        } else if(value instanceof List) {
+            return super.containsValue(value);
+        } else return false;
     }
     
     /**
@@ -123,14 +46,12 @@ public class StringMultiMap implements Map<String, ArrayList<String>> {
      * @since 25.10.'14.
      */
     public void put(String key, String val) {
-        int inx = keys.indexOf(key);
-        if(inx==-1) {
-            keys.add(key);
-            values.add(new ArrayList<>());
-            values.get(values.size()-1).add(val);
-        }
-        else if(!values.get(inx).contains(val)) {
-            values.get(inx).add(val);
+        if(this.containsKey(key)) {
+            this.get(key).add(val);
+        } else {
+            ArrayList<String> list = new ArrayList<>();
+            list.add(val);
+            super.put(key, list);
         }
     }
     
@@ -141,17 +62,15 @@ public class StringMultiMap implements Map<String, ArrayList<String>> {
      * @since 25.10.'14.
      */
     public void put(String key, String... vals) {
-        replaceKey(key);
-        values.add(new ArrayList<>(Arrays.asList(vals)));
+        super.put(key, new ArrayList<>(Arrays.asList(vals)));
     }
     
     public void put(String key, int... vals0) {
-        replaceKey(key);
         String[] vals = new String[vals0.length];
         for(int i=0; i<vals0.length; i++) {
             vals[i] = String.valueOf(String.valueOf(vals0[i]));
         }
-        values.add(new ArrayList<>(Arrays.asList(vals)));
+        super.put(key, new ArrayList<>(Arrays.asList(vals)));
     }
     
     /**
@@ -161,11 +80,13 @@ public class StringMultiMap implements Map<String, ArrayList<String>> {
      * @since 25.10.'.14
      */
     public String getKey(String value) {
-        for(int i=0; i<values.size(); i++) {
-            for (String val : values.get(i)) {
-                if (val.equalsIgnoreCase(value)) {
-                    return keys.get(i);
-                }
+        Set<Entry<String, ArrayList<String>>> map = super.entrySet();
+        ArrayList<String> vals;
+        for(Entry<String, ArrayList<String>> entry : map) {
+            vals = entry.getValue();
+            for(String val : vals) {
+                if(val.equalsIgnoreCase(value))
+                    return entry.getKey();
             }
         }
         return null;
@@ -173,34 +94,5 @@ public class StringMultiMap implements Map<String, ArrayList<String>> {
     
     public boolean contains(String str) {
         return containsKey(str) || containsValue(str);
-    }
-    
-    /**
-     * Vraca poslednju vrednost za dati kljuc. Ako kljuc ne postoji, vraca null.
-     * @param key kljuc za koji se trazi vrednost
-     * @return poslednji kljuc u listi
-     * @since 26.10.'14.
-     */
-    public String getLastValue(String key) {
-        //return values.get(keys.indexOf(key)).get(values.get(keys.indexOf(key)).size()-1);
-        int inx = keys.indexOf(key);
-        if(inx==-1) {
-            return null;
-        }
-        return getLastValue(inx);
-    }
-    
-    public String getLastValue(int inx) {
-        ArrayList<String> vals = values.get(inx);
-        return vals.get(vals.size()-1);
-    }
-    
-    private void replaceKey(String key) {
-        int inx = keys.indexOf(key);
-        if(inx>-1) {
-            keys.remove(inx);
-            values.remove(inx);
-        }
-        keys.add(key);
     }
 }

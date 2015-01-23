@@ -1,13 +1,13 @@
 /**
- * @lastmod 8.1.'15. 
- * LosFormat u konstruktorima Ucenika i Knjiga
+ * @lastmod 23.1.'15. 
+ * kazne&bugfixing
  */
 /**
  * @curr 
  * ...
  */
 /**
- * @bugs 
+ * @bugs
  * prozor Ucenici ide preko prozora za Unos
  * Unos ucenika - oduzima knjige od biblioteke ili ne? (Config opcija)
  * Ucenici sidePan.setPreferredSize ne radi, postoji workaround koji se resetuje pri scroll-u 
@@ -19,29 +19,17 @@
 /**
  * @todo 
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING)
- * Koristiti DA_STRING i NE_STRING
+ * Custom XML za cuvanje propertiesa, sa deklarisanim tipom i vrstom podatka (config, string, int konstanta)
+ * Kategorije knjiga
  * Pretraga na osnovu Levenshtein distance stringova
  * indexKnjige unutar UK - potreban ?
  * Smisliti nacin da ponovo iscrta prozor u showTextFieldDialog ako throwuje Exception 
  * Bugfixing, optimizacija koda, cišenje koda (starog pogotovo, videti imena)
- * Custom Logging handler, custom error messages
- * Napraviti pravu implementaciju MultiMap-e (umesto 2 arraylist-e) 
+ * Custom error messages (dijalozi)
  * Izbaciti sve preostale workaround-ove
  */
 /**
  * @changelog 
- * LosFormat u konstruktorima, ne dozvoljava / u imenima
- * Dodao globalne precice sa tastature, izbacio reflekciju i input/actionMap
- * Popravio pretragu knjiga, izbacio neke nepotrebne refreshove
- * Ubacio prikaz ucenika/knjiga s istim imenom/naslovom i checkUniqueness()/is*Unique
- * Izbacio knjige/ucenici S/V, ubacio customSize i win.pack()
- * Dodao Ucenici#shiftLeft i napravio da bude opciono (shiftKnjige u Config-u)
- * Popravio bagove sa kolicinom, morao da dodam Knjiga getOriginal(int i) zbog IOString konstruktora
- * Prebacio povecaj/smanjiKolicinu() u UcenikKnjiga, testirati da li je izvodljivo uopste
- * Napokon puna podrska za naslove s razlicitim imenom, a istim piscem, drugaciji format cuvanja
- * Promenio UcenikKnjiga da se sastoji od objekta Knjiga i Date
- * Ubrzao uzimanje/vracanje uvodjenjem Ucenici#refreshUcenik umesto ponovnog iscrtavanja celog prozora
- * Počistio unos, obrisao ~100ak linija, sad ubacuje direktno u memoriju. Neka ostane u posebnoj klasi za sada.
  * Pomerio changelog u fajl.
  */
  
@@ -55,15 +43,15 @@
 //5737 linija, 25.10.'14 (cleanup, encapsulation)
 //6550 linija, 29.11.'14. (konstante, code (re-)organization)
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
-//7958 linije, 8.1.'15. (trenutno, config opcije&Strings, PeriodicActions, ICheckbox, setKol, UniqueList, 
-//                       viseKnjiga, Knjiga u UK, displayName, optimizacija, cleanup)
+//8075 linija, 23.1.'15. (config opcije&Strings&cleanup, PeriodicActions, ICheckbox, setKol, UniqueList, 
+//                       viseKnjiga, Knjiga u UK, displayName, Formatter, kazne, optimizacija, cleanup)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
 //1396 linija, 25.10.'14.
 //1460 linija, 18.11.'14.
 //1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
-//1333 linija, 8.1.'15. (trenutno, auto, cleanup)
+//1542 linija, 23.1.'15. (auto, logger, cleanup)
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -199,7 +187,7 @@ public class Init {
         if (exitCount == MAX_EXITS) {
             System.exit(-1);
         }
-        String opcije[] = {"Da", "Ne"};
+        String opcije[] = {DA_STRING, NE_STRING};
         LOGGER.log(Level.INFO, "Izlazim iz programa... Čuvam podatke: {0}", sacuvaj);
         if (sacuvaj) {
             try {

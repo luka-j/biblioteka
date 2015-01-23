@@ -148,7 +148,6 @@ public class Dijalozi {
         infoWindow.setSize(INFOWINDOW_BOUNDS);
         infoWindow.setLocationRelativeTo(null);
         infoWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        infoWindow.setAlwaysOnTop(true);
         JPanel infoPan = new JPanel();
         infoPan.setBackground(Color.WHITE);
         infoWindow.setContentPane(infoPan);

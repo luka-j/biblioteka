@@ -3,7 +3,7 @@
 //1855 linija, 25.10.'14.
 //2110 linija, 29.11.'14.
 //2400 linija, 24.12.'14.
-//2790 linija, 8.1.'15. (trenutno, auto, Strings, viseKnjiga, cleanup)
+//2691 linija, 23.1.'15. (auto, Strings, viseKnjiga, (config) cleanup)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -684,7 +684,15 @@ public final class Podaci {
     public static void vratiKnjigu(int ucIndex, int knjIndex) throws VrednostNePostoji {
         Ucenik uc = ucenici.get(ucIndex);
         Knjiga knj = knjige.get(knjIndex);
-        uc.clearKnjiga(knjige.get(knjIndex));
+        int kazna = uc.getIznosKazne(knj);
+        if(kazna > 0) {
+            int platiti = JOptionPane.showOptionDialog(null, VRACANJE_KAZNA_MSG1_STRING + kazna + VRACANJE_KAZNA_MSG2_STRING, 
+                    VRACANJE_KAZNA_TITLE_STRING, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, 
+                    new String[]{DA_STRING, NE_STRING}, null);
+            if(platiti!=0)
+                return;
+        }
+        uc.clearKnjiga(knj);
         LOGGER.log(Level.INFO, "Knjiga {0} vraćena od učenika {1}", 
                 new Object[]{knjige.get(knjIndex).getNaslov(), ucenici.get(ucIndex).getIme()});
         Undo.push(Akcija.VRACANJE, new Object[]{uc, knj});

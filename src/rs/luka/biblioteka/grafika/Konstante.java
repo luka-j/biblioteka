@@ -66,6 +66,7 @@ public class Konstante {
     public static String CONFIG_BUTFONTNAME_DESC = "Font korišćen za veliku dugmad";
     public static String CONFIG_SMALLBUTFONTNAME_DESC = "Font korišćen za malu dugmad";
     public static String CONFIG_DATEPERIOD_DESC = "Period proveravanja datuma (u danima)";
+    public static String CONFIG_KAZNA_DESC = "Dnevna kazna ako učenik ne vrati knjigu na vreme";
     public static String LOADCONFIG_FNFEX_MSG_STRING = "Konfiguracijski fajl nije pronađen. Lokacija: ";
     public static String LOADCONFIG_FNFEX_TITLE_STRING = "Greška pri učitavanju konfiguracije";
     public static String LOADCONFIG_IOEX_MSG_STRING = "Došlo je do greške pri čitanju konfiguracijskog fajla "
@@ -96,6 +97,10 @@ public class Konstante {
     public static String DODAJGENERACIJU_LFEX_MSG_STRING = " nije validno ime za učenika (sadrži \"/\")\n"
             + "Možete ga naknadno uneti bez nedozvoljenih karaktera.";
     public static String DODAJGENERACIJU_LFEX_TITLE_STRING = "Nedozvoljen karakter";
+    public static String VRACANJE_KAZNA_MSG1_STRING = "Učenik je zadržao ovu knjigu predugo kod sebe.\n"
+            + "Iznos kazne je ";
+    public static String VRACANJE_KAZNA_MSG2_STRING = " dinara. Nastaviti (ako je kazna plaćena)?";
+    public static String VRACANJE_KAZNA_TITLE_STRING = "Platiti kaznu";
     /*----------Ucenik.java---------------------------------------------------*/
     public static String UCENIK_SETRAZREDI_NFEX_MSG_STRING = "Podešavanje validnih razreda "
             + "neuspelo zbog lošeg Stringa.\nBiće korišćene default vrednosti";
@@ -143,6 +148,11 @@ public class Konstante {
             + "knjiga koje\nučenik može da ima kod sebe";
     static String DIJALOZI_BROJKNJIGA_NFEX_MSG_STRING = "Uneta količina nije broj.";
     static String DIJALOZI_BROJKNJIGA_NFEX_TITLE_STRING = "Loš format";
+    /*----------Grafika.java--------------------------------------------------*/
+    static String LOADLNF_EX_MSG_STRING = "Došlo je do greške pri postavljanju teme.";
+    static String LOADLNF_EX_TITLE_STRING = "LookAndFeel greška";
+    static String EXIT_MSG_STRING = "Sačuvati izmene?";
+    static String EXIT_TITLE_STRING = "Izlaz";
     /*----------IndexedCheckbox.java------------------------------------------*/
     static int CHECKBOX_TOP_INSET = 5;
     static int CHECKBOX_LEFT_INSET = 5;
@@ -260,12 +270,12 @@ public class Konstante {
             + "koje se nalaze kod učenika, pa pokušajte ponovo";
     static String PROMENIKOL_NVKEX_TITLE_STRING = "Nema dovoljno knjiga";
     /*----------Podesavanja.java----------------------------------------------*/
-    static int PODESAVANJA_WIDTH = 600;
+    static int PODESAVANJA_WIDTH = 610;
     static int PODESAVANJA_FIXED_HEIGHT = 100;
     static int PODESAVANJA_HEIGHT_PER_LABEL = 40;
     static int PODESAVANJA_LABEL_X = 20;
     static int PODESAVANJA_LABEL_FIXED_Y = 20;
-    static int PODESAVANJA_LABEL_WIDTH = 480;
+    static int PODESAVANJA_LABEL_WIDTH = 440;
     static int PODESAVANJA_LABEL_HEIGHT = 21;
     static int PODESAVANJA_TEXTFIELD_X = 460;
     static int PODESAVANJA_TEXTFIELD_FIXED_Y = 15;

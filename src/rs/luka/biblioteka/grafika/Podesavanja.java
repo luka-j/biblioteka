@@ -6,6 +6,11 @@ import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import static java.lang.String.valueOf;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -36,7 +41,7 @@ public class Podesavanja {
 
     //Sve komponente prozora podesavanja.
     private JPanel pan;
-    private JLabel[] labels;
+    private ConfigLabel[] labels;
     private JTextField[] textfields;
 
     /**
@@ -86,20 +91,22 @@ public class Podesavanja {
         pan.setBackground(getBgColor());
         win.setContentPane(pan);
         //---------JLabels&JTextFields------------------------------------------
-        ArrayList<String> names = Config.getUserFriendlyNames();
+        Set<String> names = Config.getPodesavanjaKeys();
         win.setSize(PODESAVANJA_WIDTH, PODESAVANJA_FIXED_HEIGHT + names.size()*PODESAVANJA_HEIGHT_PER_LABEL); 
         win.setLocationRelativeTo(null); //win.setLocation                     !!
-        labels = new JLabel[names.size()];
+        labels = new ConfigLabel[names.size()];
         textfields = new JTextField[names.size()];
+        Iterator<String> it = names.iterator(); String key;
         for(int i=0; i<labels.length; i++) {
-            labels[i] = new JLabel(names.get(i));
+            key = it.next();
+            labels[i] = new ConfigLabel(key);
             labels[i].setBounds(PODESAVANJA_LABEL_X, PODESAVANJA_LABEL_FIXED_Y+i*PODESAVANJA_HEIGHT_PER_LABEL,
                     PODESAVANJA_LABEL_WIDTH, PODESAVANJA_LABEL_HEIGHT);
             labels[i].setFont(Grafika.getLabelFont());
             labels[i].setForeground(Grafika.getFgColor());
             pan.add(labels[i]);
             
-            textfields[i] = new JTextField(Config.get(names.get(i)));
+            textfields[i] = new JTextField(Config.get(key));
             textfields[i].setBounds(PODESAVANJA_TEXTFIELD_X, PODESAVANJA_TEXTFIELD_FIXED_Y +
                  i * PODESAVANJA_HEIGHT_PER_LABEL, PODESAVANJA_TEXTFIELD_WIDTH, PODESAVANJA_TEXTFIELD_HEIGHT);
             textfields[i].setFont(Grafika.getLabelFont());
@@ -189,7 +196,7 @@ public class Podesavanja {
         try {
             for(int i=0; i<labels.length; i++) {
                 if(!textfields[i].getText().isEmpty()) {
-                    Config.set(labels[i].getText(), textfields[i].getText());
+                    Config.set(labels[i].getKey(), textfields[i].getText());
                 }
             }
         }
@@ -217,5 +224,18 @@ public class Podesavanja {
         }
         pan.repaint();
         LOGGER.log(Level.FINE, "Refreshovao boje prozora Podesavanja");
+    }
+    
+    /**
+     * Postavlja tekst labela prema kljucu u configu. Cuva kljuc za dalju upotrebu.
+     * @since 23.1.'15.
+     */
+    private static class ConfigLabel extends JLabel {
+        String key;
+        ConfigLabel(String key) {
+            super(Config.getKeyDescription(key));
+            this.key = key;
+        }
+        String getKey() {return key;}
     }
 }

@@ -33,6 +33,7 @@ public class Datumi {
      */
     public static final SimpleDateFormat df = new SimpleDateFormat("ddMMyy");
     private static long razlika; //field zbog lambde
+    private static boolean kazna;
 
     /**
      * Proverava da li neki od ucenika zadrzava knjigu predugo. Limit se uzima
@@ -41,6 +42,7 @@ public class Datumi {
     public static void proveriDatum() {
         Date date = new Date();
         StringBuilder predugo = new StringBuilder();
+        kazna = Config.getAsBool("kazna");
         try (final FileWriter predugoFW = new FileWriter(new File(Utils.getWorkingDir() + "predugo.txt"))) {
             int limit = parseInt(Config.get("dateLimit"));
             if(limit==0) {
@@ -49,10 +51,12 @@ public class Datumi {
             Iterator<Ucenik> it = Podaci.iteratorUcenika();
             it.forEachRemaining((Ucenik uc) -> {
                 for (int j = 0; j < uc.getMaxBrojKnjiga(); j++) {
-                    if (!uc.isKnjigaEmpty(j) && (razlika = 
-                            date.getTime() / SEKUNDI_U_DANU - uc.getTimeKnjige(j) / SEKUNDI_U_DANU) > limit) {
+                    if (!uc.isKnjigaEmpty(j) && (razlika = date.getTime() / SEKUNDI_U_DANU - uc.getTimeKnjige(j) / SEKUNDI_U_DANU) 
+                                                         > limit) {
                         predugo.append(uc.getIme()).append(" : ").append(uc.getNaslovKnjige(j)).append(", ")
                                 .append(valueOf(razlika)).append(" dana").append('\n');
+                        if(kazna)
+                            uc.setKazna((int)razlika, j);
                     }
                 }
             });

@@ -71,7 +71,9 @@ public class Ucenici implements FocusListener {
      * Dispose-uje {@link #win}
      */
     protected static void close() {
-        win.dispose();
+        if(EventQueue.isDispatchThread())
+            win.dispose();
+        else EventQueue.invokeLater(() -> (win.dispose()));
     }
 
     /**
@@ -704,7 +706,7 @@ public class Ucenici implements FocusListener {
      * @param index index ucenika
      * @param but dugme koje treba izbaciti
      */
-    protected void refreshUcenik(int index, SmallButton but) {
+    void refreshUcenik(int index, SmallButton but) {
         Ucenik uc = Podaci.getUcenik(index);
         ucenici[index].setSelected(false);
         ucenici[index].setEnabled(true);
