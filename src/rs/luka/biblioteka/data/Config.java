@@ -1,12 +1,62 @@
+/* Spisak podešavanja koje program koristi (poređani po vremenu postanka):
+ * ucSize i knjSize: unsignedInt. Veličina lista za podatke. Podešava se automatski.
+ * Koristi ih klasa Podaci za inicijalnu veličinu lista. Legacy
+ * firstRun: bool. Označava da li se program pokreće prvi put. Podešava se automatski.
+ * Koristi ga klasa Podaci u loadData da odredi da li će da pokrene dijalog za unos
+ * dateLimit: unsignedInt, 1-365. Broj dana koje učenik sme da zadrži knjigu kod sebe. 
+ * Podešava korisnik. Default je 14.
+ * lookAndFeel: lookAndFeel {system, ocean, nimbus, motif, win classic}. Java LookAndFeel programa.
+ * Podešava korisnik. Default je ocean.
+ * brKnjiga: unsignedInt, 1-30. Broj knjiga koje učenik može da ima kod sebe u jednom trenutku.
+ * Podešava korisnik. Default je 3.
+ * bgBoja, fgBoja i TFColor: color (int ili jedna od predefinisanih boja). Određuje pozadinsku,
+ * boju teksta i polja za unos redom. Podešava korisnik preko JColorChooser-a. Default je zelena, crna i bela.
+ * logLevel: logLevel (int ili jedan od predefinisanih nivoa). Određuje minimalni nivo logovanja
+ * u aplikaciji. Predefinisani nivoi: OFF, FINEST, FINER, FINE, INFO, WARNING, SEVERE.
+ * Podešava korisnik. Menja se za vreme trajanja undo akcije automatski. Default je INFO.
+ * savePeriod: unsignedInt, 0-1440: označava period izvršavanja metodi iz PeriodicActions
+ * u minutima. Podešava korisnik. Default je 5.
+ * maxUndo: unsignedInt. Broj akcija koje se čuvaju na stack-u za undo. 
+ * Podešava se iz fajla. Default je 50.
+ * razredi: delimitedInts (neoznačeni celi brojevi razdvojeni zapetom). Dozvoljene vrednosti za 
+ * razred učenika. Podešava korisnik.
+ * workingDir: url (putanja do fajla, validan direktorijum). Direktorijum u koji treba smeštati podatke i
+ * u kojem se nalaze potrebni fajlovi. Podešava korisnik. Default je putanja iz koje je pokrenut program.
+ * logSizeLimit: unsignedInt, 0-100000000. Maksimalna veličina log fajla u bajtovima.
+ * Podešava korisnik. Default je 10000000 (10MB).
+ * logFileCount: unsignedInt, 0-10000. Maksimalan broj log fajlova. Pri svakom pokretanju se kreira novi.
+ * Podešava korisnik. Default je 15.
+ * labelFontName, butFontName i smallButFontName: string. Ime fonta koji program treba da koristi
+ * za labele, veliku dugmad i malu dugmad (uzimanje/vraćanje/promeni količinu) resp. Font mora biti
+ * prisutan na sistemu ili u sklopu JVM. Podešava korisnik.
+ * labelFontSize, butFontSize, smallButFontSize: unsignedInt, 1-50. Veličina gore pomenutih fontova.
+ * Podešava se iz fajla.
+ * labelFontWeight, butFontWeight, smallButFontWeight: font {plain, bold, italic, bold italic}.
+ * Stil fonta. Podešava se iz fajla.
+ * ucSort: sortMethod {ime, razred, raz}. Način na koji se sortiraju učenici, prvi označava da
+ * se sortiraju po imenu, ne obraćajući pažnju na razred, drugi i treći su ekvivalentni i 
+ * uzimaju razred u obzir. Ako je prva metoda izabrana, separatori su onemogućeni. 
+ * Podešava se iz fajla. Default je razred.
+ * datePeriod: floatingPoint, 1-30. Broj dana na koji se proverava da li su svi učenici vratili
+ * iznajmljene knjige na vreme. Ova akcija je deo PeriodicActions klase i izvršava se
+ * u intervalu savePeriod. Podešava korisnik. Default je 1.
+ * shiftKnjige: bool. Označava da li se knjige učenika pomeraju ulevo nakon vraćanja. Nema
+ * bitnije razlike, sem estetske. Podešava se iz fajla. Default je true.
+ * customSize: bool. Označava da li se koriste veličine prozora koje je korisnik specifikovao
+ * u sklopu int konstanti. Podešava se automatski.
+ * kazna: unsignedInt, 0-500. Kazna ako učenik ne vrati knjigu na vreme. Uvećava se svakog
+ * dana za dati iznos. Podešava korisnik. Default je 0.
+ * stringsPath: string. Putanja do fajla koji sadrži lokalizaciju u properties formatu (ključ=vrednost)
+ * Config overriduje strings fajl. Podešava se iz fajla. Default je strings.properties.
+ * showDateDialog: bool. Označava da li treba prikazivati dijalog o kašnjenju pri pokretanju
+ * programa. Ako ne, prikazivaće se samo kada učenik vrati knjigu. Učenici će i dalje biti 
+ * upisivani u fajl kao i do sada. Podešava se iz fajla. Default je true.
+ */
 package rs.luka.biblioteka.data;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,11 +66,16 @@ import java.util.Set;
 import java.util.logging.Level;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import org.xml.sax.SAXException;
 import static rs.luka.biblioteka.data.Strings.loadStrings;
+import rs.luka.biblioteka.data.XMLProperties.Type;
+import rs.luka.biblioteka.data.XMLProperties.Value;
 import rs.luka.biblioteka.exceptions.ConfigException;
+import rs.luka.biblioteka.funkcije.Init;
+import static rs.luka.biblioteka.funkcije.Init.dData;
 import rs.luka.biblioteka.funkcije.Utils;
-import rs.luka.biblioteka.grafika.Konstante;
-import static rs.luka.biblioteka.grafika.Konstante.*;
 
 
 public class Config {
@@ -31,17 +86,19 @@ public class Config {
     /**
      * Properties.
      */
-    private static Properties config;
+    private static XMLProperties config;
     /**
      * Default vrednosti za config.
      */
     private static final Properties defaults = new Properties();
+    private static final XMLProperties defs = new XMLProperties();
     /**
      * Fajl odakle se ucitava config.
      */
     private static File configFile;
     /**
-     * Komentar za config fajl, koji se upisuje na pocetku fajla.
+     * Stari komentar za config fajl, koji je sadrzao opise vrednosti.
+     * @deprecated 
      */
     private static final String configMsg = "firstRun - true ili false, oznacava da li se "
             + "program pokrece po prvi put. Ako da, otvara prozor za unos podataka.\n"
@@ -66,15 +123,27 @@ public class Config {
             + "koje se trenutno nalaze kod ucenika popunjavaju prva prazna mesta (poravnate ulevo)\n"
             + "customSize - oznacava da li se velicina prozora odredjuje automatski ili putem konstanti\n"
             + "kazna - kazna za cuvanje knjige predugo, povecava se dnevno (0 za iskljuceno)";
+    
     /**
-     * Prefix za konstante. Default je k_, ucitava se odmah po ucitavanju config-a
+     * Komentar za config fajl, koji opisuje format podataka u XML fajlu.
+     * @since 18.2.'15.
      */
-    private static String KONSTANTE_PREFIX = "k_";
+    private static final String configDesc = "\nKonfiguracijski fajl cuva podatke u XML formatu, "
+            + "koristeci sledece elemente:\n<properties> - root elemenat, u njemu se nalaze svi ostali\n"
+            + "<config> - konfiguracijska podesavanja. Ovde spada sve sto kontrolise ponasanje programa\n"
+            + "<strings> - stringovi za prikaz. Imena uzeta iz Konstante.java, bez sufiksa _STRING\n"
+            + "<ints> - velicine i pozicije grafickih komponenata. Imena iz Konstante.java\n"
+            + "<entity> - vrednost. Opisana je atributima, i to:\n"
+            + "\tname - ime podesavanja, obavezno polje\n"
+            + "\tdesc - opis podesavanja, ako postoji prikazuje se u prozoru Podesavanja (graficki)\n"
+            + "\ttype - tip podataka, jedna od vrednosti iz Type\n"
+            + "\tlimit - limit za brojcane vrednosti, u formatu MIN~MAX\n"
+            + "Lose vrednosti mogu izazvati crashovanje pri nekim uslovima.\n";
     /**
      * Tipovi podataka ili validne vrednosti za svaki kljuc. Sadrzi sve moguce kljuceve sem konstanti
      * @since 16.1.'14.
      */
-    private static final StringMultiMap types = new StringMultiMap();
+    private static final Map<String, XMLProperties.Type> types = new HashMap<>();
     /**
      * Opisi kljuceva za prikaz korisniku. Koristi Stringove iz Konstanti.
      * @since 16.1.'14.
@@ -98,33 +167,48 @@ public class Config {
     private static final Limit LABEL_FONT = new Limit(1, 50);
     private static final Limit BUTTON_FONT = new Limit(1, 30);
     private static final Limit DATE_CHECK_LIMIT = new Limit(0, 30); //1 mesec
-    private static final Limit KAZNA_LIMIT = new Limit(0, 1000); //1000 dinara dnevno, vise nego dovoljno
+    private static final Limit KAZNA_LIMIT = new Limit(0, 500); //500 dinara dnevno, vise nego dovoljno
 
     /**
      * Ucitava config iz fajla u Properties.
      */
     public static void loadConfig() {
         setDefaults();
-        loadStrings();
         setDescriptions();
         setLimits();
         setTypes();
-        configFile = new File(Utils.getWorkingDir() + "config.properties");
-        config = new Properties(defaults);
+        configFile = new File(Utils.getWorkingDir() + "config.xml");
+        config = new XMLProperties();
         String path = null;
         try {
             configFile.createNewFile();
+            if(configFile.length()==0) {
+                doFirstTimeInit();
+                return;
+            }
             path = configFile.getCanonicalPath();
-            FileReader configFR = new FileReader(configFile);
-            Config.config.load(configFR);
-            setKPrefix();
-            setKonstante();
+            config.load(configFile);
         } catch (FileNotFoundException ex) {
-            showMessageDialog(null, LOADCONFIG_FNFEX_MSG_STRING + path, LOADCONFIG_FNFEX_TITLE_STRING, 
+            loadStrings(); //stringovi nisu učitani, a došlo je do greške pri učiravanju configa: 
+                           //fallback, učitavam iz strings fajla poruke o grešci koje prikazujem
+            LOGGER.log(Level.SEVERE, "Konfiguracijski fajl nije pronađen: {0}", path);
+            showMessageDialog(null, Init.dData.LOADCONFIG_FNFEX_MSG_STRING + path, Init.dData.LOADCONFIG_FNFEX_TITLE_STRING, 
                     ERROR_MESSAGE);
         } catch (IOException ex) {
-            showMessageDialog(null, LOADCONFIG_IOEX_MSG_STRING, LOADCONFIG_IOEX_TITLE_STRING, ERROR_MESSAGE);
+            loadStrings();
+            LOGGER.log(Level.SEVERE, "I/O greška pri čitanju konfiguracijskog fajla", ex);
+            showMessageDialog(null, Init.dData.LOADCONFIG_IOEX_MSG_STRING, Init.dData.LOADCONFIG_IOEX_TITLE_STRING, ERROR_MESSAGE);
+        } catch (ParserConfigurationException ex) {
+            loadStrings();
+            LOGGER.log(Level.SEVERE, "Loša konfiguracija parsera", ex);
+            showMessageDialog(null, Init.dData.XMLCONFIG_PCEX_MSG_STRING, Init.dData.XMLCONFIG_PCEX_TITLE_STRING, ERROR_MESSAGE);
+        } catch (SAXException ex) {
+            loadStrings();
+            LOGGER.log(Level.SEVERE, "Greška pri parsiranju XMLa", ex);
+            showMessageDialog(null, Init.dData.XMLCONFIG_SAXEX_MSG_STRING, Init.dData.XMLCONFIG_SAXEX_TITLE_STRING, ERROR_MESSAGE);
         }
+        loadStrings();
+        setKonstante(); //config overriduje strings
     }
 
     /**
@@ -151,20 +235,20 @@ public class Config {
      * @since 16.1.'14.
      */
     private static void setDescriptions() {
-        descriptions.put("razredi", CONFIG_RAZREDI_DESC);
-        descriptions.put("brKnjiga", CONFIG_BRKNJIGA_DESC);
-        descriptions.put("dateLimit", CONFIG_DATELIMIT_DESC);
-        descriptions.put("workingDir", CONFIG_WORKINGDIR_DESC);
-        descriptions.put("savePeriod", CONFIG_SAVEPERIOD_DESC);
-        descriptions.put("datePeriod", CONFIG_DATEPERIOD_DESC);
-        descriptions.put("logLevel", CONFIG_LOGLEVEL_DESC);
-        descriptions.put("logSizeLimit", CONFIG_LOGSIZELIMIT_DESC);
-        descriptions.put("logFileCount", CONFIG_LOGFILECOUNT_DESC);
-        descriptions.put("lookAndFeel", CONFIG_LOOKANDFEEL_DESC);
-        descriptions.put("labelFontName", CONFIG_LABELFONTNAME_DESC);
-        descriptions.put("butFontName", CONFIG_BUTFONTNAME_DESC);
-        descriptions.put("smallButFontName", CONFIG_SMALLBUTFONTNAME_DESC);
-        descriptions.put("kazna", CONFIG_KAZNA_DESC);
+        descriptions.put("razredi", Init.dData.CONFIG_RAZREDI_STRING);
+        descriptions.put("brKnjiga", Init.dData.CONFIG_BRKNJIGA_STRING);
+        descriptions.put("dateLimit", Init.dData.CONFIG_DATELIMIT_STRING);
+        descriptions.put("workingDir", Init.dData.CONFIG_WORKINGDIR_STRING);
+        descriptions.put("savePeriod", Init.dData.CONFIG_SAVEPERIOD_STRING);
+        descriptions.put("datePeriod", Init.dData.CONFIG_DATEPERIOD_STRING);
+        descriptions.put("logLevel", Init.dData.CONFIG_LOGLEVEL_STRING);
+        descriptions.put("logSizeLimit", Init.dData.CONFIG_LOGSIZELIMIT_STRING);
+        descriptions.put("logFileCount", Init.dData.CONFIG_LOGFILECOUNT_STRING);
+        descriptions.put("lookAndFeel", Init.dData.CONFIG_LOOKANDFEEL_STRING);
+        descriptions.put("labelFontName", Init.dData.CONFIG_LABELFONTNAME_STRING);
+        descriptions.put("butFontName", Init.dData.CONFIG_BUTFONTNAME_STRING);
+        descriptions.put("smallButFontName", Init.dData.CONFIG_SMALLBUTFONTNAME_STRING);
+        descriptions.put("kazna", Init.dData.CONFIG_KAZNA_STRING);
     }
 
     /**
@@ -195,72 +279,64 @@ public class Config {
 
     /**
      * Postavlja konstante. Overriduje Strings.
-     * @since 16.1.'14.
+     * @since 16.1.'15.
      */
     private static void setKonstante() {
-        config.entrySet().stream().filter((entry) -> (entry.getKey().toString().startsWith(KONSTANTE_PREFIX)))
-              .forEach((Entry konstanta) -> (set(konstanta.getKey().toString(), konstanta.getValue().toString())));
+        Map<String, String> ints = config.getAllInts();
+        Map<String, String> strings = config.getAllStrings();
+        ints.entrySet().stream().forEach(dData::set);
+        strings.entrySet().stream().forEach((Entry<String, String> entry) -> {
+            dData.set(entry.getKey() + "_STRING", entry.getValue());
+        });
     }
     
-    /**
-     * Postavlja prefix za konstante, ako postoji u configu. Raditi pre resolveKeys.
-     */
-    private static void setKPrefix() {
-        if(config.containsKey("kPrefix"))
-            KONSTANTE_PREFIX = config.getProperty("kPrefix");
+    public static void setUsingCustomSizes() {
+        config.put(new XMLProperties.Key("customSize", XMLProperties.Category.config), 
+                new XMLProperties.Value("1", null, XMLProperties.Type.bool, null));
     }
     
     /**
      * Podesava tipove podataka za sve kljuceve. Ako su moguce samo odredjene vrednosti,
      * ubacuje te vrednosti umesto konkretnog tipa u mapu.
      * @see #types
-     * @since 16.1.'14.
+     * @since 16.1.'15.
      */
     private static void setTypes() {
-        types.put("ucSize", "int");
-        types.put("knjSize", "int");
-        types.put("firstRun", "boolean");
-        types.put("dateLimit", "int");
-        types.put("lookAndFeel", "ocean", "metal", "system", "nimbus", "motif", "win classic");
-        types.put("brKnjiga", "int");
-        types.put("bgBoja", "color");
-        types.put("fgBoja", "color");
-        types.put("TFBoja", "boolean");
-        types.put("TFColor", "color");
-        types.put("logLevel", "level");
-        types.put("savePeriod", "int");
-        types.put("maxUndo", "int");
-        types.put("razredi", "delimitedInts");
-        types.put("workingDir", "url");
-        types.put("logSizeLimit", "int");
-        types.put("logFileCount", "int");
-        types.put("labelFontName", "string");
-        types.put("labelFontSize", "int");
-        types.put("labelFontWeight", "plain", "bold", "italic", "bold italic");
-        types.put("butFontName", "string");
-        types.put("butFontSize", "int");
-        types.put("butFontWeight", "plain", "bold", "italic", "bold italic");
-        types.put("smallButFontName", "string");
-        types.put("smallButFontSize", "int");
-        types.put("smallButFontWeight", "plain", "bold", "italic", "bold italic");
-        types.put("kPrefix", "string");
-        types.put("ucSort", "ime", "razred", "raz");
-        types.put("datePeriod", "double");
-        types.put("shiftKnjige", "boolean");
-        types.put("customSize", "boolean");
-        types.put("kazna", "int");
+        types.put("ucSize", Type.unsingnedInt);
+        types.put("knjSize", Type.unsingnedInt);
+        types.put("firstRun", Type.bool);
+        types.put("dateLimit", Type.unsingnedInt);
+        types.put("lookAndFeel", Type.lookAndFeel);
+        types.put("brKnjiga", Type.unsingnedInt);
+        types.put("bgBoja", Type.color);
+        types.put("fgBoja", Type.color);
+        types.put("TFColor", Type.color);
+        types.put("logLevel", Type.level);
+        types.put("savePeriod", Type.unsingnedInt);
+        types.put("razredi", Type.delimitedInts);
+        types.put("workingDir", Type.string);
+        types.put("logSizeLimit", Type.unsingnedInt);
+        types.put("logFileCount", Type.unsingnedInt);
+        types.put("labelFontName", Type.string);
+        types.put("butFontName", Type.string);
+        types.put("smallButFontName", Type.string);
+        types.put("datePeriod", Type.floatingPoint);
+        types.put("kazna", Type.unsingnedInt);
     }
 
     /**
      * Cuva config u fajl.
+     * @see XMLProperties#store(java.lang.String) 
      */
     private static void storeConfig() {
         try {
-            config.store(new FileWriter(configFile), configMsg);
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "I/O greška pri čuvanju konfiguracijskog fajla", ex);
-            showMessageDialog(null, STORECONFIG_IOEX_MSG_STRING, STORECONFIG_IOEX_TITLE_STRING, 
-                    ERROR_MESSAGE);
+            config.store(configDesc, configFile);
+        } catch (ParserConfigurationException ex) {
+            LOGGER.log(Level.SEVERE, "Loša konfiguracija parsera", ex);
+            showMessageDialog(null, Init.dData.XMLCONFIG_PCEX_MSG_STRING, Init.dData.XMLCONFIG_PCEX_TITLE_STRING, ERROR_MESSAGE);
+        } catch (TransformerException ex) {
+            LOGGER.log(Level.SEVERE, "Greška pri transformisanju u XML", ex);
+            showMessageDialog(null, Init.dData.XMLCONFIG_TEX_MSG_STRING, Init.dData.XMLCONFIG_TEX_TITLE_STRING, ERROR_MESSAGE);
         }
     }
 
@@ -272,7 +348,7 @@ public class Config {
      * @since 25.10'.14.
      */
     public static boolean hasKey(String key) {
-        return config.containsKey(key);
+        return config.containsConfigKey(key);
     }
 
     /**
@@ -287,7 +363,7 @@ public class Config {
         if (key == null) {
             return null;
         }
-        return config.getProperty(key);
+        return config.getConfigProperty(key)==null ? defaults.getProperty(key) : config.getConfigProperty(key).getValue();
     }
 
     /**
@@ -299,11 +375,11 @@ public class Config {
      * @return vrednost koja je povezana sa datim kljucem ili sinonimom ili def.
      */
     public static String get(String key, String def) {
-        return config.getProperty(key, def);
+        return config.containsConfigKey(key) ? config.getConfigProperty(key).getValue() : def;
     }
 
     /**
-     * Vraca integer reprezentaciju trazenog kljuca ili.
+     * Vraca integer reprezentaciju trazenog kljuca ili 0 ako kljuc ne postoji.
      *
      * @param key kljuc koji se trazi
      * @return vrednost kljuca kao int.
@@ -313,9 +389,7 @@ public class Config {
      */
     public static int getAsInt(String key) {
         String val = get(key);
-        if(val==null)
-            return 0;
-        return Integer.parseInt(val);
+        return val==null ? 0 : Integer.parseInt(val);
     }
 
     /**
@@ -333,7 +407,7 @@ public class Config {
     /**
      * Vraca boolean reprezentaciju trazenog kljuca. Ako
      * je vrednost kljuca int, koristi {@link Utils#parseBoolean(int)} da dobije
-     * boolean, u suprotnom uporedjuje String sa "true".
+     * boolean, u suprotnom uporedjuje String sa "true". Ako kljuc ne postoji, vraca false.
      *
      * @param key kljuc koji se trazi ili sinonim.
      * @return boolean koji se dobija na opisani nacin
@@ -352,86 +426,36 @@ public class Config {
     }
 
     /**
-     * Postavlja dati kljuc na datu vrednost, ako su oba validna. Ignorise
+     * Postavlja dati kljuc na datu vrednost, ako su oboje validni. Ignorise
      * veliko/malo slovo.
      *
      * @param key kljuc
-     * @param val vrednost
+     * @param valString vrednost
      * @see #isNameValid(java.lang.String, java.lang.String)
      * @see #checkValue(java.lang.String, java.lang.String) 
      * @since 25.10.'14.
      */
-    public static void set(String key, String val) {
-        if (key.startsWith(KONSTANTE_PREFIX)) {
-            Konstante.set(key.substring(2), val);
-            return;
+    public static void setConfigEntry(String key, String valString) {
+        checkValue(key, valString); //throwuje ConfigException-e (koji su Runtime)
+        Value val, oldVal;
+        Limit limit = limiti.containsKey(key) ? limiti.get(key) : null;
+        if(config.containsConfigKey(key)) {
+            oldVal = config.getConfigProperty(key);
+            val = new Value(valString, oldVal.description, oldVal.type, oldVal.limit);
         }
-        
-        checkValue(key, val); //throwuje ConfigException-e (koji su Runtime)
-        if (!isNameValid(key, val)) {
-            throw new IllegalArgumentException("Vrednost " + val + " nije validna za kljuc " + key);
+        else
+            val = new Value(valString, descriptions.get(key), types.get(key), limit);
+        if (!val.type.isValid(valString)) {
+            throw new IllegalArgumentException("Vrednost " + valString + " nije validna za kljuc " + key);
         }
-        if (limiti.containsKey(key)) {
-            config.setProperty(key, limiti.get(key).limit(val));
-        } else {
-            config.setProperty(key, val);
-        }
-        LOGGER.log(Level.CONFIG, "{0} podešen na {1}", new String[]{key, val});
+        config.setConfigEntry(key, val);
+        LOGGER.log(Level.CONFIG, "{0} podešen na {1}", new String[]{key, valString});
         storeConfig();
     }
 
     /**
-     * Proverava da li je data vrednost dozvoljena za dati kljuc. 
-     * Koristi vrednosti iz {@link #types} tako sto uzima 0ti clan i:
-     * Za int i double zove odgovarajuce metode iz {@link Utils}
-     * Za boolean, dozvoljene vrednosti su true, false i broj (pri cemu se 0 tumaci kao false, sve ostalo true)
-     * Za color, pokusava {@link Color#decode(java.lang.String)} i vraca true, ako dodje do Exceptiona vraca false
-     * Za level isto kao za Color, samo kao metodu za proveru koristi {@link Level#parse(java.lang.String)}
-     * Za url i delimitedInts vraca true, jer ocekuje proveru u {@link #checkValue(java.lang.String, java.lang.String)}
-     * Za string vraca true, jer su sve vrednosti vec Stringovi
-     * Ako ne odgovara nijednom, proverava da li se data vrednost nalazi medju ostalim
-     * clanovima liste iz types i vraca rezultat {@link ArrayList#contains(java.lang.Object)}
-     * 
-     * @param key kljuc u configu
-     * @param val vrednost u configu.
-     * @return true ako je validna (moze da postoji), false u suprotnom.
-     * @since 24.10.'14.
-     */
-    private static boolean isNameValid(String key, String val) {
-        if (key.startsWith(KONSTANTE_PREFIX)) {
-            return true;
-        }
-        if (!types.contains(key)) {
-            System.out.println(key + " ne postoji");
-            return false;
-        }
-        val = val.toLowerCase();
-        ArrayList<String> type = types.get(key);
-        switch(type.get(0)) {
-            case "int": return Utils.isInteger(val);
-            case "double": return Utils.isDouble(val);
-            case "boolean": return val.equals("true") || val.equals("false") || Utils.isInteger(val);
-            case "color": try {
-                            Color.decode(val);
-                            return true;
-                        } catch (NumberFormatException ex) {
-                            return false;
-                        }
-            case "level": try {
-                            Level.parse(val.toUpperCase());
-                            return true;
-                        } catch (IllegalArgumentException ex) {
-                            return false;
-                        }
-            case "string": case "url": case "delimitedInts":
-                return true; //proverava se u checkValue
-            default:
-                return type.contains(val);
-        }
-    }
-
-    /**
-     * Proverava da li su vrednosti validne za brKnjiga, razrede i workingDir
+     * Proverava da li su vrednosti validne za brKnjiga, razrede i workingDir.
+     * Throwuje ConfigException sa imenom kljuca u opisu.
      * @param key ako je jedan od 3 koji se proverava, radi proveru, u suprotnom ignorise
      * @param val vrednost kljuca
      */
@@ -475,7 +499,7 @@ public class Config {
      * @since 25.10'.14.
      */
     public static void reset(String key) {
-        config.setProperty(key, defaults.getProperty(key));
+        //config.setProperty(key, defaults.getProperty(key));
     }
 
     /**
@@ -486,6 +510,7 @@ public class Config {
      * @since 23.1.'15.
      */
     public static Set<String> getPodesavanjaKeys() {
+        descriptions.putAll(config.getDescriptedKeys());
         return descriptions.keySet();
     }
     
@@ -494,64 +519,12 @@ public class Config {
      * @param key kljuc 
      * @return opis kljuca iz mape {@link #descriptions}
      */
-    public static String getKeyDescription(String key) {
+    public static String getKeyDescriptions(String key) {
         return descriptions.get(key);
     }
     
-    //==========LIMITS==========================================================
-
-    /**
-     * Sastoji se od minimalne i maksimalne vrednosti i funkcije koja uzima int i vraca validnu vrednost.
-     */
-    private static class Limit {
-
-        final int MIN;
-        final int MAX;
-
-        /**
-         * Kreira Limit sa datim MIN- i MAX-om
-         * @param MIN minimalna vrednost za int
-         * @param MAX maksimala vrednost za int
-         */
-        private Limit(int MIN, int MAX) {
-            this.MAX = MAX;
-            this.MIN = MIN;
-        }
-
-        /**
-         * Kreira Limit kojem su MIN i MAX {@link Integer#MIN_VALUE} i {@link Integer#MAX_VALUE}
-         */
-        private Limit() {
-            this.MAX = Integer.MAX_VALUE;
-            this.MIN = 0;
-        }
-
-        /**
-         * Kreira limit kojem je MIN data vrednost, a max {@link Integer#MAX_VALUE}.
-         * @param MIN
-         */
-        private Limit(int MIN) {
-            this.MIN = MIN;
-            this.MAX = Integer.MAX_VALUE;
-        }
-
-        /**
-         * Vraca dati int ako se nalazi izmedju min i max-a. U suprotom, vraca MIN ili MAX, u zavisnosti
-         * sta je blize
-         * @param val vrednost
-         * @return validna vrednost (val, MIN ili MAX)
-         */
-        public int limit(int val) {
-            return Integer.max(Integer.min(val, MAX), MIN);
-        }
-
-        /**
-         * String wrapper za {@link #limit(int)}. Prihvata float-ove
-         * @param val vrednost kao String
-         * @return validna vrednost kao String
-         */
-        public String limit(String val) {
-            return String.valueOf(limit((int)Math.floor(Float.valueOf(val))));
-        }
+    public static void doFirstTimeInit() {
+        
     }
 }
+ 

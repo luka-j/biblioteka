@@ -198,6 +198,12 @@ public class Utils {
         return true;
     }
     
+    public static boolean isUnsignedInteger(String str) {
+        if(str == null || str.isEmpty() || str.length() > 10)
+            return false;
+        return str.chars().allMatch(Character::isDigit);
+    }
+    
     /**
      * Pattern po regex-u datom u dokumentaciji,
      */
@@ -286,5 +292,10 @@ public class Utils {
                 return next.getKey();
         }
         return null;
+    }
+    
+    public static boolean fileExists(String path) {
+        File f = new File(path);
+        return f.isFile() && f.length()>0;
     }
 }

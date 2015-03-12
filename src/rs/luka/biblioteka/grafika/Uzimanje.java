@@ -9,7 +9,7 @@ import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
-import static rs.luka.biblioteka.grafika.Konstante.*;
+import rs.luka.biblioteka.funkcije.Init;
 
 /**
  * Historical. Nekada davno koristila kao jedini način za iznajmljivanje knjiga.
@@ -27,14 +27,14 @@ public class Uzimanje {
      * @param indexUcenika index ucenika koji uzima knjigu
      */
     public void uzmi(int indexUcenika) {
-        String knjiga = Dijalozi.showTextFieldDialog(UZIMANJE_TITLE_STRING, UZIMANJE_MSG_STRING, "");
+        String knjiga = Dijalozi.showTextFieldDialog(Init.dData.UZIMANJE_TITLE_STRING, Init.dData.UZIMANJE_MSG_STRING, "");
             try {
                 Podaci.uzmiKnjigu(indexUcenika, Podaci.getKnjiga(knjiga)); //šaljem objekat knjiga, ne naslov
             } catch (VrednostNePostoji ex) {
                 switch (ex.getMessage()) {
                     case "Knjiga":
                         LOGGER.log(Level.INFO, "Uneta knjiga {0} ne postoji", knjiga);
-                        showMessageDialog(null, UZIMANJE_VNPEX_MSG_STRING, UZIMANJE_VNPEX_TITLE_STRING, 
+                        showMessageDialog(null, Init.dData.UZIMANJE_VNPEX_MSG_STRING, Init.dData.UZIMANJE_VNPEX_TITLE_STRING, 
                                 JOptionPane.ERROR_MESSAGE);
                         break;
                     default: 
@@ -45,18 +45,18 @@ public class Uzimanje {
                 }
             } catch (NemaViseKnjiga ex) {
                 LOGGER.log(Level.INFO, "Više nema knjiga naslova {0}", knjiga);
-                showMessageDialog(null, UZIMANJE_NVKEX_MSG_STRING,
-                        UZIMANJE_NVKEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, Init.dData.UZIMANJE_NVKEX_MSG_STRING,
+                        Init.dData.UZIMANJE_NVKEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             } catch (Duplikat ex) {
                 LOGGER.log(Level.INFO, "Učenik {0} je već iznajmio knjigu {1}",
                                 new Object[]{getUcenik(indexUcenika).getIme(), knjiga});
-                showMessageDialog(null, UZIMANJE_DEX_MSG_STRING, UZIMANJE_DEX_TITLE_STRING, 
+                showMessageDialog(null, Init.dData.UZIMANJE_DEX_MSG_STRING, Init.dData.UZIMANJE_DEX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
             } catch (PreviseKnjiga ex) {
                 LOGGER.log(Level.INFO, "Učenik {0} ima previše knjiga kod sebe",
                         Podaci.getUcenik(indexUcenika));
-                showMessageDialog(null, UZIMANJE_PKEX_MSG_STRING + ex.getMessage(),
-                        UZIMANJE_PKEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, Init.dData.UZIMANJE_PKEX_MSG_STRING + ex.getMessage(),
+                        Init.dData.UZIMANJE_PKEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             }
     }
 }

@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import rs.luka.biblioteka.data.Podaci;
-import static rs.luka.biblioteka.grafika.Konstante.*;
+import rs.luka.biblioteka.funkcije.Init;
 
 /**
  * Opisuje dugme na sidePan-u. Može biti za uzimanje ili za vracanje.
@@ -30,7 +30,7 @@ class SmallButton extends JButton {
         this.setVisible(false);
         index = ucIndex;
         naslovi.add(naslov);
-        this.setBounds(SMALLBUT_X, y, SMALLBUT_WIDTH, SMALLBUT_HEIGHT);
+        this.setBounds(Init.dData.SMALLBUT_X, y, Init.dData.SMALLBUT_WIDTH, Init.dData.SMALLBUT_HEIGHT);
         this.setFont(Grafika.getSmallButtonFont());
     }
 
@@ -38,7 +38,7 @@ class SmallButton extends JButton {
      * Postavlja akciju button-a na uzimanje i prikazuje ga.
      */
     public void uzmi(Ucenici grafika) {
-        this.setText(SMALLBUT_UZMI_STRING);
+        this.setText(Init.dData.SMALLBUT_UZMI_STRING);
         this.addActionListener((ActionEvent e) -> {
             EventQueue.invokeLater(() -> {
                 new Uzimanje().uzmi(index);
@@ -54,7 +54,7 @@ class SmallButton extends JButton {
      * Postavlja akciju button-a na vracanje i prikazuje ga.
      */
     public void vrati(Ucenici grafika) {
-        this.setText(SMALLBUT_VRATI_STRING);
+        this.setText(Init.dData.SMALLBUT_VRATI_STRING);
         this.addActionListener((ActionEvent e) -> {
             EventQueue.invokeLater(() -> {
                 Podaci.vratiViseKnjigaSafe(index, naslovi);
@@ -67,7 +67,7 @@ class SmallButton extends JButton {
     }
     
     public void setKol() {
-        this.setText(SMALLBUT_SETKOL_STRING);
+        this.setText(Init.dData.SMALLBUT_SETKOL_STRING);
         this.addActionListener((ActionEvent e) -> {
             EventQueue.invokeLater(() -> {
                 new KnjigeUtils().promeniKolicinu(index);

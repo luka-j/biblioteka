@@ -10,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import javax.swing.JOptionPane;
 import rs.luka.biblioteka.data.Config;
-import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  * Sadrži root logger za aplikaciju i metode za inicijalizaciju i gašenje istog.
@@ -74,11 +73,11 @@ public class Logger {
                 ROOT_LOGGER.addHandler(CONSOLE_HANDLER);
             }
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, LOGGER_IOEX_MSG_STRING, LOGGER_IOEX_TITLE_STRING,
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, Init.dData.LOGGER_IOEX_MSG_STRING, 
+                    Init.dData.LOGGER_IOEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
         } catch (SecurityException ex) {
-            JOptionPane.showMessageDialog(null, LOGGER_SECEX_MSG_STRING, LOGGER_SECEX_TITLE_STRING, 
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, Init.dData.LOGGER_SECEX_MSG_STRING, 
+                    Init.dData.LOGGER_SECEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -130,10 +129,10 @@ class BibliotekaFormatter extends Formatter {
         Throwable ex = record.getThrown();
         if(ex != null) {
             format.append("\n");
-            format.append(ex.getClass().getCanonicalName()).append("Stack trace: \n");
+            format.append(ex.getClass().getCanonicalName()).append("\nStack trace: \n");
             StackTraceElement[] stackTrace = ex.getStackTrace();
             for(int i=stackTrace.length-1; i>=0; i--) {
-                format.append(stackTrace[i].toString()).append('\n');
+                format.append("\t").append(stackTrace[i].toString()).append('\n');
             }
         }
         format.append('\n');

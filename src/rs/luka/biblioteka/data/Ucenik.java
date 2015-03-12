@@ -14,8 +14,8 @@ import rs.luka.biblioteka.exceptions.NemaViseKnjiga;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji.vrednost;
+import rs.luka.biblioteka.funkcije.Init;
 import rs.luka.biblioteka.funkcije.Utils;
-import rs.luka.biblioteka.grafika.Konstante;
 
 /**
  *
@@ -82,8 +82,8 @@ public class Ucenik implements Comparable<Ucenik> {
                     validRazred[i] = Integer.parseInt(split[i]);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, Konstante.UCENIK_SETRAZREDI_NFEX_MSG_STRING,
-                        Konstante.UCENIK_SETRAZREDI_NFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, Init.dData.UCENIK_SETRAZREDI_NFEX_MSG_STRING,
+                        Init.dData.UCENIK_SETRAZREDI_NFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             }
         }
     }

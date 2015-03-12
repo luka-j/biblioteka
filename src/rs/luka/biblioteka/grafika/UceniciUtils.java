@@ -23,7 +23,7 @@ import rs.luka.biblioteka.exceptions.Duplikat;
 import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
-import static rs.luka.biblioteka.grafika.Konstante.*;
+import rs.luka.biblioteka.funkcije.Init;
 
                     
 /**
@@ -35,26 +35,26 @@ public class UceniciUtils {
     private static final java.util.logging.Logger LOGGER
             = java.util.logging.Logger.getLogger(UceniciUtils.class.getName());
     
-    private final Dimension DODAJUC_SIZE = new Dimension(DODAJUCENIKA_WIDTH, DODAJUCENIKA_HEIGHT);
-    private final Rectangle IME_BOUNDS = new Rectangle(DODAJUCENIKA_TEXT_X, DODAJUCENIKA_IME_Y,
-                                                       DODAJUCENIKA_LABEL_WIDTH, DODAJUCENIKA_LABEL_HEIGHT);
-    private final Rectangle IMETF_BOUNDS = new Rectangle(DODAJUCENIKA_TEXT_X, 
-            DODAJUCENIKA_IMETF_Y, DODAJUCENIKA_TEXTFIELD_WIDTH, DODAJUCENIKA_TEXTFIELD_HEIGHT);
-    private final Rectangle RAZRED_BOUNDS = new Rectangle(DODAJUCENIKA_TEXT_X, DODAJUCENIKA_RAZRED_Y, 
-            DODAJUCENIKA_LABEL_WIDTH, DODAJUCENIKA_LABEL_HEIGHT);
-    private final Rectangle RAZREDTF_BOUNDS = new Rectangle(DODAJUCENIKA_TEXT_X, DODAJUCENIKA_RAZREDTF_Y, 
-            DODAJUCENIKA_TEXTFIELD_WIDTH, DODAJUCENIKA_TEXTFIELD_HEIGHT);
-    private final Rectangle UNESI_BOUNDS = new Rectangle(DODAJUCENIKA_DODAJ_X, DODAJUCENIKA_DODAJ_Y, 
-            DODAJUCENIKA_DODAJ_WIDTH, DODAJUCENIKA_DODAJ_HEIGHT);
+    private final Dimension DODAJUC_SIZE = new Dimension(Init.dData.DODAJUCENIKA_WIDTH, Init.dData.DODAJUCENIKA_HEIGHT);
+    private final Rectangle IME_BOUNDS = new Rectangle(Init.dData.DODAJUCENIKA_TEXT_X, Init.dData.DODAJUCENIKA_IME_Y,
+                                                       Init.dData.DODAJUCENIKA_LABEL_WIDTH, Init.dData.DODAJUCENIKA_LABEL_HEIGHT);
+    private final Rectangle IMETF_BOUNDS = new Rectangle(Init.dData.DODAJUCENIKA_TEXT_X, 
+            Init.dData.DODAJUCENIKA_IMETF_Y, Init.dData.DODAJUCENIKA_TEXTFIELD_WIDTH, Init.dData.DODAJUCENIKA_TEXTFIELD_HEIGHT);
+    private final Rectangle RAZRED_BOUNDS = new Rectangle(Init.dData.DODAJUCENIKA_TEXT_X, Init.dData.DODAJUCENIKA_RAZRED_Y, 
+            Init.dData.DODAJUCENIKA_LABEL_WIDTH, Init.dData.DODAJUCENIKA_LABEL_HEIGHT);
+    private final Rectangle RAZREDTF_BOUNDS = new Rectangle(Init.dData.DODAJUCENIKA_TEXT_X, Init.dData.DODAJUCENIKA_RAZREDTF_Y, 
+            Init.dData.DODAJUCENIKA_TEXTFIELD_WIDTH, Init.dData.DODAJUCENIKA_TEXTFIELD_HEIGHT);
+    private final Rectangle UNESI_BOUNDS = new Rectangle(Init.dData.DODAJUCENIKA_DODAJ_X, Init.dData.DODAJUCENIKA_DODAJ_Y, 
+            Init.dData.DODAJUCENIKA_DODAJ_WIDTH, Init.dData.DODAJUCENIKA_DODAJ_HEIGHT);
     
     
-    private final Dimension DODAJGEN_SIZE = new Dimension(DODAJGENERACIJU_WIDTH, DODAJGENERACIJU_HEIGHT);
-    private final Rectangle IMENA_BOUNDS = new Rectangle(DODAJGENERACIJU_TEXT_X, DODAJGENERACIJU_IMENA_Y, 
-            DODAJGENERACIJU_IMENA_WIDTH, DODAJGENERACIJU_IMENA_HEIGHT);
-    private final Rectangle SCROLL_BOUNDS = new Rectangle(DODAJGENERACIJU_TEXT_X, DODAJGENERACIJU_SCROLL_Y,
-            DODAJGENERACIJU_SCROLL_WIDTH, DODAJGENERACIJU_SCROLL_HEIGHT);
-    private final Rectangle UNESIGEN_BOUNDS = new Rectangle(DODAJGENERACIJU_UNESI_X, DODAJGENERACIJU_UNESI_Y,
-            DODAJGENERACIJU_UNESI_WIDTH, DODAJGENERACIJU_UNESI_HEIGHT);
+    private final Dimension DODAJGEN_SIZE = new Dimension(Init.dData.DODAJGENERACIJU_WIDTH, Init.dData.DODAJGENERACIJU_HEIGHT);
+    private final Rectangle IMENA_BOUNDS = new Rectangle(Init.dData.DODAJGENERACIJU_TEXT_X, Init.dData.DODAJGENERACIJU_IMENA_Y, 
+            Init.dData.DODAJGENERACIJU_IMENA_WIDTH, Init.dData.DODAJGENERACIJU_IMENA_HEIGHT);
+    private final Rectangle SCROLL_BOUNDS = new Rectangle(Init.dData.DODAJGENERACIJU_TEXT_X, Init.dData.DODAJGENERACIJU_SCROLL_Y,
+            Init.dData.DODAJGENERACIJU_SCROLL_WIDTH, Init.dData.DODAJGENERACIJU_SCROLL_HEIGHT);
+    private final Rectangle UNESIGEN_BOUNDS = new Rectangle(Init.dData.DODAJGENERACIJU_UNESI_X, Init.dData.DODAJGENERACIJU_UNESI_Y,
+            Init.dData.DODAJGENERACIJU_UNESI_WIDTH, Init.dData.DODAJGENERACIJU_UNESI_HEIGHT);
     
     /**
      * Prozor za dodavanje novog ucenika.
@@ -65,7 +65,7 @@ public class UceniciUtils {
         //---------JFrame&JPanel------------------------------------------------
         JDialog win = new JDialog();
         win.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        win.setTitle(DODAJUCENIKA_TITLE_STRING);
+        win.setTitle(Init.dData.DODAJUCENIKA_TITLE_STRING);
         win.setSize(DODAJUC_SIZE);
         win.setLocationRelativeTo(null);
         win.setResizable(false);
@@ -74,7 +74,7 @@ public class UceniciUtils {
         pan.setBackground(Grafika.getBgColor());
         win.setContentPane(pan);
         //---------JLabel&JTextField--------------------------------------------
-        JLabel ime = new JLabel(DODAJUCENIKA_IME_STRING);
+        JLabel ime = new JLabel(Init.dData.DODAJUCENIKA_IME_STRING);
         ime.setBounds(IME_BOUNDS);
         ime.setBackground(Grafika.getBgColor());
         ime.setForeground(Grafika.getFgColor());
@@ -87,7 +87,7 @@ public class UceniciUtils {
         ucTF.setForeground(Grafika.getFgColor());
         ucTF.setCaretColor(Grafika.getFgColor());
         pan.add(ucTF);
-        JLabel razred = new JLabel(DODAJUCENIKA_RAZRED_STRING);
+        JLabel razred = new JLabel(Init.dData.DODAJUCENIKA_RAZRED_STRING);
         razred.setBounds(RAZRED_BOUNDS);
         razred.setBackground(Grafika.getBgColor());
         razred.setFont(Grafika.getLabelFont());
@@ -101,30 +101,30 @@ public class UceniciUtils {
         razTF.setBackground(Grafika.getTFColor());
         pan.add(razTF);
         //---------JButton------------------------------------------------------
-        JButton unesi = new JButton(DODAJUCENIKA_UNESI_STRING);
+        JButton unesi = new JButton(Init.dData.DODAJUCENIKA_UNESI_STRING);
         unesi.setFont(Grafika.getButtonFont());
         unesi.setBounds(UNESI_BOUNDS);
         unesi.addActionListener((ActionEvent e) -> {
             try {
                 Podaci.dodajUcenika(ucTF.getText(), parseUnsignedInt(razTF.getText()));
-                showMessageDialog(null, DODAJUCENIKA_SUCC_MSG_STRING, DODAJUCENIKA_SUCC_TITLE_STRING, 
+                showMessageDialog(null, Init.dData.DODAJUCENIKA_SUCC_MSG_STRING, Init.dData.DODAJUCENIKA_SUCC_TITLE_STRING, 
                         JOptionPane.INFORMATION_MESSAGE);
                 win.dispose();
                 new Ucenici().pregledUcenika();
             } catch (NumberFormatException ex) {
                 LOGGER.log(Level.INFO, "Razred novog učenika ({0}) je prevelik "
                         + "ili nije broj", razTF.getText());
-                showMessageDialog(null, DODAJUCENIKA_NFEX_MSG_STRING, DODAJUCENIKA_NFEX_TITLE_STRING, 
+                showMessageDialog(null, Init.dData.DODAJUCENIKA_NFEX_MSG_STRING, Init.dData.DODAJUCENIKA_NFEX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
             } catch (Duplikat ex) {
                 LOGGER.log(Level.INFO, "Već postoji učenik sa istim imenom i prezimenom i razredom {0} i {1}\n"
                         + "Novi učenik nije dodat.", new Object[]{ucTF.getText(), razTF.getText()});
-                showMessageDialog(null, DODAJUCENIKA_DEX_MSG_STRING, DODAJUCENIKA_DEX_TITLE_STRING, 
+                showMessageDialog(null, Init.dData.DODAJUCENIKA_DEX_MSG_STRING, Init.dData.DODAJUCENIKA_DEX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
             } catch (LosFormat ex) {
                 LOGGER.log(Level.INFO, "{0} nije validno ime (sadrži nedozvoljene karatere)", ucTF.getText());
-                showMessageDialog(null, DODAJUCENIKA_LFEX_MSG_STRING, 
-                        DODAJUCENIKA_LFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, Init.dData.DODAJUCENIKA_LFEX_MSG_STRING, 
+                        Init.dData.DODAJUCENIKA_LFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             }
         });
         pan.add(unesi);
@@ -140,14 +140,14 @@ public class UceniciUtils {
     public void obrisiUcenika() {
         final rs.luka.legacy.biblioteka.Ucenici ucenici = new rs.luka.legacy.biblioteka.Ucenici();
         //---------JFrame&JPanel------------------------------------------------
-        String ucenik = Dijalozi.showTextFieldDialog(OBRISIUCENIKA_TITLE_STRING, OBRISIUCENIKA_MSG_STRING, "");
+        String ucenik = Dijalozi.showTextFieldDialog(Init.dData.OBRISIUCENIKA_TITLE_STRING, Init.dData.OBRISIUCENIKA_MSG_STRING, "");
         if (ucenik == null || ucenik.equals("null") || ucenik.isEmpty()) {
             return;
         }
         List<Integer> inx = indexOfUcenik(ucenik);
         if (inx.isEmpty()) {
             LOGGER.log(Level.INFO, "Učenik {0} nije pronađen", ucenik);
-            showMessageDialog(null, OBRISIUCENIKA_EMPTY_MSG_STRING, OBRISIUCENIKA_EMPTY_TITLE_STRING,
+            showMessageDialog(null, Init.dData.OBRISIUCENIKA_EMPTY_MSG_STRING, Init.dData.OBRISIUCENIKA_EMPTY_TITLE_STRING,
                     JOptionPane.ERROR_MESSAGE);
         } else {
             int num = 0;
@@ -156,14 +156,14 @@ public class UceniciUtils {
             }
             try {
                 ucenici.obrisiUcenika(inx.get(num));
-                showMessageDialog(null, OBRISIUCENIKA_SUCC_MSG_STRING, OBRISIUCENIKA_SUCC_TITLE_STRING, 
+                showMessageDialog(null, Init.dData.OBRISIUCENIKA_SUCC_MSG_STRING, Init.dData.OBRISIUCENIKA_SUCC_TITLE_STRING, 
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (VrednostNePostoji ex) {
                 throw new RuntimeException("VrednostNePostoji prilikom obrisiUcenika za index "
                         + inx.get(num), ex);
             } catch (PreviseKnjiga ex) {
                 LOGGER.log(Level.INFO, "Učenik {0} nije obrisan jer ima preostalih knjiga.", inx.get(num));
-                showMessageDialog(null, OBRISIUCENIKA_PKEX_MSG_STRING, OBRISIUCENIKA_PKEX_TITLE_STRING, 
+                showMessageDialog(null, Init.dData.OBRISIUCENIKA_PKEX_MSG_STRING, Init.dData.OBRISIUCENIKA_PKEX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -178,7 +178,7 @@ public class UceniciUtils {
         //---------JFrame&JPanel------------------------------------------------
         JDialog win = new JDialog();
         win.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        win.setTitle(DODAJGENERACIJU_TITLE_STRING);
+        win.setTitle(Init.dData.DODAJGENERACIJU_TITLE_STRING);
         win.setSize(DODAJGEN_SIZE);
         win.setLocationRelativeTo(null);
         win.setResizable(false);
@@ -187,7 +187,7 @@ public class UceniciUtils {
         pan.setBackground(Grafika.getBgColor());
         win.setContentPane(pan);
         //---------JLabel&JTextPane---------------------------------------------
-        JLabel imena = new JLabel(DODAJGENERACIJU_IMENA_STRING);
+        JLabel imena = new JLabel(Init.dData.DODAJGENERACIJU_IMENA_STRING);
         imena.setBounds(IMENA_BOUNDS);
         imena.setBackground(Grafika.getBgColor());
         imena.setForeground(Grafika.getFgColor());
@@ -202,13 +202,13 @@ public class UceniciUtils {
         genTF.setBackground(Grafika.getTFColor());
         pan.add(jsp);
         //----------JButton-----------------------------------------------------
-        JButton but = new JButton(DODAJGENERACIJU_UNESI_STRING);
+        JButton but = new JButton(Init.dData.DODAJGENERACIJU_UNESI_STRING);
         but.setFont(Grafika.getButtonFont());
         but.setBounds(UNESIGEN_BOUNDS);
         but.addActionListener((ActionEvent e) -> {
             Podaci.dodajNovuGen(genTF.getText());
-            showMessageDialog(null, DODAJGENERACIJU_SUCC_MSG_STRING,
-                    DODAJGENERACIJU_SUCC_TITLE_STRING, JOptionPane.INFORMATION_MESSAGE);
+            showMessageDialog(null, Init.dData.DODAJGENERACIJU_SUCC_MSG_STRING,
+                    Init.dData.DODAJGENERACIJU_SUCC_TITLE_STRING, JOptionPane.INFORMATION_MESSAGE);
         });
         pan.add(but);
         //---------setVisible---------------------------------------------------

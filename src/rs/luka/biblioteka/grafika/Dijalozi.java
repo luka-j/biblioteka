@@ -17,8 +17,8 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import rs.luka.biblioteka.data.Knjiga;
 import static rs.luka.biblioteka.data.Podaci.getUcenik;
+import rs.luka.biblioteka.funkcije.Init;
 import rs.luka.biblioteka.funkcije.Utils;
-import static rs.luka.biblioteka.grafika.Konstante.*;
 
 
 public class Dijalozi {
@@ -36,8 +36,9 @@ public class Dijalozi {
         for (int i = 0; i < inx.size(); i++) {
             razredi[i] = valueOf(getUcenik(inx.get(i)).getRazred());
         }
-        num = showOptionDialog(null, DIJALOZI_VISERAZREDA_MSG_STRING, DIJALOZI_VISERAZREDA_TITLE_STRING, 
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, razredi, razredi[0]);
+        num = showOptionDialog(null, Init.dData.DIJALOZI_VISERAZREDA_MSG_STRING, 
+                Init.dData.DIJALOZI_VISERAZREDA_TITLE_STRING, JOptionPane.YES_NO_OPTION, 
+                JOptionPane.QUESTION_MESSAGE, null, razredi, razredi[0]);
         return num;
     }
     
@@ -53,9 +54,9 @@ public class Dijalozi {
         for(int i=0; i<knjige.size(); i++) {
             pisci[i] = knjige.get(i).getPisac();
         }
-        num = showOptionDialog(null, DIJALOZI_VISEKNJIGA_MSG1_STRING + knjige.get(0).getNaslov() + 
-                DIJALOZI_VISEKNJIGA_MSG2_STRING, DIJALOZI_VISEKNJIGA_TITLE_STRING, JOptionPane.YES_NO_OPTION, 
-                JOptionPane.QUESTION_MESSAGE, null, pisci, pisci[0]);
+        num = showOptionDialog(null, Init.dData.DIJALOZI_VISEKNJIGA_MSG1_STRING + knjige.get(0).getNaslov() + 
+                Init.dData.DIJALOZI_VISEKNJIGA_MSG2_STRING, Init.dData.DIJALOZI_VISEKNJIGA_TITLE_STRING, 
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, pisci, pisci[0]);
         return num;
     }
 
@@ -66,13 +67,13 @@ public class Dijalozi {
      * @return int vrednost unete vrednosti.
      */
     public static int brojKnjiga() {
-        String brKnjigaStr = showTextFieldDialog(DIJALOZI_BROJKNJIGA_TITLE_STRING, 
-                DIJALOZI_BROJKNJIGA_MSG_STRING, "");
+        String brKnjigaStr = showTextFieldDialog(Init.dData.DIJALOZI_BROJKNJIGA_TITLE_STRING, 
+                Init.dData.DIJALOZI_BROJKNJIGA_MSG_STRING, "");
         try {
             return Integer.parseInt(brKnjigaStr);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, DIJALOZI_BROJKNJIGA_NFEX_MSG_STRING,
-                    DIJALOZI_BROJKNJIGA_NFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, Init.dData.DIJALOZI_BROJKNJIGA_NFEX_MSG_STRING,
+                    Init.dData.DIJALOZI_BROJKNJIGA_NFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
             return brojKnjiga();
         }
     }
@@ -93,7 +94,8 @@ public class Dijalozi {
         final JDialog win = new JDialog();
         win.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         win.setTitle(naslov);
-        win.setSize(new Dimension(DIJALOZI_SIRINA, DIJALOZI_FIXED_VISINA + lines * DIJALOZI_LINE_HEIGHT));
+        win.setSize(new Dimension(Init.dData.DIJALOZI_SIRINA, 
+                Init.dData.DIJALOZI_FIXED_VISINA + lines * Init.dData.DIJALOZI_LINE_HEIGHT));
         win.setLocationRelativeTo(null);
         win.setResizable(false);
         win.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -103,14 +105,15 @@ public class Dijalozi {
         //---------JLabel&JTextField--------------------------------------------
         labelText = labelText.replace("\n", "<br>");
         JLabel label = new JLabel("<html>" +labelText);
-        label.setBounds(DIJALOZI_TEXT_X, DIJALOZI_LABEL_Y, DIJALOZI_LABEL_WIDTH, lines * DIJALOZI_LINE_HEIGHT);
+        label.setBounds(Init.dData.DIJALOZI_TEXT_X, Init.dData.DIJALOZI_LABEL_Y, 
+                Init.dData.DIJALOZI_LABEL_WIDTH, lines * Init.dData.DIJALOZI_LINE_HEIGHT);
         label.setBackground(Grafika.getBgColor());
         label.setForeground(Grafika.getFgColor());
         label.setFont(Grafika.getLabelFont());
         pan.add(label);
         final JTextField textField = new JTextField();
-        textField.setBounds(DIJALOZI_TEXT_X, lines * DIJALOZI_LINE_HEIGHT + DIJALOZI_TEXTFIELD_FIXED_Y, 
-                            DIJALOZI_TEXTFIELD_WIDTH, DIJALOZI_TEXTFIELD_HEIGHT);
+        textField.setBounds(Init.dData.DIJALOZI_TEXT_X, lines * Init.dData.DIJALOZI_LINE_HEIGHT
+                + Init.dData.DIJALOZI_TEXTFIELD_FIXED_Y, Init.dData.DIJALOZI_TEXTFIELD_WIDTH, Init.dData.DIJALOZI_TEXTFIELD_HEIGHT);
         textField.setFont(Grafika.getLabelFont());
         textField.setForeground(Grafika.getFgColor());
         textField.setCaretColor(Grafika.getFgColor());
@@ -134,7 +137,7 @@ public class Dijalozi {
      */
     private static JDialog infoWindow;
     private static final Dimension INFOWINDOW_BOUNDS = 
-            new Dimension(DIJALOZI_INFOWINDOW_WIDTH, DIJALOZI_INFOWINDOW_HEGHT);
+            new Dimension(Init.dData.DIJALOZI_INFOWINDOW_WIDTH, Init.dData.DIJALOZI_INFOWINDOW_HEGHT);
     /**
      * Iscrtava info poruku sa datim naslovom i porukom koja se koristi kao test u JLabel-u.
      * Koristi default vrednosti umesto onih u klasi Grafika za boje.
@@ -165,7 +168,7 @@ public class Dijalozi {
             infoWindow.dispose();
         }
     }
-
+    
     private Dijalozi() {
     }
 }

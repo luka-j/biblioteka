@@ -1,15 +1,14 @@
 /**
- * @lastmod 23.1.'15. 
- * kazne&bugfixing
+ * @lastmod 11.3.'15. 
+ * final Konstante
  */
 /**
  * @curr 
- * ...
+ * XMLProperties & config
  */
 /**
  * @bugs
  * prozor Ucenici ide preko prozora za Unos
- * Unos ucenika - oduzima knjige od biblioteke ili ne? (Config opcija)
  * Ucenici sidePan.setPreferredSize ne radi, postoji workaround koji se resetuje pri scroll-u 
  * ^^^ Samo u netbeans okruzenju, setPreferredSize radi normalno kada se pokrene posebno kao aplikacija !!! 
  * undo u kombinaciji sa prethodnim redo-om izaziva exception, ako se iz stacka izbrisu neke akcije
@@ -19,7 +18,10 @@
 /**
  * @todo 
  * ISTESTIRATI SVE (UNIT TESTS, DEBUGGING)
- * Custom XML za cuvanje propertiesa, sa deklarisanim tipom i vrstom podatka (config, string, int konstanta)
+ * proveriti sve (XMLProp), dokumentacija, optimizacija
+ * parallel u XMLProps ?
+ * Unos ucenika - oduzima knjige od biblioteke ili ne? (Config opcije)
+ * Lock za fajlove (ne moze vise od jednog programa da pristupi)
  * Kategorije knjiga
  * Pretraga na osnovu Levenshtein distance stringova
  * indexKnjige unutar UK - potreban ?
@@ -45,6 +47,7 @@
 //7110 linija, 25.12.'14. (dodat UVButton, izbacen Knjige i Ucenici, cleanup, bsh konzola)
 //8075 linija, 23.1.'15. (config opcije&Strings&cleanup, PeriodicActions, ICheckbox, setKol, UniqueList, 
 //                       viseKnjiga, Knjiga u UK, displayName, Formatter, kazne, optimizacija, cleanup)
+//8786 linija, 23.2.'15. (XMLProperties)
 
 //1115 linija u packageu, 24.8.'14.
 //1155 linija, 24.9.'14.
@@ -52,6 +55,7 @@
 //1460 linija, 18.11.'14.
 //1318 linija, 25.12.'14. (Knjige/Ucenici izbaceni)
 //1542 linija, 23.1.'15. (auto, logger, cleanup)
+//1552 linija, 19.2.'15.
 package rs.luka.biblioteka.funkcije;
 
 import java.io.IOException;
@@ -78,7 +82,7 @@ import rs.luka.biblioteka.grafika.Dijalozi;
 import rs.luka.biblioteka.grafika.Grafika;
 import static rs.luka.biblioteka.grafika.Grafika.initGrafika;
 import static rs.luka.biblioteka.funkcije.PeriodicActions.doPeriodicActions;
-import static rs.luka.biblioteka.grafika.Konstante.*;
+import rs.luka.biblioteka.grafika.Konstante;
 
 /**
  *
@@ -101,8 +105,8 @@ class Handler implements Thread.UncaughtExceptionHandler {
         String stackTrace = sw.toString();
 
         LOG.log(Level.SEVERE, "Uncaught exception", e);
-        showMessageDialog(null, HANDLER_MSG1_STRING + stackTrace + HANDLER_MSG2_STRING, HANDLER_TITLE_STRING, 
-                JOptionPane.ERROR_MESSAGE);
+        showMessageDialog(null, Init.dData.HANDLER_MSG1_STRING + stackTrace + Init.dData.HANDLER_MSG2_STRING, 
+                Init.dData.HANDLER_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
     }
 
     private void handleX11Ex() {
@@ -130,6 +134,11 @@ public class Init {
      * Oznacava broj izlaza do sada.
      */
     private static int exitCount = 0;
+    /**
+     * DisplayData. Objekat koji cuva konstante. Mora da bude u Init zbog toga što
+     * se ova klasa prva inicijalizuje, iako je logičnije da stoji u Grafika. Don't ask.
+     */
+    public static final Konstante dData = new Konstante();
 
     /**
      * Postavlja default UncaughtExceptionHandler, iscrtava mali prozor koji
@@ -147,7 +156,7 @@ public class Init {
     }
 
     /**
-     * Radi inicijalizaciju programa. Zove init*, load* i set* metode
+     * Radi inicijalizaciju programa. Zove init*, load* i setConfigEntry* metode
      * odgovarajucim redosledom. Vidi see also odeljak. Ne menjati redosled,
      * osim ako neki deo ne radi (exceptioni pri inicijalizaciji).
      *
@@ -185,9 +194,10 @@ public class Init {
     public static void exit(boolean sacuvaj) {
         exitCount++;
         if (exitCount == MAX_EXITS) {
+            LOGGER.log(Level.SEVERE, "Previše neuspešnih pokušaja izlaza. Forcequit");
             System.exit(-1);
         }
-        String opcije[] = {DA_STRING, NE_STRING};
+        String opcije[] = {dData.DA_STRING, dData.NE_STRING};
         LOGGER.log(Level.INFO, "Izlazim iz programa... Čuvam podatke: {0}", sacuvaj);
         if (sacuvaj) {
             try {
@@ -200,7 +210,7 @@ public class Init {
                 } catch (Throwable ex1) {
                     ex1.printStackTrace(); //nikad?
                 }
-                int zatvori = showOptionDialog(null, EXIT_IOEX_MSG_STRING, EXIT_IOEX_TITLE_STRING, 
+                int zatvori = showOptionDialog(null, dData.EXIT_IOEX_MSG_STRING, dData.EXIT_IOEX_TITLE_STRING, 
                         JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, opcije, opcije[1]);
                 if (zatvori == 0) {
                     finalizeLogger();
@@ -211,11 +221,11 @@ public class Init {
             } catch (Throwable ex) {
                 try {
                     LOGGER.log(Level.SEVERE, "Nepoznata greška pri čuvanju podataka", ex);
-                } catch (Exception | Error ex2) {
+                } catch (Throwable ex2) {
                     ex2.printStackTrace(); //nikad?
                 }
-                int zatvori = showOptionDialog(null, EXIT_TWBL_MSG_STRING,
-                        EXIT_TWBL_TITLE_STRING, JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE,
+                int zatvori = showOptionDialog(null, dData.EXIT_TWBL_MSG_STRING,
+                        dData.EXIT_TWBL_TITLE_STRING, JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE,
                         null, opcije, opcije[1]);
                 if (zatvori == 0) {
                     finalizeLogger();

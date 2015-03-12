@@ -4,10 +4,12 @@
 //2570 linija, 29.11.'14.
 //3000 linija, 25.12.'14. (dodavanje UVButton)
 //3432 linija, 23.1.'15. (auto. Strings, SmallButton, ICheckbox cleanup)
+//3440 linija, 19.2.'15.
 package rs.luka.biblioteka.grafika;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import static java.lang.Integer.parseInt;
@@ -30,7 +32,6 @@ import static javax.swing.plaf.metal.MetalLookAndFeel.setCurrentTheme;
 import rs.luka.biblioteka.data.Config;
 import rs.luka.biblioteka.funkcije.Init;
 import rs.luka.biblioteka.funkcije.Utils;
-import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  *
@@ -75,7 +76,6 @@ public class Grafika {
         fgColor = new Color(0); //crna
         TFColor = new Color(-1); //bela
     }
-
     /**
      * Ucitava podatke vezane za grafiku (lookAndFeel, boje i fontove).
      */
@@ -180,7 +180,7 @@ public class Grafika {
             LOGGER.log(Level.CONFIG, "lookAndFeel: {0}", UIManager.getLookAndFeel());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             LOGGER.log(Level.SEVERE, "Greška pri postavljanju teme (Look and Feel).", ex);
-            showMessageDialog(null, LOADLNF_EX_MSG_STRING, LOADLNF_EX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
+            showMessageDialog(null, Init.dData.LOADLNF_EX_MSG_STRING, Init.dData.LOADLNF_EX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -253,12 +253,15 @@ public class Grafika {
     protected static void exit() {
         LOGGER.log(Level.FINE, "Iniciram zatvaranje aplikacije i "
                 + "prikazujem dijalog za čuvanje podataka.");
-        String[] opcije = {DA_STRING, NE_STRING};
-        int sacuvaj = showOptionDialog(null, EXIT_MSG_STRING, EXIT_TITLE_STRING, 
+        String[] opcije = {Init.dData.DA_STRING, Init.dData.NE_STRING};
+        int sacuvaj = showOptionDialog(null, Init.dData.EXIT_MSG_STRING, Init.dData.EXIT_TITLE_STRING, 
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcije, opcije[0]); 
         //0 za da, 1 za ne, -1 za X
-        if (sacuvaj != INVALID)
+        if (sacuvaj != Init.dData.INVALID) {
+            for(Window win : Window.getWindows())
+                win.dispose(); //workaround
             Init.exit(sacuvaj==0);
+        }
         else
             LOGGER.log(Level.FINE, "Izlaz otkazan. Ostajem u aplikaciji.");
     }

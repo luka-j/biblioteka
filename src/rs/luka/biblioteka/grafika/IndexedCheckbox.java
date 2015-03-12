@@ -5,15 +5,15 @@ import javax.swing.JCheckBox;
 import javax.swing.border.EmptyBorder;
 import rs.luka.biblioteka.data.Knjiga;
 import rs.luka.biblioteka.data.Podaci;
-import static rs.luka.biblioteka.grafika.Konstante.*;
+import rs.luka.biblioteka.funkcije.Init;
 
 /**
  * JCheckBox koji cuva index i kolonu knjige (ako je za vracanje) unutar objekta.
  * @author luka
  */
 public class IndexedCheckbox extends JCheckBox {
-    private final Insets INSET = new Insets(CHECKBOX_TOP_INSET, CHECKBOX_LEFT_INSET,
-            CHECKBOX_BOTTOM_INSET, CHECKBOX_RIGHT_INSET);
+    private final Insets INSET = new Insets(Init.dData.CHECKBOX_TOP_INSET, Init.dData.CHECKBOX_LEFT_INSET,
+            Init.dData.CHECKBOX_BOTTOM_INSET, Init.dData.CHECKBOX_RIGHT_INSET);
     /**
      * Index (red) ucenika ili knjige.
      */

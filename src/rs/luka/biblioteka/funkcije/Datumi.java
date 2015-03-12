@@ -16,7 +16,6 @@ import rs.luka.biblioteka.data.Ucenik;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
-import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  *
@@ -64,17 +63,19 @@ public class Datumi {
             if (!predugoStr.isEmpty()) {
                 LOGGER.log(Level.FINE, "Provera datuma gotova. Neki učenici imaju knjige predugo kod sebe.");
                 predugoFW.write("Učenici koji drze knjige predugo kod sebe:\n" + predugoStr);
-                showMessageDialog(null, DATUMI_INFO_MSG1_STRING + predugoStr + DATUMI_INFO_MSG2_STRING,
-                        DATUMI_INFO_TITLE_STRING, INFORMATION_MESSAGE);
+                showMessageDialog(null, Init.dData.DATUMI_INFO_MSG1_STRING + predugoStr + 
+                        Init.dData.DATUMI_INFO_MSG2_STRING, Init.dData.DATUMI_INFO_TITLE_STRING, INFORMATION_MESSAGE);
             }
         } catch (FileNotFoundException ex) {
             LOGGER.log(Level.SEVERE, "Konfiguracijski ili fajl sa listom učenika koji"
                     + " imaju knjige predugo kod sebe nije prodađen!", ex);
-            showMessageDialog(null, DATUMI_FNFEX_MSG_STRING, DATUMI_FNFEX_TITLE_STRING, ERROR_MESSAGE);
+            showMessageDialog(null, Init.dData.DATUMI_FNFEX_MSG_STRING, 
+                    Init.dData.DATUMI_FNFEX_TITLE_STRING, ERROR_MESSAGE);
             
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Greška pri čitanju fajla", ex);
-            showMessageDialog(null, DATUMI_IOEX_MSG_STRING, DATUMI_IOEX_TITLE_STRING, ERROR_MESSAGE);
+            showMessageDialog(null, Init.dData.DATUMI_IOEX_MSG_STRING, 
+                    Init.dData.DATUMI_IOEX_TITLE_STRING, ERROR_MESSAGE);
         }
     }
 

@@ -12,7 +12,6 @@ import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
-import static rs.luka.biblioteka.grafika.Konstante.*;
 import rs.luka.biblioteka.grafika.Ucenici;
 
 /**
@@ -32,7 +31,7 @@ public class Unos {
     public static void initUnos() {
         if(Config.hasKey("logLevel"))
             prevLogLevel = Level.parse(Config.get("logLevel")).intValue();
-        Config.set("logLevel", "WARNING");
+        Config.setConfigEntry("logLevel", "WARNING");
         Logger.finalizeLogger();
         Logger.initLogger();
     }
@@ -86,19 +85,19 @@ public class Unos {
      * @since 10.11.'13.
      */
     public static void finalizeUnos() {
-        Config.set("firstRun", "false");
+        Config.setConfigEntry("firstRun", "false");
         LOGGER.log(Level.CONFIG, "Unos gotov. Postavljam firstRun na false.");
-        Config.set("logLevel", valueOf(prevLogLevel));
+        Config.setConfigEntry("logLevel", valueOf(prevLogLevel));
         Logger.finalizeLogger();
         Logger.initLogger();
-        Config.set("knjSize", valueOf(Podaci.getBrojKnjiga()));
-        Config.set("ucSize", valueOf(Podaci.getBrojUcenika()));
+        Config.setConfigEntry("knjSize", valueOf(Podaci.getBrojKnjiga()));
+        Config.setConfigEntry("ucSize", valueOf(Podaci.getBrojUcenika()));
         try {
             Save.save();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Greška pri čuvanju podataka nakon unosa", ex);
-            showMessageDialog(null, FINALIZE_IOEX_MSG_STRING, FINALIZE_IOEX_TITLE_STRING, 
-                    JOptionPane.ERROR_MESSAGE);
+            showMessageDialog(null, Init.dData.FINALIZE_IOEX_MSG_STRING, 
+                    Init.dData.FINALIZE_IOEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
         }
         new Ucenici().pregledUcenika();
     }

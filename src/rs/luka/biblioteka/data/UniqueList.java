@@ -57,8 +57,6 @@ public class UniqueList<E> extends ArrayList<E> {
             throw new NotUnique("Element " + element + " nije jedinstven.");
     }
     
-    
-    
     /**
      * Proverava da li je lista sortirana od poslednje modifikacije (gleda modCount).
      * Ako nije, vraca se bez izmena, u suprotnom radi sortiranje.

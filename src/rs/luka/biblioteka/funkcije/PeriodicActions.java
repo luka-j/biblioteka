@@ -65,7 +65,7 @@ public class PeriodicActions {
     /**
      * Startuje periodicne akcije. Koristi while(true) petlju (beskonacnu) unutar koje
      * se nalazi Thread.sleep(period). Koristi reflekciju da pozove sve metode ove klase
-     * koje ne primaju parametre i ne pocinju sa "do" ili "set".
+     * koje ne primaju parametre i ne pocinju sa "do" ili "setConfigEntry".
      * BLOKIRA THREAD JER RADI BESKONACNO.
      * 
      * @param period period na koji se periodicne akcije ponavljaju
@@ -126,11 +126,7 @@ public class PeriodicActions {
      */
     protected static void setDateCheckPeriod(float period) {
         if (period == -1) {
-            if (Config.hasKey("datePeriod")) {
-                DATE_CHECK_PERIOD = Float.parseFloat(Config.get("datePeriod"));
-            } else {
-                DATE_CHECK_PERIOD = 1;
-            }
+            DATE_CHECK_PERIOD = Float.parseFloat(Config.get("datePeriod", "1"));
         } else {
             DATE_CHECK_PERIOD = period;
         }

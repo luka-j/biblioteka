@@ -4,6 +4,7 @@
 //2110 linija, 29.11.'14.
 //2400 linija, 24.12.'14.
 //2691 linija, 23.1.'15. (auto, Strings, viseKnjiga, (config) cleanup)
+//3384 linija, 19.2.'15. (XMLProperties)
 package rs.luka.biblioteka.data;
 
 import java.io.BufferedReader;
@@ -29,10 +30,10 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import rs.luka.biblioteka.debugging.Test;
 import rs.luka.biblioteka.exceptions.*;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji.vrednost;
+import rs.luka.biblioteka.funkcije.Init;
 import rs.luka.biblioteka.funkcije.Undo;
 import rs.luka.biblioteka.funkcije.Utils;
 import rs.luka.biblioteka.grafika.Dijalozi;
-import static rs.luka.biblioteka.grafika.Konstante.*;
 
 /**
  * Klasa sa podacima. Sadrzi sve liste, default vrednosti i flagove i metode za
@@ -77,6 +78,7 @@ public final class Podaci {
      */
     public static void loadData() {
         if(TEST) {
+            JOptionPane.showMessageDialog(null, "DEBUG MODE");
             new Test().testUnos();
             if(true) {
                 return;
@@ -112,7 +114,7 @@ public final class Podaci {
                 uceniciF.createNewFile();
         } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "I/O greška pri učitavanju podataka", ex);
-                showMessageDialog(null, LOADDATA_IOEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
+                showMessageDialog(null, Init.dData.LOADDATA_IOEX_MSG_STRING, Init.dData.LOADDATA_EX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
         }
         try (final Scanner inN = new Scanner(new BufferedReader(new FileReader(knjigeF)));
@@ -134,21 +136,21 @@ public final class Podaci {
                     ucenici.trimToSize();
                 } catch (NoSuchElementException ex) {
                     LOGGER.log(Level.SEVERE, "Greška pri učitavanju: premalo linija", ex);
-                    showMessageDialog(null, LOADDATA_NSEEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
+                    showMessageDialog(null, Init.dData.LOADDATA_NSEEX_MSG_STRING, Init.dData.LOADDATA_EX_TITLE_STRING, 
                             JOptionPane.ERROR_MESSAGE);
                 } catch (ParseException ex) {
                     LOGGER.log(Level.SEVERE, "Greška pri učitavanju: loš format", ex);
-                    showMessageDialog(null, LOADDATA_PEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
+                    showMessageDialog(null, Init.dData.LOADDATA_PEX_MSG_STRING, Init.dData.LOADDATA_EX_TITLE_STRING, 
                             JOptionPane.ERROR_MESSAGE);
                 } catch (UnsupportedOperationException | ClassCastException |   //unchecked,
                         NullPointerException | IllegalArgumentException RTex) { //runtime exceptions
                     LOGGER.log(Level.SEVERE, "Greška pri učitavanju", RTex);
-                    showMessageDialog(null, LOADDATA_RTEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
+                    showMessageDialog(null, Init.dData.LOADDATA_RTEX_MSG_STRING, Init.dData.LOADDATA_EX_TITLE_STRING, 
                             JOptionPane.ERROR_MESSAGE);
                 }
         } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "I/O greška pri učitavanju podataka", ex);
-                showMessageDialog(null, LOADDATA_IOEX_MSG_STRING, LOADDATA_EX_TITLE_STRING, 
+                showMessageDialog(null, Init.dData.LOADDATA_IOEX_MSG_STRING, Init.dData.LOADDATA_EX_TITLE_STRING, 
                         JOptionPane.ERROR_MESSAGE);
         }
         System.gc();
@@ -466,7 +468,7 @@ public final class Podaci {
         String knjSize = Config.get("knjSize", "0");
         int knjSizeInt = parseInt(knjSize);
         knjSizeInt++;
-        try {Config.set("knjSize", valueOf(knjSizeInt));}
+        try {Config.setConfigEntry("knjSize", valueOf(knjSizeInt));}
         catch(Exception e) { throw new RuntimeException(e);} //workaround za uncompilable source code
         }
         else 
@@ -535,7 +537,7 @@ public final class Podaci {
             Undo.push(Akcija.DODAVANJE_UCENIKA, new Object[]{ucenik});
             int ucSize = Config.getAsInt("ucSize", "0");
             ucSize++;
-            Config.set("ucSize", valueOf(ucSize));
+            Config.setConfigEntry("ucSize", valueOf(ucSize));
         }
         else
             throw new Duplikat(vrednost.Ucenik);
@@ -556,13 +558,13 @@ public final class Podaci {
                 Podaci.dodajUcenika(ucenik);
             } catch (Duplikat ex) {
                 LOGGER.log(Level.INFO, "Učenik {0} već postoji; neće biti dodat", ucenik);
-                JOptionPane.showMessageDialog(null, DODAJGENERACIJU_DEX_MSG_STRING, 
-                        DODAJGENERACIJU_DEX_TITLE_STRING, JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, Init.dData.DODAJGENERACIJU_DEX_MSG_STRING, 
+                        Init.dData.DODAJGENERACIJU_DEX_TITLE_STRING, JOptionPane.WARNING_MESSAGE);
                 //ne zelim da prekidam unos, umesto toga izbacujem gresku i nastavljam
             } catch (LosFormat ex) {
                 LOGGER.log(Level.WARNING, "Učenik {0} sadrži nedozvoljen karakter (\"/\")", ucenik);
-                JOptionPane.showMessageDialog(null, ucenik + DODAJGENERACIJU_LFEX_MSG_STRING, 
-                        DODAJGENERACIJU_LFEX_TITLE_STRING, JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, ucenik + Init.dData.DODAJGENERACIJU_LFEX_MSG_STRING, 
+                        Init.dData.DODAJGENERACIJU_LFEX_TITLE_STRING, JOptionPane.WARNING_MESSAGE);
             }
         });
         povecajRazred();
@@ -617,7 +619,7 @@ public final class Podaci {
         String ucSize = Config.get("ucSize", "0");
         int ucSizeInt = parseInt(ucSize);
         ucSizeInt--;
-        Config.set("ucSize", valueOf(ucSizeInt));
+        Config.setConfigEntry("ucSize", valueOf(ucSizeInt));
     }
     
     /**
@@ -686,9 +688,10 @@ public final class Podaci {
         Knjiga knj = knjige.get(knjIndex);
         int kazna = uc.getIznosKazne(knj);
         if(kazna > 0) {
-            int platiti = JOptionPane.showOptionDialog(null, VRACANJE_KAZNA_MSG1_STRING + kazna + VRACANJE_KAZNA_MSG2_STRING, 
-                    VRACANJE_KAZNA_TITLE_STRING, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, 
-                    new String[]{DA_STRING, NE_STRING}, null);
+            int platiti = JOptionPane.showOptionDialog(null, Init.dData.VRACANJE_KAZNA_MSG1_STRING + 
+                    kazna + Init.dData.VRACANJE_KAZNA_MSG2_STRING, Init.dData.VRACANJE_KAZNA_TITLE_STRING, 
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, 
+                    new String[]{Init.dData.DA_STRING, Init.dData.NE_STRING}, null);
             if(platiti!=0)
                 return;
         }

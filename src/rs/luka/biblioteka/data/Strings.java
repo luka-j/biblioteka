@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static rs.luka.biblioteka.funkcije.Init.dData;
 import rs.luka.biblioteka.funkcije.Utils;
 import rs.luka.biblioteka.grafika.Konstante;
 
@@ -23,7 +24,7 @@ public class Strings {
     /**
      * Fajl odakle se učitavaju stringovi (strings.properties).
      */
-    private static File stringsFile;
+    private static File stringsFile = null;
     /**
      * Poruka sa opisom funkcije ovog fajla i sintaksom. Hteo sam da je uključim u fajl, ali
      * za sada mi je store() cele mape preskup za tu namenu, a ne koristim ga nigde unutar programa.
@@ -57,9 +58,20 @@ public class Strings {
       * @return true ili false, u zavisnosti od uspeha operacije.
       */
     private static boolean load() {
-        stringsFile = new File(Utils.getWorkingDir() + "strings.properties");
-        if(!stringsFile.exists() || stringsFile.length()==0)
-            return false;
+        String usersetPath = Config.get("stringsPath");
+        if(usersetPath != null && !usersetPath.isEmpty()) {
+            if(Utils.fileExists(usersetPath))
+                stringsFile = new File(usersetPath);
+            else if(Utils.fileExists(Utils.getWorkingDir() + usersetPath))
+                stringsFile = new File(Utils.getWorkingDir() + usersetPath);
+        }
+        if(stringsFile==null) {
+            if(Utils.fileExists(Utils.getWorkingDir() + "strings.properties"))
+                stringsFile = new File(Utils.getWorkingDir() + "strings.properties");
+            else if(Utils.fileExists("strings.properties"))
+                stringsFile = new File("strings.properties");
+            else return false;
+        }
         FileReader configFR;
         try {
             configFR = new FileReader(stringsFile);
@@ -80,11 +92,9 @@ public class Strings {
         strings.forEach((Object key, Object val) -> {
             String keyStr = (String)key;
             keyStr = keyStr.toUpperCase().replace('.', '_');
-            if(keyStr.startsWith("CONFIG_") && !keyStr.endsWith("_DESC"))
-                keyStr = keyStr.concat("_DESC");
-            else if(!keyStr.endsWith("_STRING"))
+            if(!keyStr.endsWith("_STRING"))
                 keyStr = keyStr.concat("_STRING");
-            Konstante.set(keyStr, (String)val);
+            dData.set(keyStr, (String)val);
         });
     }
     

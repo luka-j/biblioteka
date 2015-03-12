@@ -9,7 +9,6 @@ import java.awt.event.WindowEvent;
 import static java.lang.Integer.parseInt;
 import static java.lang.Integer.parseUnsignedInt;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,7 +22,7 @@ import rs.luka.biblioteka.exceptions.LosFormat;
 import rs.luka.biblioteka.exceptions.Prazno;
 import rs.luka.biblioteka.exceptions.PreviseKnjiga;
 import rs.luka.biblioteka.exceptions.VrednostNePostoji;
-import static rs.luka.biblioteka.grafika.Konstante.*;
+import rs.luka.biblioteka.funkcije.Init;
 
 /**
  * Prozor za unos, prikazuje se samo pri prvom pokretanju.
@@ -39,43 +38,43 @@ public class Unos {
      * Glavni prozor za unos.
      */
     private JFrame win;
-    private final Dimension UNOS_SIZE = new Dimension(UNOS_WIDTH, UNOS_HEIGHT);
-    private final Dimension BUTTON_SIZE = new Dimension(UNOS_BUTTON_WIDTH, UNOS_BUTTON_HEIGHT);
+    private final Dimension UNOS_SIZE = new Dimension(Init.dData.UNOS_WIDTH, Init.dData.UNOS_HEIGHT);
+    private final Dimension BUTTON_SIZE = new Dimension(Init.dData.UNOS_BUTTON_WIDTH, Init.dData.UNOS_BUTTON_HEIGHT);
 
     //
     //--------------------------------------------------------------------------
     //
-    private final Dimension UNOSKNJ_SIZE = new Dimension(UNOSKNJ_WIDTH, UNOSKNJ_HEIGHT);
-    private final Rectangle NASLOV_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_NASLOV_Y,
-            UNOSKNJ_LABEL_WIDTH, 2 * UNOSKNJ_LABEL_HEIGHT);
-    private final Rectangle NASLOVTF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_NASLOVTF_Y,
-            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
-    private final Rectangle PISAC_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_PISAC_Y,
-            UNOSKNJ_LABEL_WIDTH, UNOSKNJ_LABEL_HEIGHT);
-    private final Rectangle PISACTF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_PISACTF_Y,
-            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
-    private final Rectangle KOLICINA_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_KOLICINA_Y,
-            UNOSKNJ_LABEL_WIDTH, UNOSKNJ_LABEL_HEIGHT);
-    private final Rectangle KOLICINATF_BOUNDS = new Rectangle(UNOSKNJ_TEXT_X, UNOSKNJ_KOLICINATF_Y,
-            UNOSKNJ_TEXTFIELD_WIDTH, UNOSKNJ_TEXTFIELD_HEIGHT);
-    private final Rectangle KNJ_UNESI_BOUNDS = new Rectangle(UNOSKNJ_UNESI_X, UNOSKNJ_UNESI_Y,
-            UNOSKNJ_UNESI_WIDTH, UNOSKNJ_UNESI_HEIGHT);
+    private final Dimension UNOSKNJ_SIZE = new Dimension(Init.dData.UNOSKNJ_WIDTH, Init.dData.UNOSKNJ_HEIGHT);
+    private final Rectangle NASLOV_BOUNDS = new Rectangle(Init.dData.UNOSKNJ_TEXT_X, Init.dData.UNOSKNJ_NASLOV_Y,
+            Init.dData.UNOSKNJ_LABEL_WIDTH, 2 * Init.dData.UNOSKNJ_LABEL_HEIGHT);
+    private final Rectangle NASLOVTF_BOUNDS = new Rectangle(Init.dData.UNOSKNJ_TEXT_X, Init.dData.UNOSKNJ_NASLOVTF_Y,
+            Init.dData.UNOSKNJ_TEXTFIELD_WIDTH, Init.dData.UNOSKNJ_TEXTFIELD_HEIGHT);
+    private final Rectangle PISAC_BOUNDS = new Rectangle(Init.dData.UNOSKNJ_TEXT_X, Init.dData.UNOSKNJ_PISAC_Y,
+            Init.dData.UNOSKNJ_LABEL_WIDTH, Init.dData.UNOSKNJ_LABEL_HEIGHT);
+    private final Rectangle PISACTF_BOUNDS = new Rectangle(Init.dData.UNOSKNJ_TEXT_X, Init.dData.UNOSKNJ_PISACTF_Y,
+            Init.dData.UNOSKNJ_TEXTFIELD_WIDTH, Init.dData.UNOSKNJ_TEXTFIELD_HEIGHT);
+    private final Rectangle KOLICINA_BOUNDS = new Rectangle(Init.dData.UNOSKNJ_TEXT_X, Init.dData.UNOSKNJ_KOLICINA_Y,
+            Init.dData.UNOSKNJ_LABEL_WIDTH, Init.dData.UNOSKNJ_LABEL_HEIGHT);
+    private final Rectangle KOLICINATF_BOUNDS = new Rectangle(Init.dData.UNOSKNJ_TEXT_X, Init.dData.UNOSKNJ_KOLICINATF_Y,
+            Init.dData.UNOSKNJ_TEXTFIELD_WIDTH, Init.dData.UNOSKNJ_TEXTFIELD_HEIGHT);
+    private final Rectangle KNJ_UNESI_BOUNDS = new Rectangle(Init.dData.UNOSKNJ_UNESI_X, Init.dData.UNOSKNJ_UNESI_Y,
+            Init.dData.UNOSKNJ_UNESI_WIDTH, Init.dData.UNOSKNJ_UNESI_HEIGHT);
 
-    private final Dimension UNOSUC_SIZE = new Dimension(UNOSUC_WIDTH, UNOSUC_HEIGHT);
-    private final Rectangle IME_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_IME_Y,
-            UNOSUC_LABEL_WIDTH, UNOSUC_LABEL_HEIGHT);
-    private final Rectangle IMETF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_IMETF_Y,
-            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
-    private final Rectangle RAZRED_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_RAZRED_Y,
-            UNOSUC_LABEL_WIDTH, UNOSUC_LABEL_HEIGHT);
-    private final Rectangle RAZREDTF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_RAZREDTF_Y,
-            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
-    private final Rectangle KNJIGE_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_KNJIGE_Y,
-            UNOSUC_LABEL_WIDTH, 2 * UNOSUC_LABEL_HEIGHT);
-    private final Rectangle KNJIGETF_BOUNDS = new Rectangle(UNOSUC_TEXT_X, UNOSUC_KNJIGETF_Y,
-            UNOSUC_TEXTFIELD_WIDTH, UNOSUC_TEXTFIELD_HEIGHT);
-    private final Rectangle UC_UNESI_BOUNDS = new Rectangle(UNOSUC_UNESI_X, UNOSUC_UNESI_Y,
-            UNOSUC_UNESI_WIDTH, UNOSUC_UNESI_HEIGHT);
+    private final Dimension UNOSUC_SIZE = new Dimension(Init.dData.UNOSUC_WIDTH, Init.dData.UNOSUC_HEIGHT);
+    private final Rectangle IME_BOUNDS = new Rectangle(Init.dData.UNOSUC_TEXT_X, Init.dData.UNOSUC_IME_Y,
+            Init.dData.UNOSUC_LABEL_WIDTH, Init.dData.UNOSUC_LABEL_HEIGHT);
+    private final Rectangle IMETF_BOUNDS = new Rectangle(Init.dData.UNOSUC_TEXT_X, Init.dData.UNOSUC_IMETF_Y,
+            Init.dData.UNOSUC_TEXTFIELD_WIDTH, Init.dData.UNOSUC_TEXTFIELD_HEIGHT);
+    private final Rectangle RAZRED_BOUNDS = new Rectangle(Init.dData.UNOSUC_TEXT_X, Init.dData.UNOSUC_RAZRED_Y,
+            Init.dData.UNOSUC_LABEL_WIDTH, Init.dData.UNOSUC_LABEL_HEIGHT);
+    private final Rectangle RAZREDTF_BOUNDS = new Rectangle(Init.dData.UNOSUC_TEXT_X, Init.dData.UNOSUC_RAZREDTF_Y,
+            Init.dData.UNOSUC_TEXTFIELD_WIDTH, Init.dData.UNOSUC_TEXTFIELD_HEIGHT);
+    private final Rectangle KNJIGE_BOUNDS = new Rectangle(Init.dData.UNOSUC_TEXT_X, Init.dData.UNOSUC_KNJIGE_Y,
+            Init.dData.UNOSUC_LABEL_WIDTH, 2 * Init.dData.UNOSUC_LABEL_HEIGHT);
+    private final Rectangle KNJIGETF_BOUNDS = new Rectangle(Init.dData.UNOSUC_TEXT_X, Init.dData.UNOSUC_KNJIGETF_Y,
+            Init.dData.UNOSUC_TEXTFIELD_WIDTH, Init.dData.UNOSUC_TEXTFIELD_HEIGHT);
+    private final Rectangle UC_UNESI_BOUNDS = new Rectangle(Init.dData.UNOSUC_UNESI_X, Init.dData.UNOSUC_UNESI_Y,
+            Init.dData.UNOSUC_UNESI_WIDTH, Init.dData.UNOSUC_UNESI_HEIGHT);
 
     /**
      * Iscrtava prozor za unos knjiga.
@@ -84,7 +83,7 @@ public class Unos {
     public void unesiKnjige(boolean cont) {
         rs.luka.biblioteka.funkcije.Unos.initUnos();
         //---------JFrame&JPanel------------------------------------------------
-        final JFrame winKnj = new JFrame(UNOS_KNJIGE_STRING);
+        final JFrame winKnj = new JFrame(Init.dData.UNOS_KNJIGE_STRING);
         winKnj.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         winKnj.addWindowListener(new WindowAdapter() {
             @Override
@@ -102,7 +101,7 @@ public class Unos {
         pan.setBackground(Grafika.getBgColor());
         winKnj.setContentPane(pan);
         //----------JLabels&JTextBoxes------------------------------------------
-        JLabel naslov = new JLabel(UNOSKNJ_NASLOV_STRING);
+        JLabel naslov = new JLabel(Init.dData.UNOSKNJ_NASLOV_STRING);
         naslov.setBounds(NASLOV_BOUNDS);
         naslov.setFont(Grafika.getLabelFont());
         naslov.setForeground(Grafika.getFgColor());
@@ -114,7 +113,7 @@ public class Unos {
         nasText.setCaretColor(Grafika.getFgColor());
         nasText.setBackground(Grafika.getTFColor());
         pan.add(nasText);
-        JLabel pisac = new JLabel(UNOSKNJ_PISAC_STRING);
+        JLabel pisac = new JLabel(Init.dData.UNOSKNJ_PISAC_STRING);
         pisac.setBounds(PISAC_BOUNDS);
         pisac.setFont(Grafika.getLabelFont());
         pisac.setForeground(Grafika.getFgColor());
@@ -127,7 +126,7 @@ public class Unos {
         pisacText.setBackground(Grafika.getTFColor());
         pisacText.setFont(Grafika.getLabelFont());
         pan.add(pisacText);
-        JLabel kolicina = new JLabel(UNOSKNJ_KOLICINA_STRING);
+        JLabel kolicina = new JLabel(Init.dData.UNOSKNJ_KOLICINA_STRING);
         kolicina.setBounds(KOLICINA_BOUNDS);
         kolicina.setFont(Grafika.getLabelFont());
         kolicina.setForeground(Grafika.getFgColor());
@@ -140,7 +139,7 @@ public class Unos {
         kolText.setBackground(Grafika.getTFColor());
         pan.add(kolText);
         //----------JButton&ActionListener--------------------------------------
-        JButton but = new JButton(UNOSKNJ_UNESI_STRING);
+        JButton but = new JButton(Init.dData.UNOSKNJ_UNESI_STRING);
         but.setFont(Grafika.getButtonFont());
         but.setBounds(KNJ_UNESI_BOUNDS);
         ActionListener ubaci = (ActionEvent ae) -> {
@@ -149,7 +148,7 @@ public class Unos {
                 winKnj.dispose();
             } else if ("".equals(kolText.getText())) {
                 LOGGER.log(Level.INFO, "Polje za količinu pri unosu je prazno");
-                showMessageDialog(null, UNOSKNJ_PRAZNO_MSG_STRING, UNOSKNJ_PRAZNO_TITLE_STRING,
+                showMessageDialog(null, Init.dData.UNOSKNJ_PRAZNO_MSG_STRING, Init.dData.UNOSKNJ_PRAZNO_TITLE_STRING,
                         JOptionPane.ERROR_MESSAGE);
             } else {
                 try {
@@ -164,18 +163,18 @@ public class Unos {
                     winKnj.dispose();
                 } catch (NumberFormatException ex) {
                     LOGGER.log(Level.INFO, "Uneta količina {0} nije broj", kolText.getText());
-                    showMessageDialog(null, UNOSKNJ_NFEX_MSG_STRING, UNOSKNJ_NFEX_TITLE_STRING,
+                    showMessageDialog(null, Init.dData.UNOSKNJ_NFEX_MSG_STRING, Init.dData.UNOSKNJ_NFEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     kolText.grabFocus();
                 } catch (Duplikat ex) {
                     LOGGER.log(Level.WARNING, "Naslov {0} već postoji", nasText.getText());
-                    showMessageDialog(null, UNOSKNJ_DEX_MSG_STRING, UNOSKNJ_DEX_TITLE_STRING,
+                    showMessageDialog(null, Init.dData.UNOSKNJ_DEX_MSG_STRING, Init.dData.UNOSKNJ_DEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     nasText.grabFocus();
                 } catch (LosFormat ex) {
                     LOGGER.log(Level.INFO, "{0} ili {1} nije validan string za Knjigu", 
                             new String[]{nasText.getText(), pisacText.getText()});
-                    showMessageDialog(null, UNOSKNJ_LFEX_MSG_STRING, UNOSKNJ_LFEX_TITLE_STRING,
+                    showMessageDialog(null, Init.dData.UNOSKNJ_LFEX_MSG_STRING, Init.dData.UNOSKNJ_LFEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     nasText.grabFocus();
                 }
@@ -194,11 +193,11 @@ public class Unos {
      */
     public void unesiUcenike() {
         if (!Config.hasKey("brKnjiga")) {
-            Config.set("brKnjiga", String.valueOf(Dijalozi.brojKnjiga()));
+            Config.setConfigEntry("brKnjiga", String.valueOf(Dijalozi.brojKnjiga()));
         }
         rs.luka.biblioteka.funkcije.Unos.initUnos();
         //---------JFrame&JPanel------------------------------------------------
-        final JFrame winU = new JFrame(UNOS_UCENICI_STRING);
+        final JFrame winU = new JFrame(Init.dData.UNOS_UCENICI_STRING);
         winU.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         winU.addWindowListener(new WindowAdapter() {
             @Override
@@ -214,7 +213,7 @@ public class Unos {
         pan.setBackground(Grafika.getBgColor());
         winU.setContentPane(pan);
         //----------JLabels&JTextBoxes------------------------------------------
-        JLabel ime = new JLabel(UNOSUC_IME_STRING);
+        JLabel ime = new JLabel(Init.dData.UNOSUC_IME_STRING);
         ime.setBounds(IME_BOUNDS);
         ime.setFont(Grafika.getLabelFont());
         ime.setForeground(Grafika.getFgColor());
@@ -225,7 +224,7 @@ public class Unos {
         imeText.setForeground(Grafika.getFgColor());
         imeText.setCaretColor(Grafika.getFgColor());
         imeText.setBackground(Grafika.getTFColor());
-        JLabel raz = new JLabel(UNOSUC_RAZRED_STRING);
+        JLabel raz = new JLabel(Init.dData.UNOSUC_RAZRED_STRING);
         raz.setBounds(RAZRED_BOUNDS);
         raz.setFont(Grafika.getLabelFont());
         raz.setForeground(Grafika.getFgColor());
@@ -236,7 +235,7 @@ public class Unos {
         razText.setForeground(Grafika.getFgColor());
         razText.setCaretColor(Grafika.getFgColor());
         razText.setBackground(Grafika.getTFColor());
-        JLabel knj = new JLabel(UNOSUC_KNJIGE_STRING);
+        JLabel knj = new JLabel(Init.dData.UNOSUC_KNJIGE_STRING);
         knj.setBounds(KNJIGE_BOUNDS);
         knj.setFont(Grafika.getLabelFont());
         knj.setForeground(Grafika.getFgColor());
@@ -263,30 +262,30 @@ public class Unos {
                     winU.repaint();
                 } catch (NumberFormatException ex) {
                     LOGGER.log(Level.INFO, "Loš razred: {0}", razText.getText());
-                    showMessageDialog(null, UNOSUC_NFEX_MSG_STRING, UNOSUC_NFEX_TITLE_STRING,
+                    showMessageDialog(null, Init.dData.UNOSUC_NFEX_MSG_STRING, Init.dData.UNOSUC_NFEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     razText.grabFocus();
                 } catch (Prazno ex) {
                     winU.dispose();
                 } catch (PreviseKnjiga ex) {
                     LOGGER.log(Level.INFO, "Uneto previše knjiga: {0}", knjText.getText());
-                    JOptionPane.showMessageDialog(null, UNOSUC_PKEX_MSG_STRING, UNOSUC_PKEX_TITLE_STRING,
+                    JOptionPane.showMessageDialog(null, Init.dData.UNOSUC_PKEX_MSG_STRING, Init.dData.UNOSUC_PKEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     knjText.grabFocus();
                 } catch (Duplikat ex) {
                     LOGGER.log(Level.INFO, "Učenik {0} već postoji", imeText.getText());
-                    showMessageDialog(null, UNOSUC_DEX_MSG_STRING, UNOSUC_DEX_TITLE_STRING,
+                    showMessageDialog(null, Init.dData.UNOSUC_DEX_MSG_STRING, Init.dData.UNOSUC_DEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     imeText.grabFocus();
                 } catch (VrednostNePostoji ex) {
                     LOGGER.log(Level.INFO, "Nije uneta jedna od knjiga {0}", knjText.getText());
-                    showMessageDialog(null, UNOSUC_VNPEX_MSG_STRING, UNOSUC_VNPEX_TITLE_STRING,
+                    showMessageDialog(null, Init.dData.UNOSUC_VNPEX_MSG_STRING, Init.dData.UNOSUC_VNPEX_TITLE_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     knjText.grabFocus();
                 } catch (LosFormat ex) {
                     LOGGER.log(Level.INFO, "Ime {0} sadrži nedozvoljene karaktere", imeText.getText());
-                    showMessageDialog(null, UNOSUC_LFEX_MSG_STRING, 
-                            UNOSUC_LFEX_TITLE_STRING, JOptionPane.ERROR_MESSAGE);
+                    showMessageDialog(null, Init.dData.UNOSUC_LFEX_MSG_STRING, Init.dData.UNOSUC_LFEX_TITLE_STRING, 
+                            JOptionPane.ERROR_MESSAGE);
                     imeText.grabFocus();
                 }
             }
@@ -298,7 +297,7 @@ public class Unos {
         razText.addActionListener(unesi);
         pan.add(razText);
         //----------JButton-----------------------------------------------------
-        JButton but = new JButton(UNOSUC_UNESI_STRING);
+        JButton but = new JButton(Init.dData.UNOSUC_UNESI_STRING);
         but.setBounds(UC_UNESI_BOUNDS);
         but.setFont(Grafika.getButtonFont());
         but.addActionListener(unesi);
